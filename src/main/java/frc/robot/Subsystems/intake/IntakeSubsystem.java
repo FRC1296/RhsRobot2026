@@ -1,4 +1,4 @@
-package frc.robot.Subsystems.intake;
+package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase{
     private TalonFX intakeMotor;
@@ -24,8 +25,8 @@ public class IntakeSubsystem extends SubsystemBase{
     private double DEPLOY_SPEED = 0.0;
 
     public IntakeSubsystem(){
-        intakeMotor = new TalonFX(99);
-        intakeDeployMotor = new TalonFX(89);
+        intakeMotor = new TalonFX(Constants.CAN_INTAKE);
+        intakeDeployMotor = new TalonFX(Constants.CAN_DEPLOY);
 
 
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();

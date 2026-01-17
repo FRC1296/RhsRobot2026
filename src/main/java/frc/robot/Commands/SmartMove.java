@@ -1,9 +1,9 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
 public class SmartMove {
 
@@ -16,7 +16,7 @@ public class SmartMove {
 
         if (distance > PATH_THRESHOLD) {
             // Path-on-the-fly → then PID
-            return findPath.pathFindToPose(targetX, targetY, targetRotationDegrees)
+            return FindPath.pathFindToPose(targetX, targetY, targetRotationDegrees)
                     .andThen(new PIDAlign(drivetrain, targetPose)).withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
         } else {
             // Already close → PID only

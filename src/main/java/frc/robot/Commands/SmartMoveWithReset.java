@@ -1,8 +1,8 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.Subsystems.Drivetrain.CommandSwerveDrivetrain;
-import frc.robot.Subsystems.Vision.LocalizationHelpers;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.vision.LocalizationHelpers;
 
 public class SmartMoveWithReset extends SequentialCommandGroup{
     public SmartMoveWithReset(CommandSwerveDrivetrain drivetrain){

@@ -41,7 +41,10 @@ public class Constants {
     public static final int REAR_RIGHT_DRIVE_ID = 10;
     public static final int REAR_RIGHT_ANGLE_ID = 11;
 
-    public static final int TEST_MOTOR_ID = 35;
+
+     public static final int CAN_DEPLOY = 99;
+    public static final int CAN_INTAKE = 98;
+   
     
     // Motor Limits
     public static final double MOTOR_STATOR_CURRENT_LIMIT = 60.0;
