@@ -1,0 +1,46 @@
+<mxfile host="65bd71144e">
+    <diagram id="W5y8KwtDez6r9p5SgH-O" name="Page-1">
+        <mxGraphModel dx="1036" dy="710" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Intake by Arm" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="130" y="130" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Intake" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="130" y="240" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" style="edgeStyle=none;html=1;entryX=1.017;entryY=0.363;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" parent="1" source="4" target="2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="&lt;br&gt;Rotate Arm to proper position&lt;br&gt;Raise Elevator to proper height&lt;br&gt;Rotate Hand rollers until switch triggers to indicate we have coral" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="120" width="380" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" style="edgeStyle=none;html=1;entryX=1;entryY=0.388;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=14;exitX=-0.008;exitY=0.367;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="6" target="3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&lt;br&gt;Deploy Intake&lt;br&gt;Rotate intake rollers until beam break indicates we have coral&lt;br&gt;Rotate Arm to proper position / Adjust Elevator to correct position&lt;br&gt;Rotate Hand rollers until switch triggers to indicate we have coral&lt;br&gt;Rotate Arm to ready position &amp;amp; Raise Elevator to ready position&lt;br&gt;Stow Intake" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="231" width="380" height="89" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="Place Coral L4" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="130" y="370" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=14;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" parent="1" source="9" target="8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="&lt;br&gt;Determine which side we are scoring from&lt;br&gt;Adjust (forward/backward) robot position based on April Tag (lineup with reef post)&lt;br&gt;Raise Elevator to proper height&lt;br&gt;Rotate Arm to proper position&lt;br&gt;Rotate Hand rollers until switch triggers to indicate we have scored coral" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="360" width="450" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="Climb Low Cage" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="130" y="530" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=14;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" parent="1" source="12" target="11" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="&lt;br&gt;Raise Elevator to pre-climb height&lt;br&gt;Lower Elevator to Low Cage Climb height" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="520" width="380" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
