@@ -4,10 +4,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.drivetrain.TunerConstants;
+import frc.robot.subsystems.turret.TurretSubsystem;
 
 public class FMJRobotContainer {
+
+      public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+          private TurretSubsystem turret = new TurretSubsystem(drivetrain);  
+
+
   public FMJRobotContainer() {
     configureBindings();
   }
@@ -17,4 +26,13 @@ public class FMJRobotContainer {
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
-}
+
+   public void setInitialPose(double x, double y) {
+    
+        drivetrain.resetPose(new Pose2d(x,y,drivetrain.getState().Pose.getRotation()));
+    }}
+
+   
+
+
+

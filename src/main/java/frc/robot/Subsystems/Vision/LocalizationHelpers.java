@@ -19,11 +19,11 @@ public class LocalizationHelpers {
         LimelightHelpers.SetRobotOrientation(LLName, currentRotation, angularVelocity, 0, 0, 0, 0);
         PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LLName);
 
-        if (MT2 == null) {
-            if (LLName.equals("limelight-front")) {
-                Constants.visionValidFrontPub.set(false);
+      if (MT2 == null) {
+            if (LLName.equals("limelight-a")) {
+                Constants.visionValidAPub.set(false);
             } else {
-                Constants.visionValidRearPub.set(false);
+                Constants.visionValidBPub.set(false);
             }
             return;
         }
@@ -40,24 +40,23 @@ public class LocalizationHelpers {
             Constants.hasInitializedFromVision = true;
         }
 
-        if (LLName.equals("limelight-front")) {
-            Constants.visionValidFrontPub.set(!isInvalid);
+        if (LLName.equals("limelight-a")) {
+            Constants.visionValidAPub.set(!isInvalid);
             if (!isInvalid) {
-                Constants.distanceToTagFrontPub.set(MT2.rawFiducials[0].distToRobot);
-                Constants.visionPoseXFrontPub.set(MT2.pose.getX());
-                Constants.visionPoseYFrontPub.set(MT2.pose.getY());
-                Constants.visionPoseRotFrontPub.set(MT2.pose.getRotation().getDegrees());
+                Constants.distanceToTagAPub.set(MT2.rawFiducials[0].distToRobot);
+                Constants.visionPoseXAPub.set(MT2.pose.getX());
+                Constants.visionPoseYAPub.set(MT2.pose.getY());
+                Constants.visionPoseRotAPub.set(MT2.pose.getRotation().getDegrees());
             }
         } else {
-            Constants.visionValidRearPub.set(!isInvalid);
+            Constants.visionValidBPub.set(!isInvalid);
             if (!isInvalid) {
-                Constants.distanceToTagRearPub.set(MT2.rawFiducials[0].distToRobot);
-                Constants.visionPoseXRearPub.set(MT2.pose.getX());
-                Constants.visionPoseYRearPub.set(MT2.pose.getY());
-                Constants.visionPoseRotRearPub.set(MT2.pose.getRotation().getDegrees());
+                Constants.distanceToTagBPub.set(MT2.rawFiducials[0].distToRobot);
+                Constants.visionPoseXBPub.set(MT2.pose.getX());
+                Constants.visionPoseYBPub.set(MT2.pose.getY());
+                Constants.visionPoseRotBPub.set(MT2.pose.getRotation().getDegrees());
             }
         }
-
         if (!isInvalid) {
 
             double avgDistance = MT2.avgTagDist;
