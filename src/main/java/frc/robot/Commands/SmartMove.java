@@ -16,7 +16,7 @@ public class SmartMove {
 
         if (distance > PATH_THRESHOLD) {
             // Path-on-the-fly → then PID
-            return findPath.pathFindToPose(targetX, targetY, targetRotationDegrees)
+            return FindPath.pathFindToPose(targetX, targetY, targetRotationDegrees)
                     .andThen(new PIDAlign(drivetrain, targetPose)).withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
         } else {
             // Already close → PID only
