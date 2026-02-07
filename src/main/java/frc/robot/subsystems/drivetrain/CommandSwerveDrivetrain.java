@@ -12,9 +12,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -261,6 +264,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // Convert ChassisSpeeds to SwerveRequest
         var request = new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds);
         this.setControl(request);
+    }
+
+    public double aimRobotAt(double x, double y) {
+        Translation2d target = new Translation2d(x, y);
+        Translation2d currentTranslation = new Translation2d(getPose().getX(), getPose().getY());
+        Translation2d vectorToTarget = target.minus(currentTranslation);
+        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees(), -180, 180);
+        return angleToTarget;
     }
 
     public void configurePathPlanner() {

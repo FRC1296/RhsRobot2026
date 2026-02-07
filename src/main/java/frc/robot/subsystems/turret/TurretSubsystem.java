@@ -158,4 +158,9 @@ public class TurretSubsystem extends SubsystemBase {
     public void stopTurret() {
         turretMotor.setControl(dcOut.withOutput(0.0));
     }
+
+    public void turretAimAtHubBool(boolean bool){
+        Constants.turretConstants.turretAimAtHub = bool;
+    }
+
 }

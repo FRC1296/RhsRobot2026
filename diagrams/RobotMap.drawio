@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="jid--CPTID_KOY_ECjit" name="Motor View">
-        <mxGraphModel dx="1687" dy="971" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1100" pageHeight="850" background="#ffffff" math="0" shadow="0">
+        <mxGraphModel dx="1486" dy="926" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1100" pageHeight="850" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -286,6 +286,15 @@
                         <mxPoint x="170" y="282.5" as="targetPoint"/>
                         <mxPoint x="259.03999999999996" y="231.96000000000004" as="sourcePoint"/>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="220" style="edgeStyle=none;html=1;strokeColor=#000000;fontColor=#000000;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-160" y="170" as="sourcePoint"/>
+                        <mxPoint x="-30" y="115" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="221" value="SetThrottle()" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="-210" y="170" width="120" height="60" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
