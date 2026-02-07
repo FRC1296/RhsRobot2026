@@ -13,7 +13,7 @@ public class LocalizationHelpers {
     public static void updateFieldPosition(CommandSwerveDrivetrain drivetrain, String LLName) {
         boolean doRejectUpdate = false;
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
-        double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();
+        double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();//Get current from LL instead
         double xyStdDev = 0.1;
 
         LimelightHelpers.SetRobotOrientation(LLName, currentRotation, angularVelocity, 0, 0, 0, 0);
@@ -35,7 +35,7 @@ public class LocalizationHelpers {
         boolean isInvalid = (MT2.tagCount == 0 || MT2.rawFiducials == null || MT2.rawFiducials.length < 1 || doRejectUpdate == true);
 
         if (!Constants.hasInitializedFromVision && !isInvalid) {
-            Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));
+            Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));//Reset to LL rotaion instead
             drivetrain.resetPose(correctPose);
             Constants.hasInitializedFromVision = true;
         }

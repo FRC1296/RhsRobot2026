@@ -7,7 +7,7 @@ public class Constants {
 
     static NetworkTableInstance inst = NetworkTableInstance.getDefault();
     static NetworkTable testTable = inst.getTable("LimeLight Testing");
-     public static final BooleanPublisher visionValidAPub = testTable.getBooleanTopic("A Vision Valid").publish();
+    public static final BooleanPublisher visionValidAPub = testTable.getBooleanTopic("A Vision Valid").publish();
     public static final DoublePublisher distanceToTagAPub = testTable.getDoubleTopic("A Distance to Tag").publish();
 
     public static final DoublePublisher visionPoseXAPub = testTable.getDoubleTopic("A Pose X").publish();
@@ -25,32 +25,44 @@ public class Constants {
     public static final DoublePublisher fusedPoseYPub = testTable.getDoubleTopic("Fused Pose Y").publish();
     public static final DoublePublisher fusedPoseRotPub = testTable.getDoubleTopic("Fused Pose Rot").publish();
 
-
-    public static final int FRONT_LEFT_DRIVE_ID = 1;
-    public static final int FRONT_LEFT_ANGLE_ID = 2;
     
-    public static final int FRONT_RIGHT_DRIVE_ID = 4;
-    public static final int FRONT_RIGHT_ANGLE_ID = 5;
 
-    public static final int REAR_LEFT_DRIVE_ID = 7;
-    public static final int REAR_LEFT_ANGLE_ID = 8;
+    public class driveConstants{
 
-    public static final int REAR_RIGHT_DRIVE_ID = 10;
-    public static final int REAR_RIGHT_ANGLE_ID = 11;
+        public static final int FRONT_RIGHT_DRIVE_ID = 1;
+        public static final int FRONT_RIGHT_ANGLE_ID = 2;
+        public static final int FRONT_RIGHT_CANCODER = 3;
 
+        public static final int FRONT_LEFT_DRIVE_ID = 4;
+        public static final int FRONT_LEFT_ANGLE_ID = 5;
+        public static final int FRONT_LEFT_CANCODER = 6;
 
-     public static final int CAN_DEPLOY = 99;
-    public static final int CAN_INTAKE = 98;
-   
+        public static final int REAR_RIGHT_DRIVE_ID = 7;
+        public static final int REAR_RIGHT_ANGLE_ID = 8;
+        public static final int REAR_RIGHT_CANCODER = 9;
+
+        public static final int REAR_LEFT_DRIVE_ID = 10;
+        public static final int REAR_LEFT_ANGLE_ID = 11;
+        public static final int REAR_LEFT_CANCODER = 12;
+
+        public static boolean driveAimAtHub = false;
+    }
+    
     public class turretConstants {
-                public static boolean turretAimAtHub = false;
-        public static boolean aimAtPose = false;
+        public static boolean turretAimAtHub = false;
         public static final int TURRET_MOTOR_ID = 23;
     }
 
-    
-    // Motor Limits
-    public static final double MOTOR_STATOR_CURRENT_LIMIT = 60.0;
-    public static final double MOTOR_TEMP_WARNING = 70.0;
+    public class shooterConstants {
+        public static final int HOOD_MOTOR_ID = 20;
+        public static final int SHOOTER_MASTER_MOTOR_ID = 21;
+        public static final int SHOOTER_SLAVE_MOTOR_ID = 22;
+        public static final int SHOOTER_FEEDER_MOTOR_ID = 24;
+    }
+
+    public class intakeConstants {
+        public static final int INTAKE_DEPLOY_MOTOR_ID = 13;
+        public static final int INTAKE_ROLLER_MOTOR_ID = 14;
+    }
 
 }

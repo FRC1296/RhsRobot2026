@@ -35,7 +35,7 @@ public class TurretSubsystem extends SubsystemBase {
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
     private DoublePublisher turretPositionPublisher;
-    private double cruiseVelocity = 200;
+    private double cruiseVelocity = 150;
 
     private final double kP = 7.0;
     private final double kI = 0.0;
@@ -44,7 +44,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private final double gearRatio = 184.0/12.0;
     private Transform2d turretOffset = new Transform2d(
-        new Translation2d(0.0,0.0),
+        new Translation2d(0.0,0.0381),
         new Rotation2d()
     );
 
@@ -102,11 +102,12 @@ public class TurretSubsystem extends SubsystemBase {
 
     public void setTurretAngle(double degrees) {
         double aimAngle = MathUtil.inputModulus(getTurretAngle() + degrees, minAngle, maxAngle);
-        if(aimAngle > 120 || aimAngle < -120){
-            return;
-        } else{
-            turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle)));
-        }
+        // if(aimAngle > 120 || aimAngle < -120){
+        //     return;
+        // } else{
+        //     turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle)));
+        // }
+        turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle)));
     }
 
     public double calculateTurretAngleDelta(Translation2d targetTranslation) {
@@ -123,8 +124,8 @@ public class TurretSubsystem extends SubsystemBase {
         setTurretAngle(desiredAngle);
     }
 
-    public void aimAtPoseBool(){
-        Constants.turretConstants.aimAtPose = !(Constants.turretConstants.aimAtPose);
+    public void turretAimAtHubBool(boolean bool){
+        Constants.turretConstants.turretAimAtHub = bool;
     }
 
     public double getTurretAngle() {
@@ -137,30 +138,6 @@ public class TurretSubsystem extends SubsystemBase {
 
     public void moveTurretToZero() {
         turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.0));
-    }
-
-    public void moveTurretToLeft() {
-        turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(-1.5));
-    }
-
-    public void moveTurretToRight() {
-        turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(1.5));
-    }
-
-    public void runTurret() {
-        turretMotor.setControl(dcOut.withOutput(0.1));
-    }
-
-    public void reverseTurret() {
-        turretMotor.setControl(dcOut.withOutput(-0.1));
-    }
-
-    public void stopTurret() {
-        turretMotor.setControl(dcOut.withOutput(0.0));
-    }
-
-    public void turretAimAtHubBool(boolean bool){
-        Constants.turretConstants.turretAimAtHub = bool;
     }
 
 }

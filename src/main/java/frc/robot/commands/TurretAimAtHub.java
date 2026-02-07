@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.Constants;
 import frc.robot.FMJRobotContainer;
-import frc.robot.Robot;
 
 public class TurretAimAtHub extends Command {
     private TurretSubsystem turret;
