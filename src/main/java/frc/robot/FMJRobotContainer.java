@@ -13,26 +13,32 @@ import frc.robot.subsystems.turret.TurretSubsystem;
 
 public class FMJRobotContainer {
 
-      public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-          private TurretSubsystem turret = new TurretSubsystem(drivetrain);  
-
+  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  private TurretSubsystem turret = new TurretSubsystem(drivetrain);
 
   public FMJRobotContainer() {
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
 
-   public void setInitialPose(double x, double y) {
-    
-        drivetrain.resetPose(new Pose2d(x,y,drivetrain.getState().Pose.getRotation()));
-    }}
+  public void setInitialPose(double x, double y) {
 
-   
+    drivetrain.resetPose(new Pose2d(x, y, drivetrain.getState().Pose.getRotation()));
 
+  }
 
+  public CommandSwerveDrivetrain getDrivetrain() {
+    return drivetrain;
+  }
 
+  public TurretSubsystem getTurret() {
+    return turret;
+  }
+
+}

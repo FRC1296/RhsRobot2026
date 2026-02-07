@@ -43,6 +43,7 @@ public class Constants {
     public static final int CAN_INTAKE = 98;
    
     public class turretConstants {
+                public static boolean turretAimAtHub = false;
         public static boolean aimAtPose = false;
         public static final int TURRET_MOTOR_ID = 23;
     }
