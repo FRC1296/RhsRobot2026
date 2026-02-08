@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -20,9 +16,13 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.RobotAimAtHub;
+import frc.robot.commands.ShootBalls;
 import frc.robot.commands.TurretAimAtHub;
+import frc.robot.commands.TurretAimToFeed;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
+import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -30,15 +30,14 @@ import frc.robot.subsystems.vision.LocalizationHelpers;
 
 public class FMJRobotContainer {
 
-  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.25;
-  private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond);
+  private double MaxSpeed = Constants.driveConstants.driveSpeed;
+  private double MaxAngularRate = Constants.driveConstants.rotationSpeed;
 
-  /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate * 0.15) // Add a 10% deadband
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-  // private final SwerveRequest.SwerveDriveBrake brake = new
-  // SwerveRequest.SwerveDriveBrake();
+      .withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate * 0.15) // Add a 15% deadband
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.SwerveDriveBrake brake = new
+  SwerveRequest.SwerveDriveBrake();
   // private final SwerveRequest.PointWheelsAt point = new
   // SwerveRequest.PointWheelsAt();
 
@@ -51,10 +50,15 @@ public class FMJRobotContainer {
 
   private ShooterSubsystem shooter = new ShooterSubsystem();
   private TurretSubsystem turret = new TurretSubsystem(drivetrain);
+  private IntakeSubsystem intake = new IntakeSubsystem();
+  private FeederSubsystem feeder = new FeederSubsystem();
   private LedSubsystem LED = new LedSubsystem();
+  
 
   private TurretAimAtHub autoTurretHub;
   private RobotAimAtHub autoRobotHub;
+  private TurretAimToFeed autoAimFeed;
+  private ShootBalls shootBalls = new ShootBalls(this);
 
   public FMJRobotContainer() {
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
@@ -64,42 +68,51 @@ public class FMJRobotContainer {
       autoTurretHub = new TurretAimAtHub(this, 11.9, 4);
       autoRobotHub = new RobotAimAtHub(this, 11.9, 4);
     }
+    autoAimFeed = new TurretAimToFeed(this, 0.0, 0.0);
+
     configureDriverBindings();
     configureOperatorBindings();
   }
 
   private void configureOperatorBindings() {
-    operatorJoystick.rightTrigger().whileTrue(new InstantCommand(shooter::runMasterShooter))
-        .whileFalse(new InstantCommand(shooter::stopMasterShooter));
-    operatorJoystick.x().onTrue(autoTurretHub);
-    operatorJoystick.y().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
-    operatorJoystick.a().onTrue(autoRobotHub);
+    operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
+    operatorJoystick.leftTrigger().onTrue(autoTurretHub);
+    operatorJoystick.leftBumper().onTrue(autoAimFeed);
+    operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
+    operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
+    operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
+    operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
+
+    operatorJoystick.povRight().whileTrue(new InstantCommand(turret::runTurret)).onFalse(new InstantCommand(turret::stopTurret));
+    operatorJoystick.povLeft().whileTrue(new InstantCommand(turret::reverseTurret)).onFalse(new InstantCommand(turret::stopTurret));
+    operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
+    operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
+
+    operatorJoystick.back().onTrue(autoRobotHub);
+    operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
   }
 
   private void configureDriverBindings() {
     drivetrain.setDefaultCommand(
-        drivetrain.applyRequest(() -> drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        drivetrain.applyRequest(() -> drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
+            .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
+            .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)
         ));
 
-    // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    // joystick.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(),-joystick.getLeftX()))));
+    driverJoystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
 
-    driverJoystick.y().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+    driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
+    driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
+    driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
 
-    // Run SysId routines when holding back/start and X/Y.
-    // Note that each routine should be run exactly once in a single log.
     driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
     driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
     driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-    // reset the field-centric heading on left bumper press
-    // driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() ->
-    // drivetrain.seedFieldCentric()));
-
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    // driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+    // joystick.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(),-joystick.getLeftX())))); 
   }
 
   public Command getAutonomousCommand() {
@@ -117,6 +130,24 @@ public class FMJRobotContainer {
       LimelightHelpers.SetThrottle("limelight-a", 50);
       LimelightHelpers.SetThrottle("limelight-b", 50);
     }
+
+    LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-a");
+    LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-b");
+
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue){
+      if(drivetrain.getPose().getY() > 4.0){
+        autoAimFeed = new TurretAimToFeed(this, 2.0, 6.5);
+      } else {
+        autoAimFeed = new TurretAimToFeed(this, 2.0, 1.5);
+      }
+    } else {
+      if(drivetrain.getPose().getY() > 4.0){
+        autoAimFeed = new TurretAimToFeed(this, 14.5, 6.5);
+      } else {
+        autoAimFeed = new TurretAimToFeed(this, 14.5, 1.5);
+      }
+    }
+    
   }
 
   public void setInitialPose(double x, double y) {
@@ -129,6 +160,14 @@ public class FMJRobotContainer {
 
   public CommandSwerveDrivetrain getDrivetrain() {
     return drivetrain;
+  }
+
+  public FeederSubsystem getFeeder() {
+    return feeder;
+  }
+
+  public ShooterSubsystem getShooter() {
+    return shooter;
   }
 
 }

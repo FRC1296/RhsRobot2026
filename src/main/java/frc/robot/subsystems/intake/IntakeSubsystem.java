@@ -27,7 +27,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         private DoublePublisher intakePositionPublisher;
 
-        private double deployCruiseVelocity = 50;
+        private double intakeDeployPosition = 0.0;
+        private double intakeUndeployPosition = -1.0;
+
+        private double deployCruiseVelocity = 30;
 
         private final double deploykP = 10.0;
         private final double deploykI = 0.0;
@@ -38,7 +41,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 NetworkTableInstance inst = NetworkTableInstance.getDefault();
                 NetworkTable limebotTable = inst.getTable("Robot Data");
                 NetworkTable shooterTable = limebotTable.getSubTable("Intake Subsystem");
-                intakePositionPublisher = shooterTable.getDoubleTopic("Deploy Position").publish();
+                intakePositionPublisher = shooterTable.getDoubleTopic("Intake Position").publish();
 
                 intakeRollerMotor = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_ID);
                 intakeDeployMotor = new TalonFX(Constants.intakeConstants.INTAKE_DEPLOY_MOTOR_ID);
@@ -53,7 +56,6 @@ public class IntakeSubsystem extends SubsystemBase {
                                 .withInverted(InvertedValue.Clockwise_Positive);
                 CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
                                 .withStatorCurrentLimit(80);
-
                 TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration()
                                 .withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig);
 
@@ -63,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase {
         private void ConfigureDeployMotor() {
 
                 MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)
-                                .withInverted(InvertedValue.CounterClockwise_Positive);
+                                .withInverted(InvertedValue.Clockwise_Positive);
                 CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                                 .withStatorCurrentLimitEnable(true).withStatorCurrentLimit(90);
                 Slot0Configs slotZeroConfigs = new Slot0Configs().withKG(deploykG).withKP(deploykP).withKI(deploykI)
@@ -88,7 +90,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         public void runIntake() {
-                intakeRollerMotor.setControl(dcOut.withOutput(0.50));
+                intakeRollerMotor.setControl(dcOut.withOutput(0.80));
         }
 
         public void stopIntake() {
@@ -100,6 +102,10 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         public void undeployIntake() {
-                intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(-1.0));
+                intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeUndeployPosition));
+        }
+
+        public void deployIntake() {
+                intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
         }
 }

@@ -46,10 +46,14 @@ public class Constants {
         public static final int REAR_LEFT_CANCODER = 12;
 
         public static boolean driveAimAtHub = false;
+
+        public static final double driveSpeed = 1.5; // meters per sec
+        public static final double rotationSpeed = 0.5; // rotations per sec
     }
     
     public class turretConstants {
         public static boolean turretAimAtHub = false;
+        public static boolean turretAimToFeed = false;
         public static final int TURRET_MOTOR_ID = 23;
     }
 
@@ -57,12 +61,16 @@ public class Constants {
         public static final int HOOD_MOTOR_ID = 20;
         public static final int SHOOTER_MASTER_MOTOR_ID = 21;
         public static final int SHOOTER_SLAVE_MOTOR_ID = 22;
-        public static final int SHOOTER_FEEDER_MOTOR_ID = 24;
     }
 
     public class intakeConstants {
         public static final int INTAKE_DEPLOY_MOTOR_ID = 13;
         public static final int INTAKE_ROLLER_MOTOR_ID = 14;
+    }
+
+    public class feederConstants {
+        public static final int SPINDEXER_MOTOR_ID = 15;
+        public static final int FEEDER_MOTOR_ID = 16;
     }
 
 }

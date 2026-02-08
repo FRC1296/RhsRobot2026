@@ -40,7 +40,9 @@ public class LedSubsystem extends SubsystemBase {
         PoseEstimate LLA = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
         PoseEstimate LLB = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
 
-        if (LLA.tagCount > 0 || LLB.tagCount > 0) {
+        if(LLA == null || LLB == null){
+            return;
+        } else if (LLA.tagCount > 0 || LLB.tagCount > 0) {
 
             for (int i = 0; i < ledCount; i++) {
                 buffer.setLED(i, green);

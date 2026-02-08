@@ -57,7 +57,7 @@ public class TurretSubsystem extends SubsystemBase {
 
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable limebotTable = inst.getTable("Robot Data");
-        NetworkTable shooterTable = limebotTable.getSubTable("Shooter Subsystem");
+        NetworkTable shooterTable = limebotTable.getSubTable("Turret Subsystem");
         turretPositionPublisher = shooterTable.getDoubleTopic("Turret Position").publish();
 
         drivetrain = drive;
@@ -128,6 +128,10 @@ public class TurretSubsystem extends SubsystemBase {
         Constants.turretConstants.turretAimAtHub = bool;
     }
 
+    public void turretAimToFeedBool(boolean bool){
+        Constants.turretConstants.turretAimToFeed = bool;
+    }
+
     public double getTurretAngle() {
         return motorRotationsToDegrees(turretMotor.getPosition().getValueAsDouble());
     }
@@ -138,6 +142,18 @@ public class TurretSubsystem extends SubsystemBase {
 
     public void moveTurretToZero() {
         turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.0));
+    }
+
+    public void runTurret() {
+        turretMotor.setControl(dcOut.withOutput(0.05));
+    }
+
+    public void reverseTurret() {
+        turretMotor.setControl(dcOut.withOutput(-0.05));
+    }
+
+    public void stopTurret() {
+        turretMotor.setControl(dcOut.withOutput(0.0));
     }
 
 }

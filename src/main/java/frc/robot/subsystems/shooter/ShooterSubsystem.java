@@ -21,100 +21,118 @@ import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-        private TalonFX hoodMotor;
-        private TalonFX shooterMasterMotor;
-        private TalonFX shooterFollowerMotor;
-        private TalonFX shooterFeederMotor;
+    private TalonFX hoodMotor;
+    private TalonFX shooterMasterMotor;
+    private TalonFX shooterFollowerMotor;
 
-        private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
-        private DutyCycleOut dcOut = new DutyCycleOut(0);
+    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+    private DutyCycleOut dcOut = new DutyCycleOut(0);
 
-        private DoublePublisher hoodPositionPublisher;
+    private DoublePublisher hoodPositionPublisher;
+    private DoublePublisher shooterSpeedPublisher;
 
-        private double hoodCruiseVelocity = 50;
+    private double shooterSpeed = 0.85;
+    private double hoodPos = 0.0;
 
-        private final double hoodkP = 10.0;
-        private final double hoodkI = 0.0;
-        private final double hoodkD = 0.0;
-        private final double hoodkG = 0.0;
+    private double hoodCruiseVelocity = 50;
+    private final double hoodkP = 10.0;
+    private final double hoodkI = 0.0;
+    private final double hoodkD = 0.0;
+    private final double hoodkG = 0.0;
 
-        public ShooterSubsystem() {
-                NetworkTableInstance inst = NetworkTableInstance.getDefault();
-                NetworkTable limebotTable = inst.getTable("Robot Data");
-                NetworkTable shooterTable = limebotTable.getSubTable("Shooter Subsystem");
-                hoodPositionPublisher = shooterTable.getDoubleTopic("Hood Position").publish();
+    public ShooterSubsystem() {
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        NetworkTable limebotTable = inst.getTable("Robot Data");
+        NetworkTable shooterTable = limebotTable.getSubTable("Shooter Subsystem");
+        hoodPositionPublisher = shooterTable.getDoubleTopic("Hood Position").publish();
+        shooterSpeedPublisher = shooterTable.getDoubleTopic("Shooter Speed").publish();
 
-                hoodMotor = new TalonFX(Constants.shooterConstants.HOOD_MOTOR_ID);
-                shooterMasterMotor = new TalonFX(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID);
-                shooterFollowerMotor = new TalonFX(Constants.shooterConstants.SHOOTER_SLAVE_MOTOR_ID);
-                shooterFeederMotor = new TalonFX(Constants.shooterConstants.SHOOTER_FEEDER_MOTOR_ID);
+        hoodMotor = new TalonFX(Constants.shooterConstants.HOOD_MOTOR_ID);
+        shooterMasterMotor = new TalonFX(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID);
+        shooterFollowerMotor = new TalonFX(Constants.shooterConstants.SHOOTER_SLAVE_MOTOR_ID);
 
-                ConfigureHoodMotor();
-                ConfigureShooterMasterMotor();
-                ConfigureShooterFeederMotor();
-        }
+        ConfigureHoodMotor();
+        ConfigureShooterMotors();
+    }
 
-        private void ConfigureHoodMotor() {
-                MotorOutputConfigs outputConfigs = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake);
-                CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(60);
-                Slot0Configs slotZeroConfigs = new Slot0Configs().withKG(hoodkG).withKP(hoodkP).withKI(hoodkI).withKD(hoodkD);
-                MotionMagicConfigs mmConfigs = new MotionMagicConfigs().withMotionMagicCruiseVelocity(hoodCruiseVelocity)
-                                .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
-                                .withMotionMagicJerk(0);
+    private void ConfigureHoodMotor() {
+        MotorOutputConfigs outputConfigs = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(60);
+        Slot0Configs slotZeroConfigs = new Slot0Configs().withKG(hoodkG).withKP(hoodkP).withKI(hoodkI).withKD(hoodkD);
+        MotionMagicConfigs mmConfigs = new MotionMagicConfigs().withMotionMagicCruiseVelocity(hoodCruiseVelocity)
+                .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
+                .withMotionMagicJerk(0);
 
-                TalonFXConfiguration motorConfig = new TalonFXConfiguration()
-                                .withMotorOutput(outputConfigs)
-                                .withCurrentLimits(currentConfigs)
-                                .withSlot0(slotZeroConfigs)
-                                .withMotionMagic(mmConfigs);
+        TalonFXConfiguration motorConfig = new TalonFXConfiguration()
+                .withMotorOutput(outputConfigs)
+                .withCurrentLimits(currentConfigs)
+                .withSlot0(slotZeroConfigs)
+                .withMotionMagic(mmConfigs);
 
-                hoodMotor.getConfigurator().apply(motorConfig);
-                hoodMotor.setPosition(0);
-        }
+        hoodMotor.getConfigurator().apply(motorConfig);
+        hoodMotor.setPosition(0);
+    }
 
-        private void ConfigureShooterMasterMotor() {
-                shooterFollowerMotor.setControl(new Follower(shooterMasterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    private void ConfigureShooterMotors() {
+        shooterFollowerMotor.setControl(
+                new Follower(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID, MotorAlignmentValue.Opposed));
 
-                CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(110);
+        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(110);
 
-                TalonFXConfiguration motorConfig = new TalonFXConfiguration().withCurrentLimits(currentConfigs);
-                shooterMasterMotor.getConfigurator().apply(motorConfig);
-                shooterFollowerMotor.getConfigurator().apply(motorConfig);
+        TalonFXConfiguration masterMotorConfig = new TalonFXConfiguration().withCurrentLimits(currentConfigs)
+                .withMotorOutput(outputConfig);
+        TalonFXConfiguration followerMotorConfig = new TalonFXConfiguration().withCurrentLimits(currentConfigs);
 
-        }
+        shooterMasterMotor.getConfigurator().apply(masterMotorConfig);
+        shooterFollowerMotor.getConfigurator().apply(followerMotorConfig);
 
-        private void ConfigureShooterFeederMotor() {
-                MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast).withInverted(InvertedValue.Clockwise_Positive);
-                CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(70);
-
-                TalonFXConfiguration shooterFeederMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig);
-
-                shooterFeederMotor.getConfigurator().apply(shooterFeederMotorConfig);
-        }
+    }
 
     @Override
     public void periodic() {
         hoodPositionPublisher.set(getHoodPosition());
+        shooterSpeedPublisher.set(shooterSpeed);
     }
 
     public double getHoodPosition() {
         return hoodMotor.getPosition().getValueAsDouble();
-    } 
-
-    public void moveHoodToMax() {
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(-1.0));
-    }
-
-    public void moveHoodToMin() {
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(-0.05));
     }
 
     public void runMasterShooter() {
-        shooterMasterMotor.setControl(dcOut.withOutput(0.90));
+        shooterMasterMotor.setControl(dcOut.withOutput(shooterSpeed));
+    }
+
+    public void increaseShooterSpeed() {
+        if(shooterSpeed <= 0.95){
+            shooterSpeed += 0.05;
+        }
+    }
+
+    public void decreaseShooterSpeed() {
+        if(shooterSpeed >= 0.05){
+            shooterSpeed -= 0.05;
+        }
     }
 
     public void stopMasterShooter() {
         shooterMasterMotor.setControl(dcOut.withOutput(0.0));
+    }
+
+    public void runHood() {
+        hoodPos += 0.05;
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
+    }
+
+    public void reverseHood() {
+        if((hoodPos - 0.05) > 0){
+            hoodPos -= 0.05;
+            hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
+        }
     }
 
 }

@@ -5,12 +5,12 @@ import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.Constants;
 import frc.robot.FMJRobotContainer;
 
-public class TurretAimAtHub extends Command {
+public class TurretAimToFeed extends Command {
     private TurretSubsystem turret;
     private double targetX;
     private double targetY;
 
-    public TurretAimAtHub(FMJRobotContainer robot, double targetX, double targetY) {
+    public TurretAimToFeed(FMJRobotContainer robot, double targetX, double targetY) {
         this.turret = robot.getTurret();
         this.targetX = targetX;
         this.targetY = targetY;
@@ -18,9 +18,9 @@ public class TurretAimAtHub extends Command {
     }
 
     @Override
-    public void initialize() {
-        turret.turretAimToFeedBool(false);
-        turret.turretAimAtHubBool(true);
+    public void initialize(){
+        turret.turretAimAtHubBool(false);
+        turret.turretAimToFeedBool(true);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class TurretAimAtHub extends Command {
 
     @Override
     public boolean isFinished() {
-        return Constants.turretConstants.turretAimAtHub == false;
+        return Constants.turretConstants.turretAimToFeed == false;
     }
 
     @Override
