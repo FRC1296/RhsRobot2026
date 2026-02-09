@@ -226,9 +226,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             Constants.hasInitializedFromVision = false;
         }
 
-        LocalizationHelpers.updateFieldPosition(this, "limelight-a");
-        LocalizationHelpers.updateFieldPosition(this, "limelight-b");
-
         Pose2d fusedPose = this.getState().Pose;
         Constants.fusedPoseXPub.set(fusedPose.getX());
         Constants.fusedPoseYPub.set(fusedPose.getY());
