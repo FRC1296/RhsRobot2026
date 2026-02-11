@@ -31,7 +31,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
 
-    private double shooterSpeed = 0.85;
+    private double shooterSpeed = 0.65;
     private double hoodPos = 0.0;
 
     private double hoodCruiseVelocity = 50;

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="0tmS47P77ek5C62ZnIjc" name="Page-1">
-        <mxGraphModel dx="2014" dy="851" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#ffffff, #f3ecec)" math="0" shadow="0">
+        <mxGraphModel dx="1886" dy="787" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#ffffff, #f3ecec)" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -35,7 +35,7 @@
                         <mxPoint x="-130" y="423" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="67" value="Manual reverses hood" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="67" value="Manual reverses hood" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;" parent="1" vertex="1">
                     <mxGeometry x="-385" y="475" width="124" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="69" style="edgeStyle=none;html=1;strokeColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.664;entryY=0.51;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="71" target="89" edge="1">
@@ -44,10 +44,10 @@
                         <mxPoint x="192.76000000000022" y="429.91599999999994" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="71" value="Decrease shooter speed&lt;br&gt;&lt;div&gt;5%&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="448" width="144" height="60" as="geometry"/>
+                <mxCell id="71" value="Decrease shooter speed&lt;br&gt;&lt;div&gt;5%&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="316" y="458" width="144" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="74" value="Increase shooter speed&lt;div&gt;5%&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
+                <mxCell id="74" value="Increase shooter speed&lt;div&gt;5%&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
                     <mxGeometry x="312" y="247" width="140" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="82" style="edgeStyle=none;html=1;strokeColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="74" edge="1">
@@ -89,7 +89,7 @@
                 <mxCell id="95" value="" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="-113" y="597" width="134" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="97" value="Manual run hood" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="97" value="Manual run hood" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;" parent="1" vertex="1">
                     <mxGeometry x="-387.5" y="254" width="141" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="104" style="edgeStyle=none;html=1;entryX=0.312;entryY=0.267;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#000000;" parent="1" source="103" target="89" edge="1">
@@ -149,7 +149,7 @@
                 <mxCell id="120" value="&lt;font color=&quot;#000000&quot; style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;A&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="464" y="458" width="35" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="121" value="Manual reverse turret" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="121" value="Manual reverse turret" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;" parent="1" vertex="1">
                     <mxGeometry x="-404" y="340" width="141" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="123" style="edgeStyle=none;html=1;strokeColor=#001DBC;entryX=0.086;entryY=0.391;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#0050ef;strokeWidth=3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="121" target="89" edge="1">
@@ -167,14 +167,17 @@
                         <mxPoint x="-35.76923076923072" y="607" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="128" value="Manual run turret" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" vertex="1" parent="1">
+                <mxCell id="128" value="Manual run turret" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;" parent="1" vertex="1">
                     <mxGeometry x="-370.5" y="584" width="124" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="129" style="edgeStyle=none;html=1;strokeColor=#001DBC;fillColor=#0050ef;strokeWidth=3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="128">
+                <mxCell id="129" style="edgeStyle=none;html=1;strokeColor=#001DBC;fillColor=#0050ef;strokeWidth=3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="128" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="-78" y="369" as="targetPoint"/>
                         <mxPoint x="-303" y="558" as="sourcePoint"/>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="130" value="" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="-541" y="242" width="80" height="100" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

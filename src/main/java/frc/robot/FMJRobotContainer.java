@@ -75,7 +75,8 @@ public class FMJRobotContainer {
   }
 
   private void configureOperatorBindings() {
-    operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
+    //operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
+    operatorJoystick.rightTrigger().whileTrue(new InstantCommand(shooter::runMasterShooter)).whileFalse(new InstantCommand(shooter::stopMasterShooter));
     operatorJoystick.leftTrigger().onTrue(autoTurretHub);
     operatorJoystick.leftBumper().onTrue(autoAimFeed);
     operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
@@ -103,6 +104,7 @@ public class FMJRobotContainer {
 
     driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
     driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
+    driverJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeders)).whileFalse(new InstantCommand(feeder::stopFeeders));
     driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
 
     driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));

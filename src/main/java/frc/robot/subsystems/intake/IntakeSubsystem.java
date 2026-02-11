@@ -17,6 +17,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+/*
+ * Deployed position = -0.047119 rotations
+ * Undeployed position = 0.312988 rotations
+ */
+
 public class IntakeSubsystem extends SubsystemBase {
 
         private TalonFX intakeRollerMotor;
@@ -27,10 +32,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         private DoublePublisher intakePositionPublisher;
 
-        private double intakeDeployPosition = 0.0;
-        private double intakeUndeployPosition = -1.0;
+        private double intakeDeployPosition = 0.68;
+        private double intakeUndeployPosition = 0.1;
 
-        private double deployCruiseVelocity = 30;
+        private double deployCruiseVelocity = 10;
 
         private final double deploykP = 10.0;
         private final double deploykI = 0.0;
@@ -67,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)
                                 .withInverted(InvertedValue.Clockwise_Positive);
                 CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
-                                .withStatorCurrentLimitEnable(true).withStatorCurrentLimit(90);
+                                .withStatorCurrentLimitEnable(true).withStatorCurrentLimit(270);
                 Slot0Configs slotZeroConfigs = new Slot0Configs().withKG(deploykG).withKP(deploykP).withKI(deploykI)
                                 .withKD(deploykD);
                 MotionMagicConfigs mmConfigs = new MotionMagicConfigs()

@@ -30,7 +30,7 @@ public class FeederSubsystem extends SubsystemBase {
     private void ConfigureSpindexerMotor() {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast).withInverted(InvertedValue.Clockwise_Positive);
-        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(90);
+        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(40);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig);
 
@@ -48,8 +48,8 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void runFeeders() {
-        feederMotor.setControl(dcOut.withOutput(0.60));
-        spindexerMotor.setControl(dcOut.withOutput(0.40));
+        feederMotor.setControl(dcOut.withOutput(0.6));
+        spindexerMotor.setControl(dcOut.withOutput(0.15));
     }
 
     public void stopFeeders() {

@@ -61,11 +61,14 @@ public class Constants {
         public static final int HOOD_MOTOR_ID = 20;
         public static final int SHOOTER_MASTER_MOTOR_ID = 21;
         public static final int SHOOTER_SLAVE_MOTOR_ID = 22;
+        public static final int HOOD_ENCODER_ID = 24;
+        public static final int BALL_COUNT_ID = 25;
     }
 
     public class intakeConstants {
         public static final int INTAKE_DEPLOY_MOTOR_ID = 13;
         public static final int INTAKE_ROLLER_MOTOR_ID = 14;
+        public static final int INTAKE_ENCODER_ID = 26;
     }
 
     public class feederConstants {
