@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -58,6 +59,7 @@ public class FMJRobotContainer {
   private ShootBalls shootBalls = new ShootBalls(this);
 
   public FMJRobotContainer() {
+
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
       autoRobotHub = new RobotAimAtHub(this, 4.6, 4);
     } else {
@@ -74,17 +76,17 @@ public class FMJRobotContainer {
     operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
     operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runSpindexer)).whileFalse(new InstantCommand(feeder::stopSpindexer));
     operatorJoystick.leftTrigger().onTrue(autoAaS);
+    operatorJoystick.leftBumper().onTrue(autoAimFeed);
     operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
     operatorJoystick.x().onTrue(new InstantCommand(() -> shooter.shooterAutoInterpolateBool(false)));
-    operatorJoystick.leftBumper().onTrue(autoAimFeed);
     operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
     operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
     operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
 
     operatorJoystick.povRight().whileTrue(new InstantCommand(turret::runTurret)).onFalse(new InstantCommand(turret::stopTurret));
     operatorJoystick.povLeft().whileTrue(new InstantCommand(turret::reverseTurret)).onFalse(new InstantCommand(turret::stopTurret));
-    operatorJoystick.povUp().onTrue(new InstantCommand(shooter::moveToPositionOne));
-    operatorJoystick.povDown().onTrue(new InstantCommand(shooter::moveToZero));
+    operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
+    operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
 
     operatorJoystick.back().onTrue(autoRobotHub);
     operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
@@ -97,11 +99,13 @@ public class FMJRobotContainer {
             .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)
         ));
 
-    driverJoystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
     //driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
     //driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
     driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
+    driverJoystick.y().onTrue(new InstantCommand(shooter::moveToPositionOne));
+    driverJoystick.a().onTrue(new InstantCommand(shooter::moveToZero));
 
     driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
     driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
@@ -109,7 +113,7 @@ public class FMJRobotContainer {
     driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    // driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+    driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
     // joystick.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(),-joystick.getLeftX())))); 
   }
 
@@ -130,7 +134,7 @@ public class FMJRobotContainer {
     }
 
     LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-a");
-    LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-b");
+    //LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-b");
 
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue){
       if(drivetrain.getPose().getY() > 4.0){

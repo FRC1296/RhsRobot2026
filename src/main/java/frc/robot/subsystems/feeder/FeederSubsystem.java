@@ -5,7 +5,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -19,7 +19,7 @@ public class FeederSubsystem extends SubsystemBase {
     private TalonFX feederMotor;
 
     private DutyCycleOut dcOut = new DutyCycleOut(0);
-    private VelocityDutyCycle velocityOut = new VelocityDutyCycle(0);
+    private VelocityVoltage velocityOut = new VelocityVoltage(0);
 
     public FeederSubsystem() {
 
@@ -35,12 +35,14 @@ public class FeederSubsystem extends SubsystemBase {
         MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
                 .withInverted(InvertedValue.Clockwise_Positive);
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(120);
+                .withStatorCurrentLimit(80);
         Slot0Configs slotZeroConfigs = new Slot0Configs()
             .withKG(0.0)
-            .withKP(1.0)
+            .withKP(0.8)
             .withKI(0.0)
-            .withKD(0.0);
+            .withKD(0.0)
+            .withKS(0.6)
+            .withKV(0.095);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
                 .withCurrentLimits(currentLimitConfig).withSlot0(slotZeroConfigs);
@@ -70,7 +72,7 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void runSpindexer() {
-        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(14));
+        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(12.0));
     }
 
     public void stopSpindexer() {

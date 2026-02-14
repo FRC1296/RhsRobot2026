@@ -22,7 +22,7 @@ public class AutoAimAndShoot extends ParallelCommandGroup {
         }
 
         addCommands(
-            autoInterpolate,
+            //autoInterpolate,
             autoTurretHub
             );
     }
