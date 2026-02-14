@@ -14,7 +14,7 @@ public class ShootBalls extends ParallelCommandGroup {
 
         addCommands(
                 Commands.startEnd(shooter::runMasterShooter, shooter::stopMasterShooter, shooter),
-                Commands.startEnd(feeder::runFeeders, feeder::stopFeeders, feeder)
+                Commands.startEnd(feeder::runFeeder, feeder::stopFeeder, feeder)
         );
     }
 }

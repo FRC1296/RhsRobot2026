@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -35,12 +36,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
+    private DoublePublisher hoodAbsPositionPublisher;
 
     private double shooterSpeed = 0.65;
     private double hoodPos = 0.0;
 
-    private double hoodCruiseVelocity = 50;
-    private final double hoodkP = 10.0;
+    private double hoodCruiseVelocity = 25;
+    private final double hoodkP = 1;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
     private final double hoodkG = 0.0;
@@ -51,6 +53,9 @@ public class ShooterSubsystem extends SubsystemBase {
         NetworkTable shooterTable = limebotTable.getSubTable("Shooter Subsystem");
         hoodPositionPublisher = shooterTable.getDoubleTopic("Hood Position").publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic("Shooter Speed").publish();
+        hoodAbsPositionPublisher = shooterTable.getDoubleTopic("Hood Abs Position").publish();
+         //lowest pos:-0.993
+       //highest pos:-0.217
 
         hoodMotor = new TalonFX(Constants.shooterConstants.HOOD_MOTOR_ID);
         shooterMasterMotor = new TalonFX(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID);
@@ -66,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private void ConfigureAbsoluteEncoder() {
         /* Configure CANcoder to zero the magnet appropriately */
         CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
-        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(Rotations.of(0.5));
+        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(Rotations.of(0));
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0));
 
@@ -94,14 +99,14 @@ public class ShooterSubsystem extends SubsystemBase {
             .withMotionMagicJerk(0);
 
         //TODO : need to validate this configuration
-        FeedbackConfigs feedbackConfigs = new FeedbackConfigs().withFusedCANcoder(hoodAbsEncoder);
+        // FeedbackConfigs feedbackConfigs = new FeedbackConfigs().withFusedCANcoder(hoodAbsEncoder);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration()
             .withMotorOutput(outputConfigs)
             .withCurrentLimits(currentConfigs)
             .withSlot0(slotZeroConfigs)
-            .withMotionMagic(mmConfigs)
-            .withFeedback(feedbackConfigs);
+            .withMotionMagic(mmConfigs);
+            // .withFeedback(feedbackConfigs);
 
         hoodMotor.getConfigurator().apply(motorConfig);
         hoodMotor.setPosition(0);
@@ -133,6 +138,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         hoodPositionPublisher.set(getHoodPosition());
         shooterSpeedPublisher.set(shooterSpeed);
+        hoodAbsPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
     }
 
     public double getHoodPosition() {
@@ -160,8 +166,18 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void runHood() {
-        hoodPos += 0.05;
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
+        // hoodPos += 0.05;
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(-0.43));
+    }
+
+    public void moveToPositionOne() {
+        // hoodPos += 0.05;
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.75));
+    }
+
+     public void moveToZero() {
+        // hoodPos += 0.05;
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.05));
     }
 
     public void reverseHood() {

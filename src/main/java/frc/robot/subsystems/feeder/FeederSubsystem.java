@@ -2,8 +2,10 @@ package frc.robot.subsystems.feeder;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -17,6 +19,7 @@ public class FeederSubsystem extends SubsystemBase {
     private TalonFX feederMotor;
 
     private DutyCycleOut dcOut = new DutyCycleOut(0);
+    private VelocityDutyCycle velocityOut = new VelocityDutyCycle(0);
 
     public FeederSubsystem() {
 
@@ -29,32 +32,50 @@ public class FeederSubsystem extends SubsystemBase {
 
     private void ConfigureSpindexerMotor() {
 
-        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast).withInverted(InvertedValue.Clockwise_Positive);
-        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(40);
+        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(120);
+        Slot0Configs slotZeroConfigs = new Slot0Configs()
+            .withKG(0.0)
+            .withKP(0.3).
+            withKI(0.0).
+            withKD(0.0);
 
-        TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig);
+        TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
+                .withCurrentLimits(currentLimitConfig).withSlot0(slotZeroConfigs);
 
         spindexerMotor.getConfigurator().apply(motorConfig);
     }
 
     private void ConfigureFeederMotor() {
 
-        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast).withInverted(InvertedValue.Clockwise_Positive);
-        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(80);
+        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(80);
 
-        TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig);
+        TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
+                .withCurrentLimits(currentLimitConfig);
 
         feederMotor.getConfigurator().apply(motorConfig);
     }
 
-    public void runFeeders() {
-        feederMotor.setControl(dcOut.withOutput(0.6));
-        spindexerMotor.setControl(dcOut.withOutput(0.15));
+    public void runFeeder() {
+        feederMotor.setControl(dcOut.withOutput(0.8));
     }
 
-    public void stopFeeders() {
+    public void stopFeeder() {
         feederMotor.setControl(dcOut.withOutput(0.0));
-        spindexerMotor.setControl(dcOut.withOutput(0.0));
     }
 
+    public void runSpindexer() {
+        //spindexerMotor.setControl(dcOut.withOutput(0.2));
+        spindexerMotor.setControl(velocityOut.withVelocity(14.0));
+    }
+
+    public void stopSpindexer() {
+        spindexerMotor.setControl(dcOut.withOutput(0.0));
+        //spindexerMotor.setControl(velocityOut.withVelocity(0));
+    }
 }

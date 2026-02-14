@@ -75,8 +75,8 @@ public class FMJRobotContainer {
   }
 
   private void configureOperatorBindings() {
-    //operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
-    operatorJoystick.rightTrigger().whileTrue(new InstantCommand(shooter::runMasterShooter)).whileFalse(new InstantCommand(shooter::stopMasterShooter));
+    operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
+    //operatorJoystick.rightTrigger().whileTrue(new InstantCommand(shooter::runMasterShooter)).whileFalse(new InstantCommand(shooter::stopMasterShooter));
     operatorJoystick.leftTrigger().onTrue(autoTurretHub);
     operatorJoystick.leftBumper().onTrue(autoAimFeed);
     operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
@@ -86,8 +86,8 @@ public class FMJRobotContainer {
 
     operatorJoystick.povRight().whileTrue(new InstantCommand(turret::runTurret)).onFalse(new InstantCommand(turret::stopTurret));
     operatorJoystick.povLeft().whileTrue(new InstantCommand(turret::reverseTurret)).onFalse(new InstantCommand(turret::stopTurret));
-    operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
-    operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
+    operatorJoystick.povUp().onTrue(new InstantCommand(shooter::moveToPositionOne));
+    operatorJoystick.povDown().onTrue(new InstantCommand(shooter::moveToZero));
 
     operatorJoystick.back().onTrue(autoRobotHub);
     operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
@@ -104,7 +104,7 @@ public class FMJRobotContainer {
 
     driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
     driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
-    driverJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeders)).whileFalse(new InstantCommand(feeder::stopFeeders));
+    driverJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runSpindexer)).whileFalse(new InstantCommand(feeder::stopSpindexer));
     driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
 
     driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
