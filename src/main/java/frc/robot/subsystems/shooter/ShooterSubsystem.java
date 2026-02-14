@@ -10,19 +10,26 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -33,10 +40,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     private DutyCycleOut dcOut = new DutyCycleOut(0);
+    private VelocityDutyCycle velocityOut = new VelocityDutyCycle(0);
 
     private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
-    private DoublePublisher hoodAbsPositionPublisher;
 
     private double shooterSpeed = 0.65;
     private double hoodPos = 0.0;
@@ -47,15 +54,19 @@ public class ShooterSubsystem extends SubsystemBase {
     private final double hoodkD = 0.0;
     private final double hoodkG = 0.0;
 
-    public ShooterSubsystem() {
+    private Transform2d shooterOffset = new Transform2d(
+            new Translation2d(0.0, 0.0381),
+            new Rotation2d());
+    private CommandSwerveDrivetrain drivetrain;
+
+    public ShooterSubsystem(CommandSwerveDrivetrain drive) {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable limebotTable = inst.getTable("Robot Data");
         NetworkTable shooterTable = limebotTable.getSubTable("Shooter Subsystem");
         hoodPositionPublisher = shooterTable.getDoubleTopic("Hood Position").publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic("Shooter Speed").publish();
-        hoodAbsPositionPublisher = shooterTable.getDoubleTopic("Hood Abs Position").publish();
-         //lowest pos:-0.993
-       //highest pos:-0.217
+
+        drivetrain = drive;
 
         hoodMotor = new TalonFX(Constants.shooterConstants.HOOD_MOTOR_ID);
         shooterMasterMotor = new TalonFX(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID);
@@ -67,68 +78,75 @@ public class ShooterSubsystem extends SubsystemBase {
         ConfigureShooterMotors();
     }
 
-        // TODO: Validate these settings for the configuration, read documentation on method by hovering over method name
     private void ConfigureAbsoluteEncoder() {
-        /* Configure CANcoder to zero the magnet appropriately */
         CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
-        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(Rotations.of(0));
+        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0));
+        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-hoodAbsEncoder.getAbsolutePosition().getValueAsDouble()));
 
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
     }
 
     private void ConfigureHoodMotor() {
         MotorOutputConfigs outputConfigs = new MotorOutputConfigs()
-            .withNeutralMode(NeutralModeValue.Brake)
-            .withInverted(InvertedValue.Clockwise_Positive);
+                .withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.Clockwise_Positive);
 
         CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs()
-            .withStatorCurrentLimitEnable(true)
-            .withStatorCurrentLimit(60);
+                .withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-            .withKG(hoodkG)
-            .withKP(hoodkP).
-            withKI(hoodkI).
-            withKD(hoodkD);
+                .withKG(hoodkG)
+                .withKP(hoodkP)
+                .withKI(hoodkI)
+                .withKD(hoodkD);
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
-            .withMotionMagicCruiseVelocity(hoodCruiseVelocity)
-            .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
-            .withMotionMagicJerk(0);
+                .withMotionMagicCruiseVelocity(hoodCruiseVelocity)
+                .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
+                .withMotionMagicJerk(0);
 
-        //TODO : need to validate this configuration
-        // FeedbackConfigs feedbackConfigs = new FeedbackConfigs().withFusedCANcoder(hoodAbsEncoder);
+        FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
+                .withFeedbackRemoteSensorID(Constants.shooterConstants.HOOD_ENCODER_ID)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+                .withSensorToMechanismRatio(1.0)
+                .withRotorToSensorRatio(1.0);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration()
-            .withMotorOutput(outputConfigs)
-            .withCurrentLimits(currentConfigs)
-            .withSlot0(slotZeroConfigs)
-            .withMotionMagic(mmConfigs);
-            // .withFeedback(feedbackConfigs);
+                .withMotorOutput(outputConfigs)
+                .withCurrentLimits(currentConfigs)
+                .withSlot0(slotZeroConfigs)
+                .withMotionMagic(mmConfigs)
+                .withFeedback(feedbackConfigs);
 
         hoodMotor.getConfigurator().apply(motorConfig);
-        hoodMotor.setPosition(0);
     }
 
     private void ConfigureShooterMotors() {
-        shooterFollowerMotor.setControl(new Follower(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID, MotorAlignmentValue.Opposed));
+        shooterFollowerMotor.setControl(
+                new Follower(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID, MotorAlignmentValue.Opposed));
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
-            .withNeutralMode(NeutralModeValue.Coast)
-            .withInverted(InvertedValue.Clockwise_Positive);
+                .withNeutralMode(NeutralModeValue.Coast)
+                .withInverted(InvertedValue.Clockwise_Positive);
 
         CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs()
-            .withStatorCurrentLimitEnable(true)
-            .withStatorCurrentLimit(110);
+                .withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(110);
+
+         Slot0Configs slotZeroConfigs = new Slot0Configs()
+            .withKG(0.0)
+            .withKP(1.0)
+            .withKI(0.0)
+            .withKD(0.0);
 
         TalonFXConfiguration masterMotorConfig = new TalonFXConfiguration()
-            .withCurrentLimits(currentConfigs)
-            .withMotorOutput(outputConfig);
+                .withCurrentLimits(currentConfigs)
+                .withMotorOutput(outputConfig).withSlot0(slotZeroConfigs);
 
         TalonFXConfiguration followerMotorConfig = new TalonFXConfiguration()
-            .withCurrentLimits(currentConfigs);
+                .withCurrentLimits(currentConfigs).withSlot0(slotZeroConfigs);
 
         shooterMasterMotor.getConfigurator().apply(masterMotorConfig);
         shooterFollowerMotor.getConfigurator().apply(followerMotorConfig);
@@ -136,13 +154,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        hoodPositionPublisher.set(getHoodPosition());
+        hoodPositionPublisher.set(hoodMotor.getPosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
-        hoodAbsPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
-    }
-
-    public double getHoodPosition() {
-        return hoodMotor.getPosition().getValueAsDouble();
     }
 
     public void runMasterShooter() {
@@ -150,13 +163,13 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void increaseShooterSpeed() {
-        if(shooterSpeed <= 0.95){
+        if (shooterSpeed <= 0.95) {
             shooterSpeed += 0.05;
         }
     }
 
     public void decreaseShooterSpeed() {
-        if(shooterSpeed >= 0.05){
+        if (shooterSpeed >= 0.05) {
             shooterSpeed -= 0.05;
         }
     }
@@ -165,26 +178,37 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMasterMotor.setControl(dcOut.withOutput(0.0));
     }
 
-    public void runHood() {
-        // hoodPos += 0.05;
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(-0.43));
-    }
-
     public void moveToPositionOne() {
-        // hoodPos += 0.05;
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.75));
     }
 
-     public void moveToZero() {
-        // hoodPos += 0.05;
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.05));
+    public void moveToZero() {
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.00));
+    }
+
+    public void runHood() {
+        hoodPos += 0.05;
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(-0.43));
     }
 
     public void reverseHood() {
-        if((hoodPos - 0.05) > 0){
+        if ((hoodPos - 0.05) > 0) {
             hoodPos -= 0.05;
             hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
         }
+    }
+
+    public void setAutoShooter(double targetX, double targetY) {
+        Pose2d drivetrainPose = drivetrain.getPose();
+        Translation2d targetTranslation = new Translation2d(targetX, targetY);
+        Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
+        double distance = shooterTranslation.getDistance(targetTranslation);
+        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distance)));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(ShooterInterpolationHelper.calculateHoodPosition(distance)));
+    }
+
+    public void shooterAutoInterpolateBool(boolean bool){
+        Constants.shooterConstants.shooterInterpolate = bool;
     }
 
 }

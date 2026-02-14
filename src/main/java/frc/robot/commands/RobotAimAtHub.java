@@ -27,6 +27,7 @@ public class RobotAimAtHub extends Command {
     public void initialize() {
         timer.restart();
         turret.turretAimAtHubBool(false);
+        turret.turretAimToFeedBool(false);
         turret.moveTurretToZero();
         double targetAngle = drivetrain.aimRobotAt(targetX, targetY);
         move = SmartMove.move(drivetrain, drivetrain.getPose().getX(), drivetrain.getPose().getY(), targetAngle);

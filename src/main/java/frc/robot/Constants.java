@@ -63,6 +63,8 @@ public class Constants {
         public static final int SHOOTER_SLAVE_MOTOR_ID = 22;
         public static final int HOOD_ENCODER_ID = 24;
         public static final int BALL_COUNT_ID = 25;
+
+        public static boolean shooterInterpolate = false;
     }
 
     public class intakeConstants {

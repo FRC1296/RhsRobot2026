@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="0tmS47P77ek5C62ZnIjc" name="Page-1">
-        <mxGraphModel dx="1886" dy="787" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#ffffff, #f3ecec)" math="0" shadow="0">
+        <mxGraphModel dx="2014" dy="675" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#ffffff, #f3ecec)" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -61,7 +61,7 @@
                         <mxPoint x="187" y="246" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="83" value="Trigger: Run &lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;Shooter&lt;/font&gt;,&lt;div&gt;Spindexer,&lt;/div&gt;&lt;div&gt;Feeder&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="83" value="Trigger: Run &lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;Shooter &amp;amp;&lt;/font&gt;&lt;div&gt;Feeder&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="150" y="122" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="86" style="edgeStyle=none;html=1;strokeColor=#000000;" parent="1" source="85" edge="1">
@@ -69,7 +69,7 @@
                         <mxPoint x="227" y="246" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="85" value="Bumber:&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="85" value="Bumper: Run Spindexer" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="292" y="172" width="176" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="87" value="Operator Control v0.1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;fontColor=#000000;" parent="1" vertex="1">
@@ -113,7 +113,7 @@
                 <mxCell id="127" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="111" target="118" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="111" value="Cancel auto aim at hub" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
+                <mxCell id="111" value="Cancel AaS" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
                     <mxGeometry x="312" y="383" width="140" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="112" style="edgeStyle=none;html=1;strokeColor=#000000;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.598;entryY=0.384;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="111" target="89" edge="1">
@@ -176,7 +176,7 @@
                         <mxPoint x="-303" y="558" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="130" value="" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                <mxCell id="130" value="" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
                     <mxGeometry x="-541" y="242" width="80" height="100" as="geometry"/>
                 </mxCell>
             </root>

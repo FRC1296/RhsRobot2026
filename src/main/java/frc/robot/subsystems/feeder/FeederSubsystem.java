@@ -38,9 +38,9 @@ public class FeederSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(120);
         Slot0Configs slotZeroConfigs = new Slot0Configs()
             .withKG(0.0)
-            .withKP(0.3).
-            withKI(0.0).
-            withKD(0.0);
+            .withKP(1.0)
+            .withKI(0.0)
+            .withKD(0.0);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
                 .withCurrentLimits(currentLimitConfig).withSlot0(slotZeroConfigs);
@@ -70,12 +70,10 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void runSpindexer() {
-        //spindexerMotor.setControl(dcOut.withOutput(0.2));
-        spindexerMotor.setControl(velocityOut.withVelocity(14.0));
+        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(14));
     }
 
     public void stopSpindexer() {
         spindexerMotor.setControl(dcOut.withOutput(0.0));
-        //spindexerMotor.setControl(velocityOut.withVelocity(0));
     }
 }

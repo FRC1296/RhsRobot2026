@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.units.measure.*;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -63,21 +62,22 @@ public class IntakeSubsystem extends SubsystemBase {
         ConfigureDeployMotor();
     }
 
-    // TODO: Validate these settings for the configuration, read documentation on method by hovering over method name
     private void ConfigureAbsoluteEncoder() {
-        /* Configure CANcoder to zero the magnet appropriately */
         CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
-        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(Rotations.of(0.5));
+        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0));
+        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-intakeAbsEncoder.getAbsolutePosition().getValueAsDouble()));
 
         intakeAbsEncoder.getConfigurator().apply(cc_cfg);
     }
 
     private void ConfigureIntakeRollerMotor() {
-        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast).withInverted(InvertedValue.Clockwise_Positive);
-        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(80);
-        TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig);
+        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(80);
+        TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
+                .withCurrentLimits(currentLimitConfig);
 
         intakeRollerMotor.getConfigurator().apply(intakeMotorConfig);
     }
@@ -85,30 +85,33 @@ public class IntakeSubsystem extends SubsystemBase {
     private void ConfigureDeployMotor() {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
-            .withNeutralMode(NeutralModeValue.Brake)
-            .withInverted(InvertedValue.Clockwise_Positive);
+                .withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.Clockwise_Positive);
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
-            .withStatorCurrentLimitEnable(true)
-            .withStatorCurrentLimit(270);
+                .withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-            .withKG(deploykG)
-            .withKP(deploykP)
-            .withKI(deploykI)
-            .withKD(deploykD);
+                .withKG(deploykG)
+                .withKP(deploykP)
+                .withKI(deploykI)
+                .withKD(deploykD);
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
-            .withMotionMagicCruiseVelocity(deployCruiseVelocity)
-            .withMotionMagicAcceleration(deployCruiseVelocity * 2).withMotionMagicJerk(0);
+                .withMotionMagicCruiseVelocity(deployCruiseVelocity)
+                .withMotionMagicAcceleration(deployCruiseVelocity * 2).withMotionMagicJerk(0);
 
-        //TODO : need to validate this configuration
-        FeedbackConfigs feedbackConfigs = new FeedbackConfigs().withFusedCANcoder(intakeAbsEncoder);
+        FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
+                .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+                .withSensorToMechanismRatio(1.0)
+                .withRotorToSensorRatio(30.0);
 
         TalonFXConfiguration intakeDeployMotorConfig = new TalonFXConfiguration()
-            .withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig)
-            .withSlot0(slotZeroConfigs).withMotionMagic(mmConfigs)
-            .withFeedback(feedbackConfigs);
+                .withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig)
+                .withSlot0(slotZeroConfigs).withMotionMagic(mmConfigs)
+                .withFeedback(feedbackConfigs);
 
         intakeDeployMotor.getConfigurator().apply(intakeDeployMotorConfig);
         intakeDeployMotor.setPosition(0);
@@ -132,11 +135,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void undeployIntake() {
         // TODO : Validate the absolute sensor position
-        //intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeUndeployPosition));
+        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeUndeployPosition));
     }
 
     public void deployIntake() {
         // TODO : Validate the absolute sensor position
-        //intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
+        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
     }
 }

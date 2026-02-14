@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -15,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
 import frc.robot.commands.TurretAimAtHub;
@@ -48,27 +45,26 @@ public class FMJRobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private ShooterSubsystem shooter = new ShooterSubsystem();
+  private ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
   private TurretSubsystem turret = new TurretSubsystem(drivetrain);
   private IntakeSubsystem intake = new IntakeSubsystem();
   private FeederSubsystem feeder = new FeederSubsystem();
   private LedSubsystem LED = new LedSubsystem();
   
 
-  private TurretAimAtHub autoTurretHub;
+  private AutoAimAndShoot autoAaS;
   private RobotAimAtHub autoRobotHub;
   private TurretAimToFeed autoAimFeed;
   private ShootBalls shootBalls = new ShootBalls(this);
 
   public FMJRobotContainer() {
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
-      autoTurretHub = new TurretAimAtHub(this, 4.6, 4);
       autoRobotHub = new RobotAimAtHub(this, 4.6, 4);
     } else {
-      autoTurretHub = new TurretAimAtHub(this, 11.9, 4);
       autoRobotHub = new RobotAimAtHub(this, 11.9, 4);
     }
     autoAimFeed = new TurretAimToFeed(this, 0.0, 0.0);
+    autoAaS = new AutoAimAndShoot(this);
 
     configureDriverBindings();
     configureOperatorBindings();
@@ -76,10 +72,11 @@ public class FMJRobotContainer {
 
   private void configureOperatorBindings() {
     operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
-    //operatorJoystick.rightTrigger().whileTrue(new InstantCommand(shooter::runMasterShooter)).whileFalse(new InstantCommand(shooter::stopMasterShooter));
-    operatorJoystick.leftTrigger().onTrue(autoTurretHub);
-    operatorJoystick.leftBumper().onTrue(autoAimFeed);
+    operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runSpindexer)).whileFalse(new InstantCommand(feeder::stopSpindexer));
+    operatorJoystick.leftTrigger().onTrue(autoAaS);
     operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
+    operatorJoystick.x().onTrue(new InstantCommand(() -> shooter.shooterAutoInterpolateBool(false)));
+    operatorJoystick.leftBumper().onTrue(autoAimFeed);
     operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
     operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
     operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
@@ -102,9 +99,8 @@ public class FMJRobotContainer {
 
     driverJoystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
 
-    driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
-    driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
-    driverJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runSpindexer)).whileFalse(new InstantCommand(feeder::stopSpindexer));
+    //driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
+    //driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
     driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
 
     driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
