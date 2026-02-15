@@ -14,21 +14,30 @@ public class LocalizationHelpers {
         boolean doRejectUpdate = false;
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
         double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();//Get current from LL instead
-        double xyStdDev = 0.1;
+        double xyStdDev;
 
         LimelightHelpers.SetRobotOrientation(LLName, currentRotation, angularVelocity, 0, 0, 0, 0);
         PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LLName);
 
+        double linearVelocity = Math.hypot(
+            drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond,
+            drivetrain.getRobotRelativeSpeeds().vyMetersPerSecond
+        );
+
       if (MT2 == null) {
-            if (LLName.equals("limelight-a")) {
-                Constants.visionValidAPub.set(false);
-            } else {
-                Constants.visionValidBPub.set(false);
-            }
+            // if (LLName.equals("limelight-a")) {
+            //     Constants.visionValidAPub.set(false);
+            // } else {
+            //     Constants.visionValidBPub.set(false);
+            // }
             return;
         }
 
-        if (Math.abs(angularVelocity) > 360) {
+        if (MT2.avgTagDist > 6.0 || MT2.avgTagArea < 0.08) {
+            return;
+        }
+
+        if (Math.abs(angularVelocity) > 720) {
             doRejectUpdate = true;
         }
 
@@ -40,44 +49,58 @@ public class LocalizationHelpers {
             Constants.hasInitializedFromVision = true;
         }
 
-        if (LLName.equals("limelight-a")) {
-            Constants.visionValidAPub.set(!isInvalid);
-            if (!isInvalid) {
-                Constants.distanceToTagAPub.set(MT2.rawFiducials[0].distToRobot);
-                Constants.visionPoseXAPub.set(MT2.pose.getX());
-                Constants.visionPoseYAPub.set(MT2.pose.getY());
-                Constants.visionPoseRotAPub.set(MT2.pose.getRotation().getDegrees());
-            }
-        } else {
-            Constants.visionValidBPub.set(!isInvalid);
-            if (!isInvalid) {
-                Constants.distanceToTagBPub.set(MT2.rawFiducials[0].distToRobot);
-                Constants.visionPoseXBPub.set(MT2.pose.getX());
-                Constants.visionPoseYBPub.set(MT2.pose.getY());
-                Constants.visionPoseRotBPub.set(MT2.pose.getRotation().getDegrees());
-            }
-        }
-        if (!isInvalid) {
 
-            double avgDistance = MT2.avgTagDist;
-            double avgArea = MT2.avgTagArea;
-
-            xyStdDev = xyStdDev * (1 + (avgDistance / 4.0));
-
-            if (MT2.tagCount >= 2) {
-                xyStdDev *= 0.5;
-            }
-
-            if (avgArea < 0.15) {
-                xyStdDev *= 1.5;
-            }
-
-        }
+        //TODO: For removal
+        // if (LLName.equals("limelight-a")) {
+        //     Constants.visionValidAPub.set(!isInvalid);
+        //     if (!isInvalid) {
+        //         Constants.distanceToTagAPub.set(MT2.rawFiducials[0].distToRobot);
+        //         Constants.visionPoseXAPub.set(MT2.pose.getX());
+        //         Constants.visionPoseYAPub.set(MT2.pose.getY());
+        //         Constants.visionPoseRotAPub.set(MT2.pose.getRotation().getDegrees());
+        //     }
+        // } else {
+        //     Constants.visionValidBPub.set(!isInvalid);
+        //     if (!isInvalid) {
+        //         Constants.distanceToTagBPub.set(MT2.rawFiducials[0].distToRobot);
+        //         Constants.visionPoseXBPub.set(MT2.pose.getX());
+        //         Constants.visionPoseYBPub.set(MT2.pose.getY());
+        //         Constants.visionPoseRotBPub.set(MT2.pose.getRotation().getDegrees());
+        //     }
+        // }
 
         if (!isInvalid) {
+            xyStdDev = calculateStdDev(MT2, linearVelocity);
+
+
             drivetrain.addVisionMeasurement(MT2.pose, MT2.timestampSeconds,
                     VecBuilder.fill(xyStdDev, xyStdDev, 9999999));
         }
+    }
+
+    private static double calculateStdDev(PoseEstimate MT2, double linearVelocity) {
+        double stdDev = 0.05;
+        
+        double distanceFactor = 1 + (MT2.avgTagDist * 0.3);
+        stdDev *= (distanceFactor * distanceFactor);
+        
+        if (MT2.tagCount >= 2) {
+            stdDev *= 0.5;
+        }
+        
+        if (MT2.avgTagArea < 0.2) {
+            double areaFactor = 0.2 / Math.max(MT2.avgTagArea, 0.05);
+            stdDev *= Math.min(areaFactor, 3.0);
+        }
+        
+        if (linearVelocity > 0.5) {
+            double velocityFactor = 1 + (linearVelocity / 4.5);
+            stdDev *= velocityFactor;
+        }
+        
+        stdDev = Math.max(0.01, Math.min(stdDev, 5.0));
+        
+        return stdDev;
     }
 
     public static void resetToLimelightPose(CommandSwerveDrivetrain drivetrain, String LLName1, String LLName2) {
