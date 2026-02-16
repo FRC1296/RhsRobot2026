@@ -43,6 +43,8 @@ public class LocalizationHelpers {
 
         boolean isInvalid = (MT2.tagCount == 0 || MT2.rawFiducials == null || MT2.rawFiducials.length < 1 || doRejectUpdate == true);
 
+        updateDynamicCrop(LLName, isInvalid);
+
         if (!Constants.hasInitializedFromVision && !isInvalid) {
             Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));//Reset to LL rotaion instead
             drivetrain.resetPose(correctPose);
@@ -70,6 +72,7 @@ public class LocalizationHelpers {
         // }
 
         if (!isInvalid) {
+
             xyStdDev = calculateStdDev(MT2, linearVelocity);
 
 
@@ -101,6 +104,25 @@ public class LocalizationHelpers {
         stdDev = Math.max(0.01, Math.min(stdDev, 5.0));
         
         return stdDev;
+    }
+
+    private static void updateDynamicCrop(String name, boolean isInvalid){
+        if(isInvalid){
+            LimelightHelpers.setCropWindow(name, -1.0, 1.0, -1.0, 1.0);
+        } else {
+            double centerX = LimelightHelpers.getTX(name) / 41.0;
+            double centerY = LimelightHelpers.getTY(name) / 28.1;
+            double cropRadius = 0.1;
+            double xMin = centerX - cropRadius - 0.25;
+            double xMax = centerX + cropRadius + 0.25;
+            double yMin = centerY - cropRadius;
+            double yMax = centerY + cropRadius;
+            xMin = Math.max(-1.0, xMin);
+            xMax = Math.min(1.0, xMax);
+            yMin = Math.max(-1.0, yMin);
+            yMax = Math.min(1.0, yMax);
+            LimelightHelpers.setCropWindow(name, xMin, xMax, yMin, yMax);
+        }
     }
 
     public static void resetToLimelightPose(CommandSwerveDrivetrain drivetrain, String LLName1, String LLName2) {

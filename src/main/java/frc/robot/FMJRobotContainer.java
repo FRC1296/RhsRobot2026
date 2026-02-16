@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
-import frc.robot.commands.TurretAimAtHub;
 import frc.robot.commands.TurretAimToFeed;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
