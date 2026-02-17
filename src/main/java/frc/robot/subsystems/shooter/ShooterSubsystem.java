@@ -86,8 +86,9 @@ public class ShooterSubsystem extends SubsystemBase {
         CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
         cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-hoodAbsEncoder.getAbsolutePosition().getValueAsDouble()));
-
+        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
+        hoodAbsEncoder.getConfigurator().apply(cc_cfg);
+        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-hoodAbsEncoder.getAbsolutePosition().waitForUpdate(0.1).getValueAsDouble()));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
     }
 

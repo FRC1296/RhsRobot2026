@@ -40,5 +40,6 @@ public class ShooterAutoInterpolate extends Command{
     @Override
     public void end(boolean interrupted) {
         feeder.stopFeeder();
+        shooter.stopMasterShooter();
     }
 }

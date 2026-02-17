@@ -30,10 +30,12 @@ public class LocalizationHelpers {
             // } else {
             //     Constants.visionValidBPub.set(false);
             // }
+            updateDynamicCrop(LLName, true);
             return;
         }
 
         if (MT2.avgTagDist > 6.0 || MT2.avgTagArea < 0.08) {
+            updateDynamicCrop(LLName, true);
             return;
         }
 
@@ -43,7 +45,7 @@ public class LocalizationHelpers {
 
         boolean isInvalid = (MT2.tagCount == 0 || MT2.rawFiducials == null || MT2.rawFiducials.length < 1 || doRejectUpdate == true);
 
-        //updateDynamicCrop(LLName, isInvalid);
+        updateDynamicCrop(LLName, isInvalid);
 
         if (!Constants.hasInitializedFromVision && !isInvalid) {
             Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));//Reset to LL rotaion instead

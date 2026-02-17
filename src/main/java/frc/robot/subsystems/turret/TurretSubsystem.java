@@ -35,7 +35,7 @@ public class TurretSubsystem extends SubsystemBase {
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
     private DoublePublisher turretPositionPublisher;
-    private double cruiseVelocity = 150;
+    private double cruiseVelocity = 75;
 
     private final double kP = 7.0;
     private final double kI = 0.0;
