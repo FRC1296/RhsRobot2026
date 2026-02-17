@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.subsystems.vision.LocalizationHelpers;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily

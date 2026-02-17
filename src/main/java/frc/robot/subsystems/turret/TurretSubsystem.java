@@ -42,7 +42,7 @@ public class TurretSubsystem extends SubsystemBase {
     private final double kD = 0.0;
     private final double kG = 0.0;
 
-    private final double gearRatio = 184.0/12.0;
+    private final double gearRatio = 184.0/10.0;
     private Transform2d turretOffset = new Transform2d(
         new Translation2d(0.0,0.0381),
         new Rotation2d()

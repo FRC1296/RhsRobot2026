@@ -43,7 +43,7 @@ public class LocalizationHelpers {
 
         boolean isInvalid = (MT2.tagCount == 0 || MT2.rawFiducials == null || MT2.rawFiducials.length < 1 || doRejectUpdate == true);
 
-        updateDynamicCrop(LLName, isInvalid);
+        //updateDynamicCrop(LLName, isInvalid);
 
         if (!Constants.hasInitializedFromVision && !isInvalid) {
             Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));//Reset to LL rotaion instead

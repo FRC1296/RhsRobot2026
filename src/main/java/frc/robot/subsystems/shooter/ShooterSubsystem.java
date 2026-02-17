@@ -113,7 +113,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(Constants.shooterConstants.HOOD_ENCODER_ID)
-                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
                 .withSensorToMechanismRatio(1.0)
                 .withRotorToSensorRatio(1.0);
 
@@ -125,7 +125,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withFeedback(feedbackConfigs);
 
         hoodMotor.getConfigurator().apply(motorConfig);
-        hoodMotor.setPosition(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
+        //hoodMotor.setPosition(0.0);
     }
 
     private void ConfigureShooterMotors() {
@@ -161,17 +161,22 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        hoodPositionPublisher.set(hoodMotor.getPosition().getValueAsDouble());
+        hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
         distanceToHubPublisher.set(distanceToHub);
+
+        Pose2d drivetrainPose = drivetrain.getPose();
+        Translation2d targetTranslation = new Translation2d(4.6, 4);
+        Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
+        distanceToHub = shooterTranslation.getDistance(targetTranslation);
     }
 
     public void increaseShooterSpeed() {
-        shooterSpeed += 5.0;
+        shooterSpeed += 2.0;
     }
 
     public void decreaseShooterSpeed() {
-        shooterSpeed -= 5.0;
+        shooterSpeed -= 2.0;
     }
 
     public void runMasterShooter() {
