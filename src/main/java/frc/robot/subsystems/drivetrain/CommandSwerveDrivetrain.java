@@ -5,7 +5,9 @@ import static edu.wpi.first.units.Units.*;
 import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -52,16 +54,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /* Swerve requests to apply during SysId characterization */
-    private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
-            new SwerveRequest.SysIdSwerveTranslation();
-    private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization =
-            new SwerveRequest.SysIdSwerveSteerGains();
-    private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
-            new SwerveRequest.SysIdSwerveRotation();
-                private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+    private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
+    private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+    private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    
+    private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
 
-         private RobotConfig pathPlannerRobotConfig;
-
+    private RobotConfig pathPlannerRobotConfig;
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains for the drive
@@ -80,12 +79,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /*
      * SysId routine for characterizing steer. This is used to find PID gains for the steer motors.
      */
-    private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(new SysIdRoutine.Config(null, // Use
-                                                                                                    // default
-                                                                                                    // ramp
-                                                                                                    // rate
-                                                                                                    // (1
-                                                                                                    // V/s)
+    private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(new SysIdRoutine.Config(null, // Use default ramp rate (1 V/s)
             Volts.of(7), // Use dynamic voltage of 7 V
             null, // Use default timeout (10 s)
             // Log state with SignalLogger class
@@ -132,8 +126,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-       
-        
     }
 
     /**
@@ -314,7 +306,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             () -> getState().Pose, 
             () -> getState().Speeds, 
             (speeds, feedforwards) -> setControl(
-                autoRequest.withSpeeds(speeds)
+                autoRequest
+                    .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
+                    .withSpeeds(speeds)
                     .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                     .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
             ), 
@@ -324,33 +318,37 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             this);
     }
     
-    public void configurePathPlanner() {
+    private void configurePathPlanner() {
         // Load robot config from deploy directory
-        RobotConfig config;
         try {
-            config = RobotConfig.fromGUISettings();
+            pathPlannerRobotConfig = RobotConfig.fromGUISettings();
         } catch (Exception e) {
+            System.out.println("Unable to load Path Planner config from GUI");
             e.printStackTrace();
             return;
         }
 
-        
+        // TODO: we used this::getCurrentRobotChassisSpeeds last year for ChassisSpeeds supplier;
         // Configure AutoBuilder
-        AutoBuilder.configure(this::getPose, // Robot pose supplier
-                this::resetPose, // Method to reset odometry
-                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier (MUST BE ROBOT RELATIVE)
-                (speeds, feedforwards) -> driveRobotRelative(speeds), // Method to drive the robot
-                new PPHolonomicDriveController(new PIDConstants(1.5, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(1.5, 0.0, 0.0) // Rotation PID constants
-                ), config, // Robot configuration
-                () -> {
-                    // Should the path be mirrored for red alliance?
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                }, this // Reference to this subsystem
+        AutoBuilder.configure(
+            this::getPose, // Robot pose supplier
+            this::resetPose, // Method to reset odometry
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier (MUST BE ROBOT RELATIVE)
+            (speeds, feedforwards) -> driveRobotRelative(speeds), // Method to drive the robot
+            new PPHolonomicDriveController(
+                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+            ), 
+            pathPlannerRobotConfig, // Robot configuration
+            () -> {
+                // Should the path be mirrored for red alliance?
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            }, 
+            this // Reference to this subsystem
         );
     }
 }
