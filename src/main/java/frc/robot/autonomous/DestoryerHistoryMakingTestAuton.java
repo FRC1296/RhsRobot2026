@@ -33,23 +33,20 @@ public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
         PathPlannerPath firstPath = null;
         PathPlannerPath secondPath = null;
         PathPlannerPath thirdPath = null;
+        
         boolean pathLoaded = true;
-
         try {
             firstPath = PathPlannerPath.fromPathFile("Test Path 1");
             secondPath = PathPlannerPath.fromPathFile("Test Path 2");
-            thirdPath = PathPlannerPath.fromPathFile("");
-
         } catch (Exception e) {
             System.err.println("Unable to load PathPlanner file - " + e.getLocalizedMessage());
             pathLoaded = false;
         }
+
         if (pathLoaded) {
             if (isRedAlliance) {
                 firstPath = firstPath.flipPath();
                 secondPath = secondPath.flipPath();
-                thirdPath = thirdPath.flipPath();
-
             }
 
             this.initialPose = firstPath.getStartingHolonomicPose().get();
@@ -60,6 +57,7 @@ public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
                             drivetrain.getAutoPath(firstPath),
                             new InstantCommand(intake::deployIntake),
                             new AutoAimAndShoot(robot)),
+                    new WaitCommand(1),
                     new InstantCommand(feeder::runSpindexer),
                     new WaitCommand(3),
                     new ParallelCommandGroup(
