@@ -221,4 +221,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Constants.shooterConstants.shooterInterpolate = bool;
     }
 
+    public void stopShooterAutoInterpolate(){
+        Constants.shooterConstants.shooterInterpolate = false;
+    }
 }
