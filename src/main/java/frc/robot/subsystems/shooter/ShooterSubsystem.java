@@ -50,10 +50,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private double hoodPos = 0.0;
 
     private double hoodCruiseVelocity = 75;
-    private final double hoodkP = 10;
+    private final double hoodkP = 0.4;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
-    private final double hoodkG = 0.0;
+    private final double hoodkS = 0.4;
+    private final double hoodkV = 0.14;
+
 
     private double distanceToHub;
 
@@ -102,10 +104,12 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKG(hoodkG)
+                .withKS(hoodkS)
                 .withKP(hoodkP)
                 .withKI(hoodkI)
-                .withKD(hoodkD);
+                .withKD(hoodkD)
+                .withKV(hoodkV);
+
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(hoodCruiseVelocity)
@@ -142,9 +146,8 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(110);   
 
          Slot0Configs slotZeroConfigs = new Slot0Configs()
-            .withKG(0.5)
-            .withKP(0.0)
-            .withKI(0.0)
+            .withKP(0.75)
+            .withKI(0.002)
             .withKD(0.0)
             .withKS(0.25)
             .withKV(0.1125);
