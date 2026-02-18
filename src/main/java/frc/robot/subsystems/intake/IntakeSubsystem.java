@@ -25,7 +25,37 @@ import frc.robot.Constants;
 /*
  * Deployed position = -0.047119 rotations Undeployed position = 0.312988 rotations
  */
-
+//Johnny the sigma amogus wrote these
+/**
+ * 1. Use https://www.reca.lc/arm to determine the feedforward constants.
+ * 2. Use sysid tool to theoretically determine the PID initial values
+ * 3. Mathimatically determine the speed that we want the motor to run, this is our kMaxVelocity
+ *      If we want the intake to deploy (move 90degrees) in 1 second... 1/4rps(rev. per second)
+ *          this converted to rpm would be 15rpm
+ *      If we want the deploy to happen at 15rpm then the deploy motor with a 100/1 gear would need to rotate at 1500rpm
+ *      Converting rpm to m/s (https://lucidar.me/en/unit-converter/revolutions-per-second-to-meters-per-second/)
+ *          1500rpm, 0.019m(radius of shaft) => 2.9845m/s ~ 3m/s
+ * 4. (Phoenix Tuner)TEMP. SET MOTOR TO COAST MODE
+ *      we are doing this so we can freely move the system to find encoder positions
+ * 5. (Phoenix Tuner)WHAT DIRECTION IS THE INTAKE RUNNING (positive or negative)
+ *      Invert motor configuration setting if necessary and check all settings
+ * positive goes out negative goes in
+ * 6. (Phoenix Tuner)SAME THING WITH THE DEPLOY MOTOR (positive or negative)
+ * positive down negative up
+ *      Invert motor configuration setting if necessary and check all settings
+ * 7. (Phoenix Tuner)ARE WE RUNNING THE INTAKE FAST ENOUGHT TO INTAKE ANYTHING
+ *      Adjust intake speed settings as necessary
+ * yes
+ * 8. (Phoenix Tuner)SET INTAKE MOTOR TO BREAK MODE
+ * 9. Comment-out the actual useOutput so motor does not move and 
+ *     put the value on the Shuffleboard - verify that values being calculated are valid
+ * 10. FIND POSITIONS FOR DEPLOY MOTOR
+ *      set all position constants based on these values
+ * 11. DETERMINE THE PID VALUESSSSSS
+ *      Increase P value until deploy moves as expected with as little overshoot/oscillation as possible
+ *      Increase D value until overshoot is decreased with no oscillation
+ *      Should not need to tune the I component
+ */
 public class IntakeSubsystem extends SubsystemBase {
 
     private TalonFX intakeRollerMotor;
