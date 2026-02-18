@@ -286,26 +286,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
      public Command getAutoPath(PathPlannerPath path) {
-        // double driveBaseRadius = 0;
-        // for (var moduleLocation : m_moduleLocations) {
-        //     driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
-        // }
-        //
-        // return new FollowPathHolonomic(
-        //         path,
-        //         ()->this.getState().Pose, // Robot pose supplier
-        //         this::getCurrentRobotChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        //         (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        //         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-        //                 new PIDConstants(10.0, 0.0, 0.0), // Translation PID constants
-        //                 new PIDConstants(10.0, 0.0, 0.0), // Rotation PID constants
-        //                 Constants.CTRESwerve.kSpeedAt12VoltsMps, // Max module speed, in m/s
-        //                 driveBaseRadius, // Drive base radius in meters. Distance from robot center to furthest module.
-        //                 new ReplanningConfig() // Default path replanning config. See the API for the options here
-        //         ),
-        //         () -> {return false;},
-        //         this // Reference to this subsystem to set requirements
-        // );
 
         SmartDashboard.putString("AutonMessages", "Got auto path, wieght - '" + pathPlannerRobotConfig.massKG + "'");
 
