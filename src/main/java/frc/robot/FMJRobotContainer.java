@@ -15,9 +15,12 @@ import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
 import frc.robot.commands.TurretAimToFeed;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
+
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -32,8 +35,7 @@ public class FMJRobotContainer {
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate * 0.15) // Add a 15% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  private final SwerveRequest.SwerveDriveBrake brake = new
-  SwerveRequest.SwerveDriveBrake();
+  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   // private final SwerveRequest.PointWheelsAt point = new
   // SwerveRequest.PointWheelsAt();
 
@@ -48,8 +50,9 @@ public class FMJRobotContainer {
   private TurretSubsystem turret = new TurretSubsystem(drivetrain);
   private IntakeSubsystem intake = new IntakeSubsystem();
   private FeederSubsystem feeder = new FeederSubsystem();
+  private ClimberSubsystem climber = new ClimberSubsystem();
+
   private LedSubsystem LED = new LedSubsystem();
-  
 
   private AutoAimAndShoot autoAaS;
   private RobotAimAtHub autoRobotHub;
@@ -72,7 +75,8 @@ public class FMJRobotContainer {
 
   private void configureOperatorBindings() {
     operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
-    operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runSpindexer)).whileFalse(new InstantCommand(feeder::stopSpindexer));
+    operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runSpindexer))
+        .whileFalse(new InstantCommand(feeder::stopSpindexer));
     operatorJoystick.leftTrigger().onTrue(autoAaS);
     operatorJoystick.leftBumper().onTrue(autoAimFeed);
     operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
@@ -81,27 +85,32 @@ public class FMJRobotContainer {
     operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
     operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
 
-    operatorJoystick.povRight().whileTrue(new InstantCommand(turret::runTurret)).onFalse(new InstantCommand(turret::stopTurret));
-    operatorJoystick.povLeft().whileTrue(new InstantCommand(turret::reverseTurret)).onFalse(new InstantCommand(turret::stopTurret));
+    operatorJoystick.povRight().whileTrue(new InstantCommand(turret::runTurret))
+        .onFalse(new InstantCommand(turret::stopTurret));
+    operatorJoystick.povLeft().whileTrue(new InstantCommand(turret::reverseTurret))
+        .onFalse(new InstantCommand(turret::stopTurret));
     operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
     operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
 
     operatorJoystick.back().onTrue(autoRobotHub);
-    operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+    operatorJoystick.start().onTrue(
+        new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
   }
 
   private void configureDriverBindings() {
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
             .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
-            .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)
-        ));
+            .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)));
 
     driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
-    //driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
-    //driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
-    driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
+    // driverJoystick.leftTrigger().onTrue(new
+    // InstantCommand(intake::deployIntake));
+    // driverJoystick.leftBumper().onTrue(new
+    // InstantCommand(intake::undeployIntake));
+    driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake))
+        .whileFalse(new InstantCommand(intake::stopIntake));
     driverJoystick.y().onTrue(new InstantCommand(shooter::moveToPositionOne));
     driverJoystick.a().onTrue(new InstantCommand(shooter::moveToZero));
 
@@ -112,7 +121,9 @@ public class FMJRobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
 
     driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-    // joystick.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(),-joystick.getLeftX())))); 
+    // joystick.b().whileTrue(drivetrain.applyRequest(() ->
+    // point.withModuleDirection(new
+    // Rotation2d(-joystick.getLeftY(),-joystick.getLeftX()))));
   }
 
   public Command getAutonomousCommand() {
@@ -132,22 +143,22 @@ public class FMJRobotContainer {
     }
 
     LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-a");
-    //LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-b");
+    // LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-b");
 
-    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue){
-      if(drivetrain.getPose().getY() > 4.0){
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+      if (drivetrain.getPose().getY() > 4.0) {
         autoAimFeed = new TurretAimToFeed(this, 2.0, 6.5);
       } else {
         autoAimFeed = new TurretAimToFeed(this, 2.0, 1.5);
       }
     } else {
-      if(drivetrain.getPose().getY() > 4.0){
+      if (drivetrain.getPose().getY() > 4.0) {
         autoAimFeed = new TurretAimToFeed(this, 14.5, 6.5);
       } else {
         autoAimFeed = new TurretAimToFeed(this, 14.5, 1.5);
       }
     }
-    
+
   }
 
   public void setInitialPose(double x, double y) {
@@ -168,6 +179,14 @@ public class FMJRobotContainer {
 
   public ShooterSubsystem getShooter() {
     return shooter;
+  }
+
+  public IntakeSubsystem getIntake() {
+    return intake;
+  }
+
+  public ClimberSubsystem getClimber() {
+    return climber;
   }
 
 }
