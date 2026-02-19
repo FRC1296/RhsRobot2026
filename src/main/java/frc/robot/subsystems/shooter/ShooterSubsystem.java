@@ -116,6 +116,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
                 .withMotionMagicJerk(0);
 
+        //might want to try sync or remote. I think fused uses filter to merge rotor and encoder data not directly set them equal
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(Constants.shooterConstants.HOOD_ENCODER_ID)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)

@@ -7,7 +7,7 @@ public class ShooterInterpolationHelper {
     private static double shortRangeMax = 3.5;
 
     private static double shortRangeHoodPosition = 0.0;
-    private static double mediumRangeHoodPosition = 0.27;
+    private static double mediumRangeHoodPosition = 0.25;
 
     private static InterpolatingDoubleTreeMap shortRangeTable = new InterpolatingDoubleTreeMap();
     private static InterpolatingDoubleTreeMap mediumRangeTable = new InterpolatingDoubleTreeMap();
