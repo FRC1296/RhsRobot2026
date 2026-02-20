@@ -4,6 +4,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,13 +62,17 @@ public class FMJRobotContainer {
   private TurretAimToFeed autoAimFeed;
   private ShootBalls shootBalls = new ShootBalls(this);
 
+  private Translation2d hubLocation;
+
   public FMJRobotContainer() {
 
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
-      autoRobotHub = new RobotAimAtHub(this, 4.6, 4);
+        hubLocation = new Translation2d(4.6, 4.0);
     } else {
-      autoRobotHub = new RobotAimAtHub(this, 11.9, 4);
+        hubLocation = new Translation2d(11.6, 4.0);
     }
+    
+    autoRobotHub = new RobotAimAtHub(this, hubLocation.getX(), hubLocation.getY());
     autoAimFeed = new TurretAimToFeed(this, 0.0, 0.0);
     autoAaS = new AutoAimAndShoot(this);
 
@@ -212,4 +217,7 @@ public class FMJRobotContainer {
     return climber;
   }
 
+  public Translation2d getHubLocation() {
+    return hubLocation;
+  }
 }
