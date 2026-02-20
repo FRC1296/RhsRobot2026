@@ -46,6 +46,11 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    LimelightHelpers.setPipelineIndex("limelight-a", 0);
+    LimelightHelpers.setPipelineIndex("limelight-b", 0);
+    LimelightHelpers.SetThrottle("limelight-a", 0);
+    LimelightHelpers.SetThrottle("limelight-b", 0);
   }
 
   @Override

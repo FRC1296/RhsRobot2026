@@ -225,7 +225,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Constants.shooterConstants.shooterInterpolate = bool;
     }
 
-    public void stopShooterAutoInterpolate(){
+    public void stopAutoAimAndShoot(){
         Constants.shooterConstants.shooterInterpolate = false;
+        Constants.turretConstants.turretAimAtHub = false;
     }
 }

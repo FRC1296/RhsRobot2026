@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.DestoryerHistoryMakingTestAuton;
 import frc.robot.autonomous.IAuto;
-import frc.robot.autonomous.ShootAuton;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
@@ -132,8 +131,9 @@ public class FMJRobotContainer {
     // Rotation2d(-joystick.getLeftY(),-joystick.getLeftX()))));
   }
 
+  //Does using get initial pose overwrite what the limelightlight says the pose is on startup
   public Command getAutonomousCommand() {
-    Command auton = new ShootAuton(this, MaxSpeed, MaxAngularRate, false);
+    Command auton = new DestoryerHistoryMakingTestAuton(this, MaxSpeed, MaxAngularRate, false);
 
     Pose2d initialPose;
     if (auton instanceof IAuto) {
@@ -199,6 +199,7 @@ public class FMJRobotContainer {
   public SpindexerSubsystem getSpindexer() {
     return spindexer;
   }
+  
   public ShooterSubsystem getShooter() {
     return shooter;
   }

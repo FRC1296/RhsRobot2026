@@ -26,7 +26,6 @@ public class ShootAuton extends AutonomousRoutine {
 
         PathPlannerPath firstPath = null;
         PathPlannerPath secondPath = null;
-        PathPlannerPath thirdPath = null;
 
         boolean pathLoaded = true;
         try {
@@ -48,14 +47,11 @@ public class ShootAuton extends AutonomousRoutine {
             addCommands(
 
                     new AutoAimAndShoot(robot),
-                    new InstantCommand(spindexer::runSpindexer, spindexer)//,
-                    //new WaitCommand(3),
-                    //new ParallelCommandGroup(
-                            //new InstantCommand(spindexer::stopSpindexer),
-                            // InstantCommand(shooter::stopShooterAutoInterpolate)));
-            );
-
+                    new InstantCommand(spindexer::runSpindexer, spindexer),
+                    new WaitCommand(3),
+                    new ParallelCommandGroup(
+                        new InstantCommand(spindexer::stopSpindexer),
+                        new InstantCommand(shooter::stopAutoAimAndShoot)));
         }
-        this.addRequirements(feeder,spindexer,drivetrain,shooter,turret,intake);
     }
 }

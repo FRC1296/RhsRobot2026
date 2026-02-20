@@ -6,11 +6,9 @@ import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
-import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
-import frc.robot.subsystems.turret.TurretSubsystem;
 
 public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
     public DestoryerHistoryMakingTestAuton(FMJRobotContainer robot, double velocity, double acceleration,
@@ -20,13 +18,11 @@ public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
         CommandSwerveDrivetrain drivetrain = robot.getDrivetrain();
         IntakeSubsystem intake = robot.getIntake();
         ShooterSubsystem shooter = robot.getShooter();
-        FeederSubsystem feeder = robot.getFeeder();
-        TurretSubsystem turret = robot.getTurret();
         SpindexerSubsystem spindexer = robot.getSpindexer();
 
         PathPlannerPath firstPath = null;
         PathPlannerPath secondPath = null;
-        PathPlannerPath thirdPath = null;
+        //PathPlannerPath thirdPath = null;
 
         boolean pathLoaded = true;
         try {
@@ -50,25 +46,26 @@ public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
                     new ParallelCommandGroup(
                             drivetrain.getAutoPath(firstPath),
                             // new InstantCommand(intake::deployIntake),
-                            new AutoAimAndShoot(robot)),
-                    new WaitCommand(0.5),
-                    new InstantCommand(spindexer::runSpindexer),
-                    new WaitCommand(3),
-                    new ParallelCommandGroup(
-                            new InstantCommand(spindexer::stopSpindexer),
-                            new InstantCommand(shooter::stopShooterAutoInterpolate)),
+                            new AutoAimAndShoot(robot),
+                            new SequentialCommandGroup(
+                                    new WaitCommand(5.0),
+                                    new InstantCommand(spindexer::runSpindexer),
+                                    new WaitCommand(3.0),
+                                    new InstantCommand(spindexer::stopSpindexer),
+                                    new InstantCommand(shooter::stopAutoAimAndShoot))),
                     new ParallelCommandGroup(
                             drivetrain.getAutoPath(secondPath),
                             new InstantCommand(intake::runIntake)),
                     new WaitCommand(3),
                     new InstantCommand(intake::stopIntake),
-                    new AutoAimAndShoot(robot),
-                    new InstantCommand(spindexer::runSpindexer),
-                    new WaitCommand(3),
                     new ParallelCommandGroup(
-                            new InstantCommand(spindexer::stopSpindexer),
-                            new InstantCommand(shooter::stopShooterAutoInterpolate)));
-
+                            new AutoAimAndShoot(robot),
+                            new SequentialCommandGroup(
+                                    new WaitCommand(0.2),
+                                    new InstantCommand(spindexer::runSpindexer),
+                                    new WaitCommand(3.0),
+                                    new InstantCommand(spindexer::stopSpindexer),
+                                    new InstantCommand(shooter::stopAutoAimAndShoot))));
         }
 
     }
