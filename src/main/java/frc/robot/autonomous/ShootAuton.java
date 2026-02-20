@@ -12,8 +12,8 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
-public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
-    public DestoryerHistoryMakingTestAuton(FMJRobotContainer robot, double velocity, double acceleration,
+public class ShootAuton extends AutonomousRoutine {
+    public ShootAuton(FMJRobotContainer robot, double velocity, double acceleration,
             boolean isRedAlliance) {
         super(robot, velocity, acceleration, isRedAlliance);
 
@@ -46,30 +46,16 @@ public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
-                    new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
-                    new ParallelCommandGroup(
-                            drivetrain.getAutoPath(firstPath),
-                            // new InstantCommand(intake::deployIntake),
-                            new AutoAimAndShoot(robot)),
-                    new WaitCommand(0.5),
-                    new InstantCommand(spindexer::runSpindexer),
-                    new WaitCommand(3),
-                    new ParallelCommandGroup(
-                            new InstantCommand(spindexer::stopSpindexer),
-                            new InstantCommand(shooter::stopShooterAutoInterpolate)),
-                    new ParallelCommandGroup(
-                            drivetrain.getAutoPath(secondPath),
-                            new InstantCommand(intake::runIntake)),
-                    new WaitCommand(3),
-                    new InstantCommand(intake::stopIntake),
+
                     new AutoAimAndShoot(robot),
-                    new InstantCommand(spindexer::runSpindexer),
-                    new WaitCommand(3),
-                    new ParallelCommandGroup(
-                            new InstantCommand(spindexer::stopSpindexer),
-                            new InstantCommand(shooter::stopShooterAutoInterpolate)));
+                    new InstantCommand(spindexer::runSpindexer, spindexer)//,
+                    //new WaitCommand(3),
+                    //new ParallelCommandGroup(
+                            //new InstantCommand(spindexer::stopSpindexer),
+                            // InstantCommand(shooter::stopShooterAutoInterpolate)));
+            );
 
         }
-
+        this.addRequirements(feeder,spindexer,drivetrain,shooter,turret,intake);
     }
 }

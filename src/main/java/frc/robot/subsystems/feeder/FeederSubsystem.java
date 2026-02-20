@@ -19,7 +19,6 @@ import frc.robot.Constants;
 
 public class FeederSubsystem extends SubsystemBase {
 
-    private TalonFX spindexerMotor;
     private TalonFX feederMotor;
 
     private DutyCycleOut dcOut = new DutyCycleOut(0);
@@ -39,41 +38,9 @@ public class FeederSubsystem extends SubsystemBase {
         spindexerStallPublisher = feederTable.getBooleanTopic("Spindexer Stall").publish();
         spindexerStallPublisher.set(false);
 
-        spindexerMotor = new TalonFX(Constants.feederConstants.SPINDEXER_MOTOR_ID);
         feederMotor = new TalonFX(Constants.feederConstants.FEEDER_MOTOR_ID);
 
-        ConfigureSpindexerMotor();
         ConfigureFeederMotor();
-    }
-
-    private void ConfigureSpindexerMotor() {
-
-        MotorOutputConfigs outputConfig = new MotorOutputConfigs()
-            .withNeutralMode(NeutralModeValue.Coast)
-            .withInverted(InvertedValue.Clockwise_Positive);
-
-        CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
-            .withStatorCurrentLimitEnable(true)
-            .withStatorCurrentLimit(statorCurrentLimit);
-
-        Slot0Configs slotZeroConfigs = new Slot0Configs()
-            .withKG(0.0)
-            .withKP(0.8)
-            .withKI(0.0)
-            .withKD(0.0)
-            .withKS(0.6)
-            .withKV(0.095);
-
-        TalonFXConfiguration motorConfig = new TalonFXConfiguration()
-            .withMotorOutput(outputConfig)
-            .withCurrentLimits(currentLimitConfig)
-            .withSlot0(slotZeroConfigs);
-
-        spindexerMotor.getConfigurator().apply(motorConfig);
-
-        spindexerVelocitySS = spindexerMotor.getVelocity();
-        spindexerVelocityErrorSS = spindexerMotor.getClosedLoopError();
-        spindexerStatorCurrentSS = spindexerMotor.getStatorCurrent();
     }
 
     private void ConfigureFeederMotor() {
@@ -97,27 +64,4 @@ public class FeederSubsystem extends SubsystemBase {
         feederMotor.setControl(dcOut.withOutput(0.0));
     }
 
-    public void runSpindexer() {
-        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(12.0));
-    }
-
-    public void stopSpindexer() {
-        spindexerMotor.setControl(dcOut.withOutput(0.0));
-    }
-
-    @Override
-    public void periodic() {
-        super.periodic();
-
-        BaseStatusSignal.refreshAll(spindexerVelocitySS, spindexerVelocityErrorSS, spindexerStatorCurrentSS);
-
-        boolean isStall = false;
-        // Only check for stall when control is VelocityVoltage
-        if (spindexerMotor.getAppliedControl() instanceof VelocityVoltage) {
-            if (spindexerVelocityErrorSS.getValueAsDouble() > 11.0 && spindexerStatorCurrentSS.getValueAsDouble() > statorCurrentLimit) {
-                isStall = true;
-            }
-        }
-        spindexerStallPublisher.set(isStall);
-    }
 }
