@@ -25,6 +25,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -45,6 +48,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+
+    private DoublePublisher robotSpeedPublisher;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -132,6 +137,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        NetworkTable robotTable = inst.getTable("Robot Data");
+        NetworkTable driveTable = robotTable.getSubTable("Drive Subsystem");
+        robotSpeedPublisher = driveTable.getDoubleTopic("Robot Speed").publish();
     }
 
     /**
@@ -252,6 +261,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         //     Constants.hasInitializedFromVision = false;
         // }
 
+        robotSpeedPublisher.set(Math.hypot(
+            this.getRobotRelativeSpeeds().vxMetersPerSecond,
+            this.getRobotRelativeSpeeds().vyMetersPerSecond));
+
         Pose2d fusedPose = this.getState().Pose;
         Constants.fusedPoseXPub.set(fusedPose.getX());
         Constants.fusedPoseYPub.set(fusedPose.getY());
@@ -323,7 +336,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                 .withSpeeds(speeds)
                                 .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                                 .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-                new PPHolonomicDriveController(new PIDConstants(10.0, 0.0, 0.0), new PIDConstants(7.0, 0.0, 0.0)),
+                new PPHolonomicDriveController(new PIDConstants(0.45, 0.0, .01), new PIDConstants(1.0, 0.0, 0.0)),
                 pathPlannerRobotConfig,
                 () -> {
                     return false;
@@ -350,8 +363,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier (MUST BE ROBOT RELATIVE)
                 (speeds, feedforwards) -> driveRobotRelative(speeds), // Method to drive the robot
                 new PPHolonomicDriveController(
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                        new PIDConstants(0.75, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(0.75, 0.0, 0.0) // Rotation PID constants
                 ),
                 pathPlannerRobotConfig, // Robot configuration
                 () -> {

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
 import frc.robot.commands.AutoAimAndShoot;
+import frc.robot.commands.SmartMove;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -42,12 +43,13 @@ public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
 
             addCommands(
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
+                    new InstantCommand(() -> SmartMove.move(drivetrain,initialPose.getX(),initialPose.getY(), 0.0)),
                     new ParallelCommandGroup(
                             drivetrain.getAutoPath(firstPath),
                             // new InstantCommand(intake::deployIntake),
                             new AutoAimAndShoot(robot),
                             new SequentialCommandGroup(
-                                    new WaitCommand(12.0),
+                                    new WaitCommand(6.0),
                                     new InstantCommand(spindexer::runSpindexer),
                                     new WaitCommand(3.0),
                                     new InstantCommand(spindexer::stopSpindexer),

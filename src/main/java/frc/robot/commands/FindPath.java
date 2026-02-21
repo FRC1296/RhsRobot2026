@@ -14,7 +14,7 @@ public class FindPath {
 
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
-                2.5, 2.0,
+                1.0, 1.0,
                 Math.toRadians(360), Math.toRadians(360));
 
         // Since AutoBuilder is configured, we can use it to build pathfinding commands

@@ -155,4 +155,8 @@ public class LocalizationHelpers {
         }
     }
 
+    public static boolean tagInVison(String LLName){
+        return LimelightHelpers.getTV(LLName);
+    }
+
 }
