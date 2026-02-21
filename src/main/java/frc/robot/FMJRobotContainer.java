@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -139,8 +138,17 @@ public class FMJRobotContainer {
 
   //Does using get initial pose overwrite what the limelightlight says the pose is on startup
   public Command getAutonomousCommand() {
-    Command auton = new DestoryerHistoryMakingTestAuton(this, .25, .5, false);
+    boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+    Command auton = new DestoryerHistoryMakingTestAuton(this, MaxSpeed, MaxAngularRate, isRed);
 
+    if(LocalizationHelpers.tagInVison("limelight-a")){
+      LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
+    } else {
+      drivetrain.resetPose(((IAuto) auton).getInitialPose());
+    }
+
+    return auton;
+    
     // Pose2d initialPose;
     // if (auton instanceof IAuto) {
     //   initialPose = ((IAuto) auton).getInitialPose();
@@ -151,8 +159,6 @@ public class FMJRobotContainer {
 
     // SmartDashboard.putString("Auton Pose", "x-" + initialPose.getX() + ", y-" + initialPose.getY() + ", rotation-"
     //     + initialPose.getRotation().getDegrees());
-
-    return auton;
   }
 
   public void robotPeriodic() {

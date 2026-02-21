@@ -80,8 +80,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeSubsystem() {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable limebotTable = inst.getTable("Robot Data");
-        NetworkTable shooterTable = limebotTable.getSubTable("Intake Subsystem");
+        NetworkTable robotTable = inst.getTable("Robot Data");
+        NetworkTable shooterTable = robotTable.getSubTable("Intake Subsystem");
         intakePositionPublisher = shooterTable.getDoubleTopic("Intake Position").publish();
 
         intakeRollerMotor = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_ID);

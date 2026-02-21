@@ -66,8 +66,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem(CommandSwerveDrivetrain drive) {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable limebotTable = inst.getTable("Robot Data");
-        NetworkTable shooterTable = limebotTable.getSubTable("Shooter Subsystem");
+        NetworkTable robotTable = inst.getTable("Robot Data");
+        NetworkTable shooterTable = robotTable.getSubTable("Shooter Subsystem");
         hoodPositionPublisher = shooterTable.getDoubleTopic("Hood Position").publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic("Shooter Speed").publish();
         distanceToHubPublisher = shooterTable.getDoubleTopic("Distance To Hub").publish();
