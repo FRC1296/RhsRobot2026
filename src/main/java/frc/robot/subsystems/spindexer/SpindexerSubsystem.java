@@ -11,14 +11,12 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class SpindexerSubsystem extends SubsystemBase {
@@ -103,10 +101,10 @@ public class SpindexerSubsystem extends SubsystemBase {
         // Only check for stall when control is VelocityVoltage
         if (spindexerMotor.getAppliedControl() instanceof VelocityVoltage) {
             if (spindexerVelocityErrorSS.getValueAsDouble() > 11.0
-                    && spindexerStatorCurrentSS.getValueAsDouble() > (statorCurrentLimit-5.0)) {
+                    && spindexerStatorCurrentSS.getValueAsDouble() > (statorCurrentLimit - 5.0)) {
                 isStall = true;
-                if(stallCommand.isScheduled() == false){
-                //CommandScheduler.getInstance().schedule(stallCommand.withTimeout(2));
+                if (stallCommand.isScheduled() == false) {
+                    CommandScheduler.getInstance().schedule(stallCommand);
                 }
             }
         }

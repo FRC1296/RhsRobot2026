@@ -13,14 +13,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class SpindexerStallCommand extends Command {
   private SpindexerSubsystem spindexerSubsystem;
   private BooleanSubscriber stallDetector;
+  private long startTime;
+  private double timeToRun = 2000; //milliseconds
+
   /** Creates a new SpindexerStallCommand. */
   public SpindexerStallCommand(SpindexerSubsystem spindexer) {
     // Use addRequirements() here to declare subsystem dependencies.
     spindexerSubsystem = spindexer;
+    addRequirements(spindexer);
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable robotTable = inst.getTable("Robot Data");
-        NetworkTable feederTable = robotTable.getSubTable("Feeder Subsystem");
+    NetworkTable robotTable = inst.getTable("Robot Data");
+    NetworkTable feederTable = robotTable.getSubTable("Feeder Subsystem");
     stallDetector = feederTable.getBooleanTopic("Spindexer Stall").subscribe(false);
   }
 
@@ -28,6 +32,7 @@ public class SpindexerStallCommand extends Command {
   @Override
   public void initialize() {
     spindexerSubsystem.stopSpindexer();
+    startTime = System.currentTimeMillis();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,13 +44,16 @@ public class SpindexerStallCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //spindexerSubsystem.runSpindexer();
+    // spindexerSubsystem.runSpindexer();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean isDone = stallDetector.get();
-    return isDone;
+    boolean done = false;
+    if ((System.currentTimeMillis() - startTime) > timeToRun) {
+      done = true;
+    }
+    return done;
   }
 }
