@@ -92,7 +92,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         // Only check for stall when control is VelocityVoltage
         if (spindexerMotor.getAppliedControl() instanceof VelocityVoltage) {
             if (spindexerVelocityErrorSS.getValueAsDouble() > 11.0
-                    && spindexerStatorCurrentSS.getValueAsDouble() > statorCurrentLimit) {
+                    && spindexerStatorCurrentSS.getValueAsDouble() > (statorCurrentLimit-5.0)) {
                 isStall = true;
             }
         }
