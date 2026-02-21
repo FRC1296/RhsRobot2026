@@ -18,7 +18,7 @@ public class ShootAuton extends AutonomousRoutine {
         super(robot, velocity, acceleration, isRedAlliance);
 
         CommandSwerveDrivetrain drivetrain = robot.getDrivetrain();
-        IntakeSubsystem intake = robot.getIntake();
+        // IntakeSubsystem intake = robot.getIntake();
         ShooterSubsystem shooter = robot.getShooter();
         FeederSubsystem feeder = robot.getFeeder();
         TurretSubsystem turret = robot.getTurret();
@@ -50,8 +50,8 @@ public class ShootAuton extends AutonomousRoutine {
                     new InstantCommand(spindexer::runSpindexer, spindexer),
                     new WaitCommand(3),
                     new ParallelCommandGroup(
-                        new InstantCommand(spindexer::stopSpindexer),
-                        new InstantCommand(shooter::stopAutoAimAndShoot)));
+                            new InstantCommand(spindexer::stopSpindexer),
+                            new InstantCommand(shooter::stopAutoAimAndShoot)));
         }
     }
 }

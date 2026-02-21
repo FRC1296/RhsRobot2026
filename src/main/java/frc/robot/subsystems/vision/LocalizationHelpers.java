@@ -13,29 +13,28 @@ public class LocalizationHelpers {
     public static void updateFieldPosition(CommandSwerveDrivetrain drivetrain, String LLName) {
         boolean doRejectUpdate = false;
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
-        double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();//Get current from LL instead
+        double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();// Get current from LL instead
         double xyStdDev;
 
         LimelightHelpers.SetRobotOrientation(LLName, currentRotation, angularVelocity, 0, 0, 0, 0);
         PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LLName);
 
         double linearVelocity = Math.hypot(
-            drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond,
-            drivetrain.getRobotRelativeSpeeds().vyMetersPerSecond
-        );
+                drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond,
+                drivetrain.getRobotRelativeSpeeds().vyMetersPerSecond);
 
-      if (MT2 == null) {
+        if (MT2 == null) {
             // if (LLName.equals("limelight-a")) {
-            //     Constants.visionValidAPub.set(false);
+            // Constants.visionValidAPub.set(false);
             // } else {
-            //     Constants.visionValidBPub.set(false);
+            // Constants.visionValidBPub.set(false);
             // }
-            //updateDynamicCrop(LLName, true);
+            // updateDynamicCrop(LLName, true);
             return;
         }
 
         if (MT2.avgTagDist > 6.0 || MT2.avgTagArea < 0.08) {
-            //updateDynamicCrop(LLName, true);
+            // updateDynamicCrop(LLName, true);
             return;
         }
 
@@ -43,73 +42,121 @@ public class LocalizationHelpers {
             doRejectUpdate = true;
         }
 
-        boolean isInvalid = (MT2.tagCount == 0 || MT2.rawFiducials == null || MT2.rawFiducials.length < 1 || doRejectUpdate == true);
+        boolean isInvalid = (MT2.tagCount == 0 || MT2.rawFiducials == null || MT2.rawFiducials.length < 1
+                || doRejectUpdate == true);
 
-        //updateDynamicCrop(LLName, isInvalid);
+        // updateDynamicCrop(LLName, isInvalid);
 
         if (!Constants.hasInitializedFromVision && !isInvalid) {
-            Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));//Reset to LL rotaion instead
+            Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));// Reset
+                                                                                                                       // to
+                                                                                                                       // LL
+                                                                                                                       // rotaion
+                                                                                                                       // instead
             drivetrain.resetPose(correctPose);
             Constants.hasInitializedFromVision = true;
         }
 
-
-        //TODO: For removal
+        // TODO: For removal
         // if (LLName.equals("limelight-a")) {
-        //     Constants.visionValidAPub.set(!isInvalid);
-        //     if (!isInvalid) {
-        //         Constants.distanceToTagAPub.set(MT2.rawFiducials[0].distToRobot);
-        //         Constants.visionPoseXAPub.set(MT2.pose.getX());
-        //         Constants.visionPoseYAPub.set(MT2.pose.getY());
-        //         Constants.visionPoseRotAPub.set(MT2.pose.getRotation().getDegrees());
-        //     }
+        // Constants.visionValidAPub.set(!isInvalid);
+        // if (!isInvalid) {
+        // Constants.distanceToTagAPub.set(MT2.rawFiducials[0].distToRobot);
+        // Constants.visionPoseXAPub.set(MT2.pose.getX());
+        // Constants.visionPoseYAPub.set(MT2.pose.getY());
+        // Constants.visionPoseRotAPub.set(MT2.pose.getRotation().getDegrees());
+        // }
         // } else {
-        //     Constants.visionValidBPub.set(!isInvalid);
-        //     if (!isInvalid) {
-        //         Constants.distanceToTagBPub.set(MT2.rawFiducials[0].distToRobot);
-        //         Constants.visionPoseXBPub.set(MT2.pose.getX());
-        //         Constants.visionPoseYBPub.set(MT2.pose.getY());
-        //         Constants.visionPoseRotBPub.set(MT2.pose.getRotation().getDegrees());
-        //     }
+        // Constants.visionValidBPub.set(!isInvalid);
+        // if (!isInvalid) {
+        // Constants.distanceToTagBPub.set(MT2.rawFiducials[0].distToRobot);
+        // Constants.visionPoseXBPub.set(MT2.pose.getX());
+        // Constants.visionPoseYBPub.set(MT2.pose.getY());
+        // Constants.visionPoseRotBPub.set(MT2.pose.getRotation().getDegrees());
+        // }
         // }
 
         if (!isInvalid) {
 
             xyStdDev = calculateStdDev(MT2, linearVelocity);
 
-
             drivetrain.addVisionMeasurement(MT2.pose, MT2.timestampSeconds,
                     VecBuilder.fill(xyStdDev, xyStdDev, 9999999));
         }
     }
 
+    public static void updatePose(CommandSwerveDrivetrain drivetrain, String llName) {
+        double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
+        double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();// Get current from LL instead
+
+        LimelightHelpers.SetRobotOrientation(llName, currentRotation, angularVelocity, 0, 0, 0, 0);
+        PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName);
+
+        double linearVelocity = Math.hypot(
+                drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond,
+                drivetrain.getRobotRelativeSpeeds().vyMetersPerSecond);
+
+        if (MT2 != null && MT2.avgTagDist <= 6.0 && MT2.avgTagArea >= 0.08) {
+            boolean isValid = false;
+            if (Math.abs(angularVelocity) <= 720  && isValidTarget(MT2)) {
+                isValid = true;
+            }
+
+            if (!Constants.hasInitializedFromVision) {
+                if (isValid) {
+                    Pose2d correctPose = new Pose2d(
+                            MT2.pose.getX(),
+                            MT2.pose.getY(),
+                            Rotation2d.fromDegrees(currentRotation));// Reset to LL rotaion instead
+
+                    drivetrain.resetPose(correctPose);
+                    Constants.hasInitializedFromVision = true;
+                } else {
+                    double xyStdDev = calculateStdDev(MT2, linearVelocity);
+                    drivetrain.addVisionMeasurement(MT2.pose, MT2.timestampSeconds,
+                            VecBuilder.fill(xyStdDev, xyStdDev, 9999999));
+                }
+            }
+        }
+    }
+
+    private static boolean isValidTarget(PoseEstimate target) {
+        boolean retVal = false;
+
+        if (target.tagCount > 0 && target.rawFiducials != null && target.rawFiducials.length >= 1) {
+            retVal = true;
+        }
+
+        return retVal;
+    }
+
     private static double calculateStdDev(PoseEstimate MT2, double linearVelocity) {
         double stdDev = 0.05;
-        
+
         double distanceFactor = 1 + (MT2.avgTagDist * 0.3);
         stdDev *= (distanceFactor * distanceFactor);
-        
+
         if (MT2.tagCount >= 2) {
             stdDev *= 0.5;
         }
-        
+
         if (MT2.avgTagArea < 0.2) {
             double areaFactor = 0.2 / Math.max(MT2.avgTagArea, 0.05);
             stdDev *= Math.min(areaFactor, 3.0);
         }
-        
+
         if (linearVelocity > 0.5) {
             double velocityFactor = 1 + (linearVelocity / 4.5);
             stdDev *= velocityFactor;
         }
-        
+
         stdDev = Math.max(0.01, Math.min(stdDev, 5.0));
-        
+
         return stdDev;
     }
 
-    private static void updateDynamicCrop(String name, boolean isInvalid){
-        if(isInvalid){
+    private static void updateDynamicCrop(String name, boolean isInvalid) {
+        if (isInvalid) {
             LimelightHelpers.setCropWindow(name, -1.0, 1.0, -1.0, 1.0);
         } else {
             double centerX = LimelightHelpers.getTX(name) / 41.0;
@@ -137,25 +184,31 @@ public class LocalizationHelpers {
         PoseEstimate OneMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LLName1);
         PoseEstimate TwoMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LLName2);
 
-        boolean isInvalid1 = (OneMT2 == null || OneMT2.tagCount == 0 || OneMT2.rawFiducials == null || OneMT2.rawFiducials.length == 0);
-        boolean isInvalid2 = (TwoMT2 == null || TwoMT2.tagCount == 0 || TwoMT2.rawFiducials == null || TwoMT2.rawFiducials.length == 0);
+        boolean isInvalid1 = (OneMT2 == null || OneMT2.tagCount == 0 || OneMT2.rawFiducials == null
+                || OneMT2.rawFiducials.length == 0);
+        boolean isInvalid2 = (TwoMT2 == null || TwoMT2.tagCount == 0 || TwoMT2.rawFiducials == null
+                || TwoMT2.rawFiducials.length == 0);
 
         if (!isInvalid1 && !isInvalid2) {
             double distToTag1 = OneMT2.rawFiducials[0].distToRobot;
             double distToTag2 = TwoMT2.rawFiducials[0].distToRobot;
             if (distToTag1 < distToTag2) {
-                drivetrain.resetPose(new Pose2d(OneMT2.pose.getX(), OneMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
+                drivetrain.resetPose(
+                        new Pose2d(OneMT2.pose.getX(), OneMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
             } else {
-                drivetrain.resetPose(new Pose2d(TwoMT2.pose.getX(), TwoMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
+                drivetrain.resetPose(
+                        new Pose2d(TwoMT2.pose.getX(), TwoMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
             }
         } else if (!isInvalid1 && isInvalid2) {
-            drivetrain.resetPose(new Pose2d(OneMT2.pose.getX(), OneMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
+            drivetrain.resetPose(
+                    new Pose2d(OneMT2.pose.getX(), OneMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
         } else if (!isInvalid2 && isInvalid1) {
-            drivetrain.resetPose(new Pose2d(TwoMT2.pose.getX(), TwoMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
+            drivetrain.resetPose(
+                    new Pose2d(TwoMT2.pose.getX(), TwoMT2.pose.getY(), Rotation2d.fromDegrees(currentRotation)));
         }
     }
 
-    public static boolean tagInVison(String LLName){
+    public static boolean tagInVison(String LLName) {
         return LimelightHelpers.getTV(LLName);
     }
 

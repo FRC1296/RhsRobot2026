@@ -21,9 +21,9 @@ public class ShooterInterpolationHelper {
 
         mediumRangeTable.put(3.5, 70.0);
         mediumRangeTable.put(4.0, 76.0);
-        mediumRangeTable.put(4.5, 80.0);
-        mediumRangeTable.put(5.0, 82.0);
-        mediumRangeTable.put(5.7, 89.0);
+        mediumRangeTable.put(4.5, 82.0);
+        mediumRangeTable.put(5.0, 84.0);
+        mediumRangeTable.put(5.7, 91.0);
     }
 
     public static double calculateShooterSpeed(double distance) {

@@ -50,12 +50,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private double hoodPos = 0.0;
 
     private double hoodCruiseVelocity = 75;
-    private final double hoodkP = 0.4;
+    private final double hoodkP = 0.1;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
-    private final double hoodkS = 0.4;
-    private final double hoodkV = 0.14;
-
+    private final double hoodkS = 0.49;
+    private final double hoodkV = 0.1175;
 
     private double distanceToHub;
 
@@ -90,7 +89,8 @@ public class ShooterSubsystem extends SubsystemBase {
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
-        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-hoodAbsEncoder.getAbsolutePosition().waitForUpdate(0.1).getValueAsDouble()));
+        cc_cfg.MagnetSensor.withMagnetOffset(
+                Rotations.of(-hoodAbsEncoder.getAbsolutePosition().waitForUpdate(0.1).getValueAsDouble()));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
     }
 
@@ -110,16 +110,16 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withKD(hoodkD)
                 .withKV(hoodkV);
 
-
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(hoodCruiseVelocity)
                 .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
                 .withMotionMagicJerk(0);
 
-        //might want to try sync or remote. I think fused uses filter to merge rotor and encoder data not directly set them equal
+        // might want to try sync or remote. I think fused uses filter to merge rotor
+        // and encoder data not directly set them equal
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(Constants.shooterConstants.HOOD_ENCODER_ID)
-                .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
                 .withSensorToMechanismRatio(1.0)
                 .withRotorToSensorRatio(1.0);
 
@@ -131,7 +131,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withFeedback(feedbackConfigs);
 
         hoodMotor.getConfigurator().apply(motorConfig);
-        //hoodMotor.setPosition(0.0);
+        // hoodMotor.setPosition(0.0);
     }
 
     private void ConfigureShooterMotors() {
@@ -144,14 +144,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(110);   
+                .withStatorCurrentLimit(110);
 
-         Slot0Configs slotZeroConfigs = new Slot0Configs()
-            .withKP(0.75)
-            .withKI(0.002)
-            .withKD(0.0)
-            .withKS(0.25)
-            .withKV(0.1125);
+        Slot0Configs slotZeroConfigs = new Slot0Configs()
+                .withKP(0.75)
+                .withKI(0.002)
+                .withKD(0.0)
+                .withKS(0.25)
+                .withKV(0.1125);
 
         TalonFXConfiguration masterMotorConfig = new TalonFXConfiguration()
                 .withCurrentLimits(currentConfigs)
@@ -217,15 +217,17 @@ public class ShooterSubsystem extends SubsystemBase {
         Translation2d targetTranslation = new Translation2d(targetX, targetY);
         Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
         distanceToHub = shooterTranslation.getDistance(targetTranslation);
-        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distanceToHub)));
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(ShooterInterpolationHelper.calculateHoodPosition(distanceToHub)));
+        shooterMasterMotor.setControl(
+                velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distanceToHub)));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0)
+                .withPosition(ShooterInterpolationHelper.calculateHoodPosition(distanceToHub)));
     }
 
-    public void shooterAutoInterpolateBool(boolean bool){
+    public void shooterAutoInterpolateBool(boolean bool) {
         Constants.shooterConstants.shooterInterpolate = bool;
     }
 
-    public void stopAutoAimAndShoot(){
+    public void stopAutoAimAndShoot() {
         Constants.shooterConstants.shooterInterpolate = false;
         Constants.turretConstants.turretAimAtHub = false;
     }

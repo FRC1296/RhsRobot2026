@@ -17,7 +17,8 @@ public class Robot extends TimedRobot {
 
     private FMJRobotContainer m_robotContainer;
 
-    public Robot() {}
+    public Robot() {
+    }
 
     @Override
     public void robotInit() {
@@ -28,12 +29,14 @@ public class Robot extends TimedRobot {
         FollowPathCommand.warmupCommand();
 
         // Start WPILib Data Log
-        DataLogManager.start(); // stores logs in either USB(diretory logs) or roborio drive(/home/lvuser/logs)
-        DriverStation.startDataLog(DataLogManager.getLog());
-        
-        // Start CTRE Data Log - logging will automatically start for FRC match
-        SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this location
-        SignalLogger.start();
+        // DataLogManager.start(); // stores logs in either USB(diretory logs) or
+        // roborio drive(/home/lvuser/logs)
+        // DriverStation.startDataLog(DataLogManager.getLog());
+
+        // // Start CTRE Data Log - logging will automatically start for FRC match
+        // SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this
+        // location
+        // SignalLogger.start();
     }
 
     @Override
@@ -79,6 +82,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousExit() {
+        m_robotContainer.autonomousExit();
     }
 
     @Override
