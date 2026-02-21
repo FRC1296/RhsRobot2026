@@ -69,6 +69,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double intakeDeployPosition = 0.68;
     private double intakeUndeployPosition = 0.1;
+    private double intakeAgitatePosition = 0.39;
 
     private double deployCruiseVelocity = 10;
 
@@ -159,6 +160,10 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeRollerMotor.setControl(dcOut.withOutput(0.0));
     }
 
+    public void runIntakeReverse(double speed) {
+        intakeRollerMotor.setControl(dcOut.withOutput(speed));
+    }
+
     public double getIntakePosition() {
         return intakeDeployMotor.getPosition().getValueAsDouble();
     }
@@ -171,5 +176,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public void deployIntake() {
         // TODO : Validate the absolute sensor position
         intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
+    }
+
+    public void moveIntakeToAgitate() {
+        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeAgitatePosition));
     }
 }
