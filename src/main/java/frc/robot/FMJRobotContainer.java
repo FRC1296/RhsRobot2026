@@ -139,7 +139,7 @@ public class FMJRobotContainer {
 
   //Does using get initial pose overwrite what the limelightlight says the pose is on startup
   public Command getAutonomousCommand() {
-    Command auton = new DestoryerHistoryMakingTestAuton(this, .25, .5, false);
+    Command auton = new DestoryerHistoryMakingTestAuton(this, MaxSpeed, MaxAngularRate, false);
 
     // Pose2d initialPose;
     // if (auton instanceof IAuto) {

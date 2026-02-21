@@ -104,7 +104,7 @@ public class SpindexerSubsystem extends SubsystemBase {
                     && spindexerStatorCurrentSS.getValueAsDouble() > (statorCurrentLimit - 5.0)) {
                 isStall = true;
                 if (stallCommand.isScheduled() == false) {
-                    CommandScheduler.getInstance().schedule(stallCommand);
+                    //CommandScheduler.getInstance().schedule(stallCommand);
                 }
             }
         }
