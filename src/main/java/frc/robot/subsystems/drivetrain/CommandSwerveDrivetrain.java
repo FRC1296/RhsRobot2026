@@ -248,9 +248,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-        if (DriverStation.isDisabled()) {
-            Constants.hasInitializedFromVision = false;
-        }
+        // if (DriverStation.isDisabled()) {
+        //     Constants.hasInitializedFromVision = false;
+        // }
 
         Pose2d fusedPose = this.getState().Pose;
         Constants.fusedPoseXPub.set(fusedPose.getX());

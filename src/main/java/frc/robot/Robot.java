@@ -44,10 +44,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        LimelightHelpers.setPipelineIndex("limelight-a", 1);
-        LimelightHelpers.setPipelineIndex("limelight-b", 1);
-        LimelightHelpers.SetThrottle("limelight-a", 200);
-        LimelightHelpers.SetThrottle("limelight-b", 200);
+        Constants.hasInitializedFromVision = false;
+        // LimelightHelpers.setPipelineIndex("limelight-a", 1);
+        // LimelightHelpers.setPipelineIndex("limelight-b", 1);
+        // LimelightHelpers.SetThrottle("limelight-a", 200);
+        // LimelightHelpers.SetThrottle("limelight-b", 200);
     }
 
     @Override

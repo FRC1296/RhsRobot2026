@@ -39,7 +39,7 @@ public class SpindexerStallCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    spindexerSubsystem.runSpindexer();
+    //spindexerSubsystem.runSpindexer();
   }
 
   // Returns true when the command should end.

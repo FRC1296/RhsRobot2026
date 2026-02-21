@@ -66,6 +66,7 @@ public class FMJRobotContainer {
 
   public FMJRobotContainer() {
 
+    drivetrain.getPigeon2().setYaw(0.0);
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
         hubLocation = new Translation2d(4.6, 4.0);
     } else {
@@ -138,23 +139,24 @@ public class FMJRobotContainer {
 
   //Does using get initial pose overwrite what the limelightlight says the pose is on startup
   public Command getAutonomousCommand() {
-    Command auton = new DestoryerHistoryMakingTestAuton(this, MaxSpeed, MaxAngularRate, false);
+    Command auton = new DestoryerHistoryMakingTestAuton(this, .25, .5, false);
 
-    Pose2d initialPose;
-    if (auton instanceof IAuto) {
-      initialPose = ((IAuto) auton).getInitialPose();
-    } else {
-      initialPose = new Pose2d();
-    }
-    drivetrain.initializePoseForAutonomous(initialPose);
+    // Pose2d initialPose;
+    // if (auton instanceof IAuto) {
+    //   initialPose = ((IAuto) auton).getInitialPose();
+    // } else {
+    //   initialPose = new Pose2d();
+    // }
+    // drivetrain.initializePoseForAutonomous(initialPose);
 
-    SmartDashboard.putString("Auton Pose", "x-" + initialPose.getX() + ", y-" + initialPose.getY() + ", rotation-"
-        + initialPose.getRotation().getDegrees());
+    // SmartDashboard.putString("Auton Pose", "x-" + initialPose.getX() + ", y-" + initialPose.getY() + ", rotation-"
+    //     + initialPose.getRotation().getDegrees());
 
     return auton;
   }
 
   public void robotPeriodic() {
+    LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-a");
   }
 
   public void teleopPeriodic() {
@@ -166,7 +168,6 @@ public class FMJRobotContainer {
       LimelightHelpers.SetThrottle("limelight-b", 50);
     }
 
-    LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-a");
     // LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-b");
 
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {

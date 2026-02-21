@@ -11,8 +11,7 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 
 public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
-    public DestoryerHistoryMakingTestAuton(FMJRobotContainer robot, double velocity, double acceleration,
-            boolean isRedAlliance) {
+    public DestoryerHistoryMakingTestAuton(FMJRobotContainer robot, double velocity, double acceleration, boolean isRedAlliance) {
         super(robot, velocity, acceleration, isRedAlliance);
 
         CommandSwerveDrivetrain drivetrain = robot.getDrivetrain();
@@ -48,7 +47,7 @@ public class DestoryerHistoryMakingTestAuton extends AutonomousRoutine {
                             // new InstantCommand(intake::deployIntake),
                             new AutoAimAndShoot(robot),
                             new SequentialCommandGroup(
-                                    new WaitCommand(5.0),
+                                    new WaitCommand(12.0),
                                     new InstantCommand(spindexer::runSpindexer),
                                     new WaitCommand(3.0),
                                     new InstantCommand(spindexer::stopSpindexer),
