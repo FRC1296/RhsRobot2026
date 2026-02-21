@@ -14,7 +14,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class SpindexerSubsystem extends SubsystemBase {
@@ -30,6 +34,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private StatusSignal spindexerStatorCurrentSS;
 
     private BooleanPublisher spindexerStallPublisher;
+    private SpindexerStallCommand stallCommand;
 
     public SpindexerSubsystem() {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -41,6 +46,8 @@ public class SpindexerSubsystem extends SubsystemBase {
         spindexerMotor = new TalonFX(Constants.feederConstants.SPINDEXER_MOTOR_ID);
 
         ConfigureSpindexerMotor();
+
+        stallCommand = new SpindexerStallCommand(this);
 
     }
 
@@ -78,6 +85,10 @@ public class SpindexerSubsystem extends SubsystemBase {
         spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(12.0));
     }
 
+    public void reverseSpindexer() {
+        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(-6.0));
+    }
+
     public void stopSpindexer() {
         spindexerMotor.setControl(dcOut.withOutput(0.0));
     }
@@ -94,6 +105,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             if (spindexerVelocityErrorSS.getValueAsDouble() > 11.0
                     && spindexerStatorCurrentSS.getValueAsDouble() > (statorCurrentLimit-5.0)) {
                 isStall = true;
+                if(stallCommand.isScheduled() == false){
+                CommandScheduler.getInstance().schedule(stallCommand);
+                }
             }
         }
         spindexerStallPublisher.set(isStall);
