@@ -5,22 +5,8 @@ import edu.wpi.first.networktables.*;
 public class Constants {
     public static boolean hasInitializedFromVision = false;
 
-    //TODO: For removal
     static NetworkTableInstance inst = NetworkTableInstance.getDefault();
     static NetworkTable testTable = inst.getTable("LimeLight Testing");
-    //public static final BooleanPublisher visionValidAPub = testTable.getBooleanTopic("A Vision Valid").publish();
-    //public static final DoublePublisher distanceToTagAPub = testTable.getDoubleTopic("A Distance to Tag").publish();
-
-    //public static final DoublePublisher visionPoseXAPub = testTable.getDoubleTopic("A Pose X").publish();
-    //public static final DoublePublisher visionPoseYAPub = testTable.getDoubleTopic("A Pose Y").publish();
-    //public static final DoublePublisher visionPoseRotAPub = testTable.getDoubleTopic("A Pose Rot").publish();
-
-    //public static final BooleanPublisher visionValidBPub = testTable.getBooleanTopic("B Vision Valid").publish();
-    //public static final DoublePublisher distanceToTagBPub = testTable.getDoubleTopic("B Distance to Tag").publish();
-
-    // public static final DoublePublisher visionPoseXBPub = testTable.getDoubleTopic("B Pose X").publish();
-    // public static final DoublePublisher visionPoseYBPub = testTable.getDoubleTopic("B Pose Y").publish();
-    // public static final DoublePublisher visionPoseRotBPub = testTable.getDoubleTopic("B Pose Rot").publish();
 
     public static final DoublePublisher fusedPoseXPub = testTable.getDoubleTopic("Fused Pose X").publish();
     public static final DoublePublisher fusedPoseYPub = testTable.getDoubleTopic("Fused Pose Y").publish();

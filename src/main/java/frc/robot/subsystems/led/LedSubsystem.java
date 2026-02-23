@@ -26,7 +26,7 @@ public class LedSubsystem extends SubsystemBase {
 
         // Set all leds to red for startup
         for (int i = 0; i < buffer.getLength(); i++) {
-            buffer.setLED(i, Color.kOrange);
+            buffer.setLED(i, Color.kDarkOrange);
         }
 
         ledStrip.setData(buffer);
@@ -37,12 +37,10 @@ public class LedSubsystem extends SubsystemBase {
        
         Color red = Color.kRed;
         Color green = Color.kGreen;
-        PoseEstimate LLA = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-a");
-        PoseEstimate LLB = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-b");
+        boolean LLA = LimelightHelpers.getTV("limelight-a");
+        boolean LLB = LimelightHelpers.getTV("limelight-b");
 
-        if(LLA == null || LLB == null){
-            return;
-        } else if (LLA.tagCount > 0 || LLB.tagCount > 0) {
+        if (LLA == true || LLB == true) {
 
             for (int i = 0; i < ledCount; i++) {
                 buffer.setLED(i, green);

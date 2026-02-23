@@ -90,8 +90,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        // m_robotContainer.setInitialPose(1.3, 2.4);
-
+        
         LimelightHelpers.setPipelineIndex("limelight-a", 0);
         LimelightHelpers.setPipelineIndex("limelight-b", 0);
         LimelightHelpers.SetThrottle("limelight-a", 0);

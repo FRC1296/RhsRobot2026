@@ -89,8 +89,7 @@ public class ShooterSubsystem extends SubsystemBase {
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
-        cc_cfg.MagnetSensor.withMagnetOffset(
-                Rotations.of(-hoodAbsEncoder.getAbsolutePosition().waitForUpdate(0.1).getValueAsDouble()));
+        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-hoodAbsEncoder.getAbsolutePosition().waitForUpdate(0.1).getValueAsDouble()));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
     }
 
@@ -115,8 +114,6 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
                 .withMotionMagicJerk(0);
 
-        // might want to try sync or remote. I think fused uses filter to merge rotor
-        // and encoder data not directly set them equal
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(Constants.shooterConstants.HOOD_ENCODER_ID)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
@@ -217,10 +214,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Translation2d targetTranslation = new Translation2d(targetX, targetY);
         Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
         distanceToHub = shooterTranslation.getDistance(targetTranslation);
-        shooterMasterMotor.setControl(
-                velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distanceToHub)));
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0)
-                .withPosition(ShooterInterpolationHelper.calculateHoodPosition(distanceToHub)));
+        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distanceToHub)));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(ShooterInterpolationHelper.calculateHoodPosition(distanceToHub)));
     }
 
     public void shooterAutoInterpolateBool(boolean bool) {
