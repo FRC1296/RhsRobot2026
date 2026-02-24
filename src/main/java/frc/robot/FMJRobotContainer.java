@@ -65,7 +65,7 @@ public class FMJRobotContainer {
 
     private ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
     private TurretSubsystem turret = new TurretSubsystem(drivetrain);
-    // private IntakeSubsystem intake = new IntakeSubsystem();
+    private IntakeSubsystem intake;
     private FeederSubsystem feeder = new FeederSubsystem();
     private ClimberSubsystem climber = new ClimberSubsystem();
     private SpindexerSubsystem spindexer = new SpindexerSubsystem();
@@ -79,38 +79,43 @@ public class FMJRobotContainer {
     private BooleanPublisher haveBallPublisher;
 
     private Translation2d hubLocation;
+    private Translation2d feedLocation;
 
     private DoublePublisher robotVelocityPublisher;
     private DoublePublisher robotAnglePublisher;
     private double robotVelocity;
     private double robotAngle;
 
-    private DoublePublisher turretVelocityPublisher;
+    private DoublePublisher shooterVelocityPublisher;
     private DoublePublisher turretAnglePublisher;
 
     public FMJRobotContainer() {
 
+        //intake = new IntakeSubsystem();
+
         drivetrain.getPigeon2().setYaw(0.0);
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
-            hubLocation = new Translation2d(Constants.blueTargetX, Constants.blueTargetY);
+            hubLocation = Constants.BLUE_HUB;
+            feedLocation = Constants.BLUE_FEED_ONE;
         } else {
-            hubLocation = new Translation2d(Constants.redTargetX, Constants.redTargetY);
+            hubLocation = Constants.RED_HUB;
+            feedLocation = Constants.RED_FEED_ONE;
         }
 
         autoRobotHub = new RobotAimAtHub(this, hubLocation.getX(), hubLocation.getY());
-        autoAimFeed = new TurretAimToFeed(this, 0.0, 0.0);
+        autoAimFeed = new TurretAimToFeed(this, feedLocation.getX(), feedLocation.getY());
         autoAaS = new AutoAimAndShoot(this);
 
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable robotTable = inst.getTable("Robot Data");
-        haveBallPublisher = robotTable.getBooleanTopic("Have ball").publish();
+        NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
+        haveBallPublisher = robotTable.getBooleanTopic(Constants.NT_INTAKE_HAS_BALL).publish();
         haveBallPublisher.set(false);
 
-        robotVelocityPublisher = robotTable.getDoubleTopic("Robot Velocity").publish();
-        robotAnglePublisher = robotTable.getDoubleTopic("Robot Angle").publish(); 
+        robotVelocityPublisher = robotTable.getDoubleTopic(Constants.NT_ROBOT_VELOCITY).publish();
+        robotAnglePublisher = robotTable.getDoubleTopic(Constants.NT_ROBOT_ANGLE).publish(); 
 
-        turretVelocityPublisher = robotTable.getDoubleTopic("Turret Velocity").publish();
-        turretAnglePublisher = robotTable.getDoubleTopic("Turret Angle").publish();
+        shooterVelocityPublisher = robotTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
+        turretAnglePublisher = robotTable.getDoubleTopic(Constants.NT_TURRET_ANGLE).publish();
 
         configureDriverBindings();
         configureOperatorBindings();
@@ -199,7 +204,7 @@ public class FMJRobotContainer {
         robotVelocityPublisher.set(robotVelocity);
         robotAnglePublisher.set(robotAngle);
 
-        turretVelocityPublisher.set(shooter.getShooterVelocity());
+        shooterVelocityPublisher.set(shooter.getShooterVelocity());
         turretAnglePublisher.set(turret.getTurretAngle());
 
     }
@@ -215,18 +220,17 @@ public class FMJRobotContainer {
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             if (drivetrain.getPose().getY() > 4.0) {
-                autoAimFeed = new TurretAimToFeed(this, 2.0, 6.5);
+                autoAimFeed.setFeedLocation(Constants.BLUE_FEED_ONE);
             } else {
-                autoAimFeed = new TurretAimToFeed(this, 2.0, 1.5);
+                autoAimFeed.setFeedLocation(Constants.BLUE_FEED_TWO);
             }
         } else {
             if (drivetrain.getPose().getY() > 4.0) {
-                autoAimFeed = new TurretAimToFeed(this, 14.5, 6.5);
+                autoAimFeed.setFeedLocation(Constants.RED_FEED_ONE);
             } else {
-                autoAimFeed = new TurretAimToFeed(this, 14.5, 1.5);
+                autoAimFeed.setFeedLocation(Constants.RED_FEED_TWO);
             }
         }
-
     }
 
     public void setInitialPose(double x, double y) {
@@ -271,9 +275,9 @@ public class FMJRobotContainer {
         return shooter;
     }
 
-    // public IntakeSubsystem getIntake() {
-    // return intake;
-    // }
+    public IntakeSubsystem getIntake() {
+        return intake;
+    }
 
     public ClimberSubsystem getClimber() {
         return climber;

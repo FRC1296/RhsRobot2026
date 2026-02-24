@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.FMJRobotContainer;
 
 public class SpindexerShoot extends Command {
@@ -14,7 +15,7 @@ public class SpindexerShoot extends Command {
         this.spindexer = robot.getSpindexer();
         addRequirements(spindexer);
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable robotTable = inst.getTable("Robot Data");
+        NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable driveTable = robotTable.getSubTable("Drive Subsystem");
         speedSubscriber = driveTable.getDoubleTopic("Robot Speed").subscribe(0);
     }

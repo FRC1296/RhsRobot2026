@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.Constants;
@@ -35,5 +36,10 @@ public class TurretAimToFeed extends Command {
 
     @Override
     public void end(boolean interrupted) {
+    }
+
+    public void setFeedLocation(Translation2d location) {
+        targetX = location.getX();
+        targetY = location.getY();
     }
 }

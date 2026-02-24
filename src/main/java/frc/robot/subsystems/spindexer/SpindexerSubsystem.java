@@ -36,9 +36,9 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public SpindexerSubsystem() {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable robotTable = inst.getTable("Robot Data");
-        NetworkTable feederTable = robotTable.getSubTable("Feeder Subsystem");
-        spindexerStallPublisher = feederTable.getBooleanTopic("Spindexer Stall").publish();
+        NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
+        NetworkTable spindexerTable = robotTable.getSubTable(Constants.NT_SPINDEXER);
+        spindexerStallPublisher = spindexerTable.getBooleanTopic(Constants.NT_SPINDEXER_STALL).publish();
         spindexerStallPublisher.set(false);
 
         spindexerMotor = new TalonFX(Constants.feederConstants.SPINDEXER_MOTOR_ID);

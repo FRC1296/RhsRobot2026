@@ -65,11 +65,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem(CommandSwerveDrivetrain drive) {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable robotTable = inst.getTable("Robot Data");
-        NetworkTable shooterTable = robotTable.getSubTable("Shooter Subsystem");
-        hoodPositionPublisher = shooterTable.getDoubleTopic("Hood Position").publish();
-        shooterSpeedPublisher = shooterTable.getDoubleTopic("Shooter Speed").publish();
-        distanceToHubPublisher = shooterTable.getDoubleTopic("Distance To Hub").publish();
+        NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
+        NetworkTable shooterTable = robotTable.getSubTable(Constants.NT_SHOOTER);
+        hoodPositionPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_HOOD_POSITION).publish();
+        shooterSpeedPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
+        distanceToHubPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_DISTANCE_TO_HUB).publish();
 
         drivetrain = drive;
 

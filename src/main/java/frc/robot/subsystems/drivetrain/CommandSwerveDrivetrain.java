@@ -139,9 +139,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable robotTable = inst.getTable("Robot Data");
-        NetworkTable driveTable = robotTable.getSubTable("Drive Subsystem");
-        robotSpeedPublisher = driveTable.getDoubleTopic("Robot Speed").publish();
+        NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
+        NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
+        robotSpeedPublisher = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).publish();
     }
 
     /**
@@ -265,12 +265,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         robotSpeedPublisher.set(Math.hypot(
             this.getRobotRelativeSpeeds().vxMetersPerSecond,
             this.getRobotRelativeSpeeds().vyMetersPerSecond));
-
-        Pose2d fusedPose = this.getState().Pose;
-        Constants.fusedPoseXPub.set(fusedPose.getX());
-        Constants.fusedPoseYPub.set(fusedPose.getY());
-        Constants.fusedPoseRotPub.set(fusedPose.getRotation().getDegrees());
-
     }
 
     private void startSimThread() {

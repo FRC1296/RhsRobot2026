@@ -8,6 +8,7 @@ import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpindexerStallCommand extends Command {
@@ -23,7 +24,7 @@ public class SpindexerStallCommand extends Command {
     addRequirements(spindexer);
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    NetworkTable robotTable = inst.getTable("Robot Data");
+    NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
     NetworkTable feederTable = robotTable.getSubTable("Feeder Subsystem");
     stallDetector = feederTable.getBooleanTopic("Spindexer Stall").subscribe(false);
   }
