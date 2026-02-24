@@ -26,8 +26,8 @@ public class AutoAimAndShoot extends ParallelCommandGroup {
 
         addCommands(
                 autoInterpolate,
-                autoTurretHub,
-                spindexerShoot);
+                autoTurretHub);
+                //spindexerShoot);
     }
 
 }

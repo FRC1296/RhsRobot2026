@@ -4,21 +4,19 @@ import com.pathplanner.lib.path.*;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
-import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.SmartMove;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 
 public class TestAuton extends AutonomousRoutine {
     public TestAuton(FMJRobotContainer robot, double velocity, double acceleration, boolean isRedAlliance) {
+
         super(robot, velocity, acceleration, isRedAlliance);
 
         CommandSwerveDrivetrain drivetrain = robot.getDrivetrain();
         // IntakeSubsystem intake = robot.getIntake();
-        ShooterSubsystem shooter = robot.getShooter();
         SpindexerSubsystem spindexer = robot.getSpindexer();
         FeederSubsystem feeder = robot.getFeeder();
 

@@ -118,8 +118,7 @@ public class FMJRobotContainer {
 
     private void configureOperatorBindings() {
         operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
-        operatorJoystick.rightBumper()
-                .toggleOnTrue(Commands.startEnd(spindexer::runSpindexer, spindexer::stopSpindexer, spindexer));
+        operatorJoystick.rightBumper().toggleOnTrue(Commands.startEnd(spindexer::runSpindexer, spindexer::stopSpindexer, spindexer));
         operatorJoystick.leftTrigger().onTrue(autoAaS);
         operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
@@ -138,9 +137,7 @@ public class FMJRobotContainer {
         // operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
 
         operatorJoystick.back().onTrue(autoRobotHub);
-        operatorJoystick.start().onTrue(
-                new InstantCommand(
-                        () -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
     }
 
     private void configureDriverBindings() {
@@ -173,7 +170,6 @@ public class FMJRobotContainer {
         // Rotation2d(-joystick.getLeftY(),-joystick.getLeftX()))));
     }
 
-    // Does using get initial pose overwrite what the limelightlight says the pose
     // is on startup
     public Command getAutonomousCommand() {
         boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
@@ -188,18 +184,6 @@ public class FMJRobotContainer {
         shooter.setDefaultCommand(new AutoShooter(this, hubLocation.getX(), hubLocation.getY()));
         turret.setDefaultCommand(new TurretAimAtHub(this, hubLocation.getX(), hubLocation.getY()));
         return auton;
-
-        // Pose2d initialPose;
-        // if (auton instanceof IAuto) {
-        // initialPose = ((IAuto) auton).getInitialPose();
-        // } else {
-        // initialPose = new Pose2d();
-        // }
-        // drivetrain.initializePoseForAutonomous(initialPose);
-
-        // SmartDashboard.putString("Auton Pose", "x-" + initialPose.getX() + ", y-" +
-        // initialPose.getY() + ", rotation-"
-        // + initialPose.getRotation().getDegrees());
     }
 
     public void autonomousExit() {
@@ -208,7 +192,8 @@ public class FMJRobotContainer {
     }
 
     public void robotPeriodic() {
-        LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-a");
+        LocalizationHelpers.updatePose(drivetrain, "limelight-a");
+        // LocalizationHelpers.updatePose(drivetrain, "limelight-b");
 
         getDriveVector();
         robotVelocityPublisher.set(robotVelocity);
@@ -227,8 +212,6 @@ public class FMJRobotContainer {
             LimelightHelpers.SetThrottle("limelight-a", 50);
             LimelightHelpers.SetThrottle("limelight-b", 50);
         }
-
-        // LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-b");
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             if (drivetrain.getPose().getY() > 4.0) {
