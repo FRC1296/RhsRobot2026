@@ -4,7 +4,11 @@ import edu.wpi.first.networktables.*;
 
 public class Constants {
     public static boolean hasInitializedFromVision = false;
-
+    //location constants
+    public static final double blueTargetX = 4.6;
+    public static final double blueTargetY = 4.0;
+    public static final double redTargetX = 11.6;
+    public static final double redTargetY = 4.0;
     //TODO: For removal
     static NetworkTableInstance inst = NetworkTableInstance.getDefault();
     static NetworkTable testTable = inst.getTable("LimeLight Testing");
@@ -57,6 +61,7 @@ public class Constants {
         public static boolean turretAimAtHub = false;
         public static boolean turretAimToFeed = false;
         public static final int TURRET_MOTOR_ID = 23;
+       
     }
 
     public class shooterConstants {
@@ -67,6 +72,7 @@ public class Constants {
         public static final int BALL_COUNT_ID = 25;
 
         public static boolean shooterInterpolate = false;
+        public static boolean shootWhileMoving = false;
     }
 
     public class intakeConstants {

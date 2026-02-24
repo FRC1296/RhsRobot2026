@@ -176,6 +176,10 @@ public class ShooterSubsystem extends SubsystemBase {
         distanceToHub = shooterTranslation.getDistance(targetTranslation);
     }
 
+    public double getShooterVelocity(){
+        return shooterMasterMotor.getVelocity().getValueAsDouble();
+    }
+
     public void increaseShooterSpeed() {
         shooterSpeed += 2.0;
     }

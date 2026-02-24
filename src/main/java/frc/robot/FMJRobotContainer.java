@@ -3,10 +3,16 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -35,6 +41,8 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.LocalizationHelpers;
+import frc.robot.Constants;
+
 
 public class FMJRobotContainer {
 
@@ -72,13 +80,21 @@ public class FMJRobotContainer {
 
     private Translation2d hubLocation;
 
+    private DoublePublisher robotVelocityPublisher;
+    private DoublePublisher robotAnglePublisher;
+    private double robotVelocity;
+    private double robotAngle;
+
+    private DoublePublisher turretVelocityPublisher;
+    private DoublePublisher turretAnglePublisher;
+
     public FMJRobotContainer() {
 
         drivetrain.getPigeon2().setYaw(0.0);
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
-            hubLocation = new Translation2d(4.6, 4.0);
+            hubLocation = new Translation2d(Constants.blueTargetX, Constants.blueTargetY);
         } else {
-            hubLocation = new Translation2d(11.6, 4.0);
+            hubLocation = new Translation2d(Constants.redTargetX, Constants.redTargetY);
         }
 
         autoRobotHub = new RobotAimAtHub(this, hubLocation.getX(), hubLocation.getY());
@@ -89,6 +105,12 @@ public class FMJRobotContainer {
         NetworkTable robotTable = inst.getTable("Robot Data");
         haveBallPublisher = robotTable.getBooleanTopic("Have ball").publish();
         haveBallPublisher.set(false);
+
+        robotVelocityPublisher = robotTable.getDoubleTopic("Robot Velocity").publish();
+        robotAnglePublisher = robotTable.getDoubleTopic("Robot Angle").publish(); 
+
+        turretVelocityPublisher = robotTable.getDoubleTopic("Turret Velocity").publish();
+        turretAnglePublisher = robotTable.getDoubleTopic("Turret Angle").publish();
 
         configureDriverBindings();
         configureOperatorBindings();
@@ -187,6 +209,14 @@ public class FMJRobotContainer {
 
     public void robotPeriodic() {
         LocalizationHelpers.updateFieldPosition(drivetrain, "limelight-a");
+
+        getDriveVector();
+        robotVelocityPublisher.set(robotVelocity);
+        robotAnglePublisher.set(robotAngle);
+
+        turretVelocityPublisher.set(shooter.getShooterVelocity());
+        turretAnglePublisher.set(turret.getTurretAngle());
+
     }
 
     public void teleopPeriodic() {
@@ -220,17 +250,22 @@ public class FMJRobotContainer {
         drivetrain.resetPose(new Pose2d(x, y, drivetrain.getState().Pose.getRotation()));
     }
 
-    public void getDriveVector() {
+    public Vector<N2> getDriveVector() {
         ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
         double vx = cs.vxMetersPerSecond;
         double vy = cs.vyMetersPerSecond;
-
+    
         // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
         double totalV = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));
+        robotVelocity = totalV;
 
         // Direction (Angle): theta = inverse tan(vy/vx)
         double theta = Math.toDegrees(Math.atan2(vy, vx));
+        robotAngle = theta;
 
+        Translation2d test = new Translation2d(totalV,theta);
+        return test.toVector();
+       
     }
 
     public TurretSubsystem getTurret() {
