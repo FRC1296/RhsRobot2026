@@ -1,13 +1,15 @@
 package frc.robot.autonomous;
 
-import com.pathplanner.lib.path.*;
-import edu.wpi.first.wpilibj2.command.*;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.feeder.FeederSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;

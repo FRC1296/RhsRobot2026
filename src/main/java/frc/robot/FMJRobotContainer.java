@@ -3,13 +3,10 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Num;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
@@ -22,8 +19,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.autonomous.DestoryerHistoryMakingTestAuton;
 import frc.robot.autonomous.IAuto;
+import frc.robot.autonomous.LeftToSource;
 import frc.robot.autonomous.TestAuton;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.AutoShooter;
@@ -41,7 +38,6 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.LocalizationHelpers;
-import frc.robot.Constants;
 
 
 public class FMJRobotContainer {
@@ -91,7 +87,7 @@ public class FMJRobotContainer {
 
     public FMJRobotContainer() {
 
-        //intake = new IntakeSubsystem();
+        intake = new IntakeSubsystem();
 
         drivetrain.getPigeon2().setYaw(0.0);
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
@@ -178,7 +174,7 @@ public class FMJRobotContainer {
     // is on startup
     public Command getAutonomousCommand() {
         boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-        Command auton = new TestAuton(this, MaxSpeed, MaxAngularRate, isRed);
+        Command auton = new LeftToSource(this, MaxSpeed, MaxAngularRate, isRed);
 
         if (LocalizationHelpers.tagInVison("limelight-a")) {
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
@@ -200,7 +196,7 @@ public class FMJRobotContainer {
         LocalizationHelpers.updatePose(drivetrain, "limelight-a");
         // LocalizationHelpers.updatePose(drivetrain, "limelight-b");
 
-        getDriveVector();
+        // getDriveVector();
         robotVelocityPublisher.set(robotVelocity);
         robotAnglePublisher.set(robotAngle);
 
@@ -237,23 +233,23 @@ public class FMJRobotContainer {
         drivetrain.resetPose(new Pose2d(x, y, drivetrain.getState().Pose.getRotation()));
     }
 
-    public Vector<N2> getDriveVector() {
-        ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
-        double vx = cs.vxMetersPerSecond;
-        double vy = cs.vyMetersPerSecond;
+    // public Vector<N2> getDriveVector() {
+    //     ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
+    //     double vx = cs.vxMetersPerSecond;
+    //     double vy = cs.vyMetersPerSecond;
     
-        // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
-        double totalV = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));
-        robotVelocity = totalV;
+    //     // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
+    //     double totalV = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));
+    //     robotVelocity = totalV;
 
-        // Direction (Angle): theta = inverse tan(vy/vx)
-        double theta = Math.toDegrees(Math.atan2(vy, vx));
-        robotAngle = theta;
+    //     // Direction (Angle): theta = inverse tan(vy/vx)
+    //     double theta = Math.toDegrees(Math.atan2(vy, vx));
+    //     robotAngle = theta;
 
-        Translation2d test = new Translation2d(totalV,theta);
-        return test.toVector();
+    //     Translation2d test = new Translation2d(totalV,theta);
+    //     return test.toVector();
        
-    }
+    // }
 
     public TurretSubsystem getTurret() {
         return turret;
