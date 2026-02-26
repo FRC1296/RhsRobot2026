@@ -102,11 +102,6 @@ public class TurretSubsystem extends SubsystemBase {
 
     public void setTurretAngle(double degrees) {
         double aimAngle = MathUtil.inputModulus(getTurretAngle() + degrees, minAngle, maxAngle);
-        // if(aimAngle > 120 || aimAngle < -120){
-        //     return;
-        // } else{
-        //     turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle)));
-        // }
         turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle)));
     }
 
@@ -118,9 +113,8 @@ public class TurretSubsystem extends SubsystemBase {
         return angleToTarget;
     }
 
-    public void turretAimAt(double targetX, double targetY) {
-        Translation2d targetTranslation = new Translation2d(targetX, targetY);
-        double desiredAngle = calculateTurretAngleDelta(targetTranslation);
+    public void turretAimAt(Translation2d virtualTarget) {
+        double desiredAngle = calculateTurretAngleDelta(virtualTarget);
         setTurretAngle(desiredAngle);
     }
 

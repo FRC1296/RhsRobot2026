@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -166,11 +167,6 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
         distanceToHubPublisher.set(distanceToHub);
-
-        Pose2d drivetrainPose = drivetrain.getPose();
-        Translation2d targetTranslation = new Translation2d(4.6, 4);
-        Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
-        distanceToHub = shooterTranslation.getDistance(targetTranslation);
     }
 
     public double getShooterVelocity(){
@@ -214,12 +210,36 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setAutoShooter(double targetX, double targetY) {
+        Translation2d virtualTarget = calculateVirtualTarget(targetX, targetY);
+
         Pose2d drivetrainPose = drivetrain.getPose();
-        Translation2d targetTranslation = new Translation2d(targetX, targetY);
         Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
-        distanceToHub = shooterTranslation.getDistance(targetTranslation);
+
+        distanceToHub = shooterTranslation.getDistance(virtualTarget);
+
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distanceToHub)));
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(ShooterInterpolationHelper.calculateHoodPosition(distanceToHub)));
+    }
+
+    public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
+        Pose2d pose = drivetrain.getPose();
+        Translation2d shooterPos = (pose.plus(shooterOffset)).getTranslation();
+        Translation2d realTarget = new Translation2d(realTargetX, realTargetY);
+
+        double distance = shooterPos.getDistance(realTarget);
+        double ballSpeed = ShooterInterpolationHelper.ballFlightSpeedTable.get(distance);
+        double timeOfFlight = distance / ballSpeed;
+
+        ChassisSpeeds speeds = drivetrain.getFieldRelativeSpeeds();
+
+        double virtualX = realTargetX - (speeds.vxMetersPerSecond * timeOfFlight);
+        double virtualY = realTargetY - (speeds.vyMetersPerSecond * timeOfFlight);
+
+        return new Translation2d(virtualX, virtualY);
+    }
+
+    public Translation2d getVirtualTarget(double targetX, double targetY) {
+        return calculateVirtualTarget(targetX, targetY);
     }
 
     public void shooterAutoInterpolateBool(boolean bool) {

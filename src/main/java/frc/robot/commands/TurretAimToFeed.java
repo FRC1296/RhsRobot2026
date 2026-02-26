@@ -26,7 +26,7 @@ public class TurretAimToFeed extends Command {
 
     @Override
     public void execute() {
-        turret.turretAimAt(targetX, targetY);
+        //turret.turretAimAt(targetX, targetY);
     }
 
     @Override

@@ -11,6 +11,8 @@ public class ShooterInterpolationHelper {
 
     private static InterpolatingDoubleTreeMap shortRangeTable = new InterpolatingDoubleTreeMap();
     private static InterpolatingDoubleTreeMap mediumRangeTable = new InterpolatingDoubleTreeMap();
+    public static InterpolatingDoubleTreeMap ballFlightSpeedTable = new InterpolatingDoubleTreeMap();
+
 
     static {
         shortRangeTable.put(1.5, 48.0); // 1m -> 15 RPS
@@ -24,6 +26,12 @@ public class ShooterInterpolationHelper {
         mediumRangeTable.put(4.5, 82.0);
         mediumRangeTable.put(5.0, 84.0);
         mediumRangeTable.put(5.7, 91.0);
+
+        ballFlightSpeedTable.put(1.5, 5.0); //Distance to hub -> avg Horizontal ball speed
+        ballFlightSpeedTable.put(2.0, 5.5);
+        ballFlightSpeedTable.put(3.0, 6.0);
+        ballFlightSpeedTable.put(4.0, 6.5);
+        ballFlightSpeedTable.put(5.7, 7.5);
     }
 
     public static double calculateShooterSpeed(double distance) {

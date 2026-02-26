@@ -1,13 +1,12 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.*;
 
 public class Constants {
     public static boolean hasInitializedFromVision = false;
     //location constants
     public static final Translation2d BLUE_HUB = new Translation2d(4.6, 4.0);
-    public static final Translation2d RED_HUB = new Translation2d(11.6, 4.0);
+    public static final Translation2d RED_HUB = new Translation2d(11.9, 4.0);
     public static final Translation2d BLUE_FEED_ONE = new Translation2d(2.0, 6.5);
     public static final Translation2d BLUE_FEED_TWO = new Translation2d(2.0, 1.5);
     public static final Translation2d RED_FEED_ONE = new Translation2d(14.5, 6.5);
@@ -38,23 +37,6 @@ public class Constants {
 
     
     public class driveConstants{
-
-        //TODO: redo for new tuner constants
-        public static final int FRONT_RIGHT_DRIVE_ID = 1;
-        public static final int FRONT_RIGHT_ANGLE_ID = 2;
-        public static final int FRONT_RIGHT_CANCODER = 3;
-
-        public static final int FRONT_LEFT_DRIVE_ID = 4;
-        public static final int FRONT_LEFT_ANGLE_ID = 5;
-        public static final int FRONT_LEFT_CANCODER = 6;
-
-        public static final int REAR_RIGHT_DRIVE_ID = 7;
-        public static final int REAR_RIGHT_ANGLE_ID = 8;
-        public static final int REAR_RIGHT_CANCODER = 9;
-
-        public static final int REAR_LEFT_DRIVE_ID = 10;
-        public static final int REAR_LEFT_ANGLE_ID = 11;
-        public static final int REAR_LEFT_CANCODER = 12;
 
         public static boolean driveAimAtHub = false;
 

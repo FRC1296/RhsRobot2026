@@ -23,6 +23,7 @@ import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToSource;
 import frc.robot.autonomous.TestAuton;
 import frc.robot.commands.AutoAimAndShoot;
+import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.AutoShooter;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
@@ -61,13 +62,14 @@ public class FMJRobotContainer {
 
     private ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
     private TurretSubsystem turret = new TurretSubsystem(drivetrain);
-    private IntakeSubsystem intake;
+    private IntakeSubsystem intake = new IntakeSubsystem();
     private FeederSubsystem feeder = new FeederSubsystem();
     private ClimberSubsystem climber = new ClimberSubsystem();
     private SpindexerSubsystem spindexer = new SpindexerSubsystem();
     private LedSubsystem LED = new LedSubsystem();
 
-    private AutoAimAndShoot autoAaS;
+    //private AutoAimAndShoot autoAaS;
+    private AutoAimAndShootMoving autoAaSM;
     private RobotAimAtHub autoRobotHub;
     private TurretAimToFeed autoAimFeed;
     private ShootBalls shootBalls = new ShootBalls(this);
@@ -87,9 +89,8 @@ public class FMJRobotContainer {
 
     public FMJRobotContainer() {
 
-        intake = new IntakeSubsystem();
-
         drivetrain.getPigeon2().setYaw(0.0);
+
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             hubLocation = Constants.BLUE_HUB;
             feedLocation = Constants.BLUE_FEED_ONE;
@@ -100,7 +101,9 @@ public class FMJRobotContainer {
 
         autoRobotHub = new RobotAimAtHub(this, hubLocation.getX(), hubLocation.getY());
         autoAimFeed = new TurretAimToFeed(this, feedLocation.getX(), feedLocation.getY());
-        autoAaS = new AutoAimAndShoot(this);
+        autoAaSM = new AutoAimAndShootMoving(this, hubLocation.getX(), hubLocation.getY());
+        //autoAaS = new AutoAimAndShoot(this);
+
 
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
@@ -119,12 +122,11 @@ public class FMJRobotContainer {
 
     private void configureOperatorBindings() {
         operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
-        operatorJoystick.rightBumper().toggleOnTrue(Commands.startEnd(spindexer::runSpindexer, spindexer::stopSpindexer, spindexer));
-        operatorJoystick.leftTrigger().onTrue(autoAaS);
-        operatorJoystick.leftBumper().onTrue(autoAimFeed);
+        operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
+        operatorJoystick.leftTrigger().onTrue(autoAaSM);
+        //operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
-        operatorJoystick.x().onTrue(new InstantCommand(() -> shooter.shooterAutoInterpolateBool(false)));
-        operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
+        //operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
         operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
         operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
 
@@ -182,8 +184,7 @@ public class FMJRobotContainer {
             drivetrain.resetPose(((IAuto) auton).getInitialPose());
         }
 
-        shooter.setDefaultCommand(new AutoShooter(this, hubLocation.getX(), hubLocation.getY()));
-        turret.setDefaultCommand(new TurretAimAtHub(this, hubLocation.getX(), hubLocation.getY()));
+        shooter.setDefaultCommand(new AutoAimAndShootMoving(this, hubLocation.getX(), hubLocation.getY()));
         return auton;
     }
 
