@@ -11,7 +11,8 @@ public class ShooterInterpolationHelper {
 
     private static InterpolatingDoubleTreeMap shortRangeTable = new InterpolatingDoubleTreeMap();
     private static InterpolatingDoubleTreeMap mediumRangeTable = new InterpolatingDoubleTreeMap();
-    public static InterpolatingDoubleTreeMap ballFlightSpeedTable = new InterpolatingDoubleTreeMap();
+    private static InterpolatingDoubleTreeMap timeOfFlightShortTable = new InterpolatingDoubleTreeMap();
+    private static InterpolatingDoubleTreeMap timeOfFlightMediumTable = new InterpolatingDoubleTreeMap();
 
 
     static {
@@ -27,11 +28,30 @@ public class ShooterInterpolationHelper {
         mediumRangeTable.put(5.0, 84.0);
         mediumRangeTable.put(5.7, 91.0);
 
-        ballFlightSpeedTable.put(1.5, 5.0); //Distance to hub -> avg Horizontal ball speed
-        ballFlightSpeedTable.put(2.0, 5.5);
-        ballFlightSpeedTable.put(3.0, 6.0);
-        ballFlightSpeedTable.put(4.0, 6.5);
-        ballFlightSpeedTable.put(5.7, 7.5);
+        timeOfFlightShortTable.put(1.5, 5.0); //Distance to hub -> Time of Flight sec
+        timeOfFlightShortTable.put(2.0, 5.5);
+        timeOfFlightShortTable.put(2.5, 6.0);
+        timeOfFlightShortTable.put(3.0, 6.5);
+        timeOfFlightShortTable.put(3.5, 7.5);
+
+        timeOfFlightMediumTable.put(3.5, 70.0);
+        timeOfFlightMediumTable.put(4.0, 76.0);
+        timeOfFlightMediumTable.put(4.5, 82.0);
+        timeOfFlightMediumTable.put(5.0, 84.0);
+        timeOfFlightMediumTable.put(5.7, 91.0);
+    }
+
+    public static double calculateToF(double distance) {
+
+        if (distance <= shortRangeMax) {
+            // Short range: use short range table and hood position
+            double ToF = timeOfFlightShortTable.get(distance);
+            return ToF;
+        } else {
+            // Medium range: use medium range table and hood position
+            double ToF = mediumRangeTable.get(distance);
+            return ToF;
+        }
     }
 
     public static double calculateShooterSpeed(double distance) {

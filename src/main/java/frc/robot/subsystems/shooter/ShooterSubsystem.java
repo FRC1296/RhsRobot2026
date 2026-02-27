@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -46,6 +47,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
     private DoublePublisher distanceToHubPublisher;
+    private DoubleSubscriber robotVelocitySubscriber;
 
     private double shooterSpeed = 70.0;
     private double hoodPos = 0.0;
@@ -71,6 +73,9 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodPositionPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_HOOD_POSITION).publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
         distanceToHubPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_DISTANCE_TO_HUB).publish();
+
+        NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
+        robotVelocitySubscriber = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).subscribe(0.0);
 
         drivetrain = drive;
 
@@ -210,7 +215,10 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setAutoShooter(double targetX, double targetY) {
-        Translation2d virtualTarget = calculateVirtualTarget(targetX, targetY);
+        Translation2d virtualTarget = new Translation2d(targetX, targetY);
+        if(robotVelocitySubscriber.getAsDouble() > 0.1){
+            virtualTarget = calculateVirtualTarget(targetX, targetY);
+        }
 
         Pose2d drivetrainPose = drivetrain.getPose();
         Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
@@ -224,21 +232,31 @@ public class ShooterSubsystem extends SubsystemBase {
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
         Pose2d pose = drivetrain.getPose();
         Translation2d shooterPos = (pose.plus(shooterOffset)).getTranslation();
-        Translation2d realTarget = new Translation2d(realTargetX, realTargetY);
-
-        double distance = shooterPos.getDistance(realTarget);
-        double ballSpeed = ShooterInterpolationHelper.ballFlightSpeedTable.get(distance);
-        double timeOfFlight = distance / ballSpeed;
-
         ChassisSpeeds speeds = drivetrain.getFieldRelativeSpeeds();
+        Translation2d virtualTarget = new Translation2d(realTargetX, realTargetY);
+        double distance = shooterPos.getDistance(virtualTarget);
+        double timeOfFlight = ShooterInterpolationHelper.calculateToF(distance);
+        double virtualX = realTargetX;
+        double virtualY = realTargetY;
 
-        double virtualX = realTargetX - (speeds.vxMetersPerSecond * timeOfFlight);
-        double virtualY = realTargetY - (speeds.vyMetersPerSecond * timeOfFlight);
+
+        for (int i = 0; i < 5; i++) {
+            distance = shooterPos.getDistance(virtualTarget);
+            timeOfFlight = ShooterInterpolationHelper.calculateToF(distance);
+
+            virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight);
+            virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight);
+
+            virtualTarget = new Translation2d(virtualX, virtualY);
+        }
 
         return new Translation2d(virtualX, virtualY);
     }
 
     public Translation2d getVirtualTarget(double targetX, double targetY) {
+        if(robotVelocitySubscriber.getAsDouble() > 0.1){
+            return new Translation2d(targetX, targetY);
+        }
         return calculateVirtualTarget(targetX, targetY);
     }
 
