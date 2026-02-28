@@ -60,13 +60,13 @@ public class FMJRobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    private ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
-    private TurretSubsystem turret = new TurretSubsystem(drivetrain);
-    private IntakeSubsystem intake = new IntakeSubsystem();
-    private FeederSubsystem feeder = new FeederSubsystem();
-    private ClimberSubsystem climber = new ClimberSubsystem();
-    private SpindexerSubsystem spindexer = new SpindexerSubsystem();
-    private LedSubsystem LED = new LedSubsystem();
+    private ShooterSubsystem shooter;
+    private TurretSubsystem turret;
+    private IntakeSubsystem intake;
+    private FeederSubsystem feeder;
+    private ClimberSubsystem climber;
+    private SpindexerSubsystem spindexer;
+    private LedSubsystem LED;
 
     //private AutoAimAndShoot autoAaS;
     private AutoAimAndShootMoving autoAaSM;
@@ -90,6 +90,14 @@ public class FMJRobotContainer {
     public FMJRobotContainer() {
 
         drivetrain.getPigeon2().setYaw(0.0);
+
+        shooter = new ShooterSubsystem(drivetrain);
+        turret = new TurretSubsystem(drivetrain);
+        intake = new IntakeSubsystem();
+        feeder = new FeederSubsystem();
+        climber = new ClimberSubsystem();
+        spindexer = new SpindexerSubsystem();
+        LED = new LedSubsystem();
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             hubLocation = Constants.BLUE_HUB;

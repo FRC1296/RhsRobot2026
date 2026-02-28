@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
@@ -31,6 +32,8 @@ public class TurretSubsystem extends SubsystemBase {
     /** Creates a new ShooterSubsystem. */
 
     private TalonFX turretMotor;
+    private DigitalInput hallEffect;
+
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
@@ -63,6 +66,8 @@ public class TurretSubsystem extends SubsystemBase {
         drivetrain = drive;
 
         turretMotor = new TalonFX(Constants.turretConstants.TURRET_MOTOR_ID);
+        hallEffect = new DigitalInput(Constants.turretConstants.HALL_EFFECT_ID);
+        
         configureTurretMotor();
     }
 

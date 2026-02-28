@@ -39,7 +39,7 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void runFeeder() {
-        feederMotor.setControl(dcOut.withOutput(0.8));
+        feederMotor.setControl(dcOut.withOutput(Constants.feederConstants.feederSpeed));
     }
 
     public void stopFeeder() {

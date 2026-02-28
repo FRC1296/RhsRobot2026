@@ -47,8 +47,7 @@ public class Constants {
         public static boolean turretAimAtHub = false;
         public static boolean turretAimToFeed = false;
         public static final int TURRET_MOTOR_ID = 23;
-        public static final int DP_HALL_EFFECT = 0;
-
+        public static final int HALL_EFFECT_ID = 0;
     }
 
     public class shooterConstants {
@@ -70,8 +69,11 @@ public class Constants {
 
     public class feederConstants {
         public static final int SPINDEXER_MOTOR_ID = 15;
-        public static final double SPINDEXER_SPEED = 12.0;
         public static final int FEEDER_MOTOR_ID = 16;
+        
+        public static final double feederSpeed = 0.8;
+        public static final double SPINDEXER_SPEED = 12.0;
+
     }
 
     public class climberConstants {
