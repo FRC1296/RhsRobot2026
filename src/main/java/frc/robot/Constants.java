@@ -34,7 +34,6 @@ public class Constants {
     public static final String NT_SHOOTER_DISTANCE_TO_HUB = "Distance To Hub";
 
     public static final String NT_TURRET_ANGLE = "Turret Angle";
-
     
     public class driveConstants{
 
@@ -48,6 +47,8 @@ public class Constants {
         public static boolean turretAimAtHub = false;
         public static boolean turretAimToFeed = false;
         public static final int TURRET_MOTOR_ID = 23;
+        public static final int DP_HALL_EFFECT = 0;
+
     }
 
     public class shooterConstants {
@@ -69,7 +70,11 @@ public class Constants {
 
     public class feederConstants {
         public static final int SPINDEXER_MOTOR_ID = 15;
+        public static final double SPINDEXER_SPEED = 12.0;
         public static final int FEEDER_MOTOR_ID = 16;
     }
 
+    public class climberConstants {
+        public static final int CLIMBER_MOTOR_ID = 27;
+    }
 }

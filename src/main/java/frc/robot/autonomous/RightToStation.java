@@ -14,8 +14,8 @@ import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 
-public class TestAuton extends AutonomousRoutine {
-    public TestAuton(FMJRobotContainer robot, double velocity, double acceleration, boolean isRedAlliance) {
+public class RightToStation extends AutonomousRoutine {
+    public RightToStation(FMJRobotContainer robot, double velocity, double acceleration, boolean isRedAlliance) {
 
         super(robot, velocity, acceleration, isRedAlliance);
 
@@ -30,9 +30,9 @@ public class TestAuton extends AutonomousRoutine {
 
         boolean pathLoaded = true;
         try {
-            firstPath = PathPlannerPath.fromPathFile("Left To Shoot Pos");
-            secondPath = PathPlannerPath.fromPathFile("Collect Depot Ball");
-            thirdPath = PathPlannerPath.fromPathFile("Depot Ball To Shoot Pos");
+            firstPath = PathPlannerPath.fromPathFile("Right To Shoot Pos");
+            secondPath = PathPlannerPath.fromPathFile("Shoot Pos To Station");
+            thirdPath = PathPlannerPath.fromPathFile("Station To Shoot Pos");
         } catch (Exception e) {
             System.err.println("Unable to load PathPlanner file - " + e.getLocalizedMessage());
             pathLoaded = false;

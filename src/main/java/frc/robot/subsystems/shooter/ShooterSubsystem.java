@@ -150,11 +150,11 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(110);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.75)
-                .withKI(0.002)
+                .withKP(0.6)
+                .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.25)
-                .withKV(0.1125);
+                .withKS(0.2)
+                .withKV(0.114);
 
         TalonFXConfiguration masterMotorConfig = new TalonFXConfiguration()
                 .withCurrentLimits(currentConfigs)
@@ -179,11 +179,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void increaseShooterSpeed() {
-        shooterSpeed += 2.0;
+        shooterSpeed += 5.0;
     }
 
     public void decreaseShooterSpeed() {
-        shooterSpeed -= 2.0;
+        shooterSpeed -= 5.0;
     }
 
     public void runMasterShooter() {

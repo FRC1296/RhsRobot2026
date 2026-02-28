@@ -11,8 +11,8 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 
-public class LeftToSource extends AutonomousRoutine {
-    public LeftToSource(FMJRobotContainer robot, double velocity, double acceleration,
+public class LeftToDepot extends AutonomousRoutine {
+    public LeftToDepot(FMJRobotContainer robot, double velocity, double acceleration,
             boolean isRedAlliance) {
         super(robot, velocity, acceleration, isRedAlliance);
 
@@ -27,9 +27,9 @@ public class LeftToSource extends AutonomousRoutine {
 
         boolean pathLoaded = true;
         try {
-            firstPath = PathPlannerPath.fromPathFile("Left to Source");
-            secondPath = PathPlannerPath.fromPathFile("Collect Source Ball");
-            thirdPath = PathPlannerPath.fromPathFile("Source Ball to Shoot Pos");
+               firstPath = PathPlannerPath.fromPathFile("Left To Shoot Pos");
+            secondPath = PathPlannerPath.fromPathFile("Collect Depot Ball");
+            thirdPath = PathPlannerPath.fromPathFile("Depot Ball To Shoot Pos");
         } catch (Exception e) {
             System.err.println("Unable to load PathPlanner file - " + e.getLocalizedMessage());
             pathLoaded = false;
@@ -52,7 +52,7 @@ public class LeftToSource extends AutonomousRoutine {
                             new InstantCommand(intake::deployIntake),
                             new AutoAimAndShoot(robot),
                             new SequentialCommandGroup(
-                                    new WaitCommand(6.0),
+                                    new WaitCommand(3.0),
                                     new InstantCommand(spindexer::runSpindexer),
                                     new WaitCommand(5.0),
                                     new InstantCommand(spindexer::stopSpindexer),

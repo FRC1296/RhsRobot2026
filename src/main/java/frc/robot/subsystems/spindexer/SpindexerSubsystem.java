@@ -22,8 +22,8 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     private TalonFX spindexerMotor;
 
-    private DutyCycleOut dcOut = new DutyCycleOut(0);
-    private VelocityVoltage velocityOut = new VelocityVoltage(0);
+        private DutyCycleOut dcOut = new DutyCycleOut(0);
+        private VelocityVoltage velocityOut = new VelocityVoltage(0);
 
     private double statorCurrentLimit = 80.0;
     private StatusSignal spindexerVelocitySS;
@@ -60,10 +60,10 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(0.0)
-                .withKP(0.8)
+                .withKP(0.505)
                 .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.6)
+                .withKS(0.3)
                 .withKV(0.095);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration()
@@ -79,7 +79,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void runSpindexer() {
-        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(12.0));
+        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
     }
 
     public void reverseSpindexer() {

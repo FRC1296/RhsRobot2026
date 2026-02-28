@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
-import frc.robot.autonomous.LeftToSource;
+import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.TestAuton;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.AutoAimAndShootMoving;
@@ -155,9 +155,7 @@ public class FMJRobotContainer {
         // InstantCommand(intake::deployIntake));
         // driverJoystick.leftBumper().onTrue(new
         // InstantCommand(intake::undeployIntake));
-        // driverJoystick.rightTrigger().whileTrue(new
-        // InstantCommand(intake::runIntake)).whileFalse(new
-        // InstantCommand(intake::stopIntake));
+        driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
         // driverJoystick.y().onTrue(new InstantCommand(shooter::moveToPositionOne));
         // driverJoystick.a().onTrue(new InstantCommand(shooter::moveToZero));
 
@@ -176,7 +174,7 @@ public class FMJRobotContainer {
     // is on startup
     public Command getAutonomousCommand() {
         boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-        Command auton = new LeftToSource(this, MaxSpeed, MaxAngularRate, isRed);
+        Command auton = new LeftToDepot(this, MaxSpeed, MaxAngularRate, isRed);
 
         if (LocalizationHelpers.tagInVison("limelight-a")) {
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
