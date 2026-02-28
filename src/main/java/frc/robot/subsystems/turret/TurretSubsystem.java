@@ -40,10 +40,11 @@ public class TurretSubsystem extends SubsystemBase {
     private DoublePublisher turretPositionPublisher;
     private double cruiseVelocity = 75;
 
-    private final double kP = 7.0;
+    private final double kP = 0.55;
     private final double kI = 0.0;
     private final double kD = 0.0;
-    private final double kG = 0.0;
+    private final double kS = 0.4;
+    private final double kV = 0.067;
 
     private final double gearRatio = 184.0/10.0;
     private Transform2d turretOffset = new Transform2d(
@@ -77,7 +78,7 @@ public class TurretSubsystem extends SubsystemBase {
         CurrentLimitsConfigs currentConfigs =
                 new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
                         .withStatorCurrentLimit(60);
-        Slot0Configs slotZeroConfigs = new Slot0Configs().withKG(kG).withKP(kP).withKI(kI).withKD(kD);
+        Slot0Configs slotZeroConfigs = new Slot0Configs().withKS(kS).withKP(kP).withKI(kI).withKD(kD).withKV(kV);
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs().withMotionMagicCruiseVelocity(cruiseVelocity)
                 .withMotionMagicAcceleration(cruiseVelocity * 2)
                 .withMotionMagicJerk(0);

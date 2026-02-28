@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
+import frc.robot.autonomous.RightToStation;
 import frc.robot.autonomous.TestAuton;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.AutoAimAndShootMoving;
@@ -72,7 +73,7 @@ public class FMJRobotContainer {
     private AutoAimAndShootMoving autoAaSM;
     private RobotAimAtHub autoRobotHub;
     private TurretAimToFeed autoAimFeed;
-    private ShootBalls shootBalls = new ShootBalls(this);
+    private ShootBalls shootBalls;
 
     private BooleanPublisher haveBallPublisher;
 
@@ -98,6 +99,8 @@ public class FMJRobotContainer {
         climber = new ClimberSubsystem();
         spindexer = new SpindexerSubsystem();
         LED = new LedSubsystem();
+
+        shootBalls = new ShootBalls(this);
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             hubLocation = Constants.BLUE_HUB;
@@ -144,8 +147,8 @@ public class FMJRobotContainer {
         // operatorJoystick.povLeft().whileTrue(new
         // InstantCommand(turret::reverseTurret)).onFalse(new
         // InstantCommand(turret::stopTurret));
-        // operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
-        // operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
+        operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
+        operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
 
         operatorJoystick.back().onTrue(autoRobotHub);
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
@@ -182,7 +185,7 @@ public class FMJRobotContainer {
     // is on startup
     public Command getAutonomousCommand() {
         boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-        Command auton = new LeftToDepot(this, MaxSpeed, MaxAngularRate, isRed);
+        Command auton = new RightToStation(this, MaxSpeed, MaxAngularRate, isRed);
 
         if (LocalizationHelpers.tagInVison("limelight-a")) {
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
@@ -201,7 +204,7 @@ public class FMJRobotContainer {
 
     public void robotPeriodic() {
         LocalizationHelpers.updatePose(drivetrain, "limelight-a");
-        // LocalizationHelpers.updatePose(drivetrain, "limelight-b");
+        LocalizationHelpers.updatePose(drivetrain, "limelight-b");
 
         // getDriveVector();
         robotVelocityPublisher.set(robotVelocity);

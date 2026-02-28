@@ -47,17 +47,19 @@ public class ShooterSubsystem extends SubsystemBase {
     private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
     private DoublePublisher distanceToHubPublisher;
+    private DoublePublisher dTHPub;
     private DoubleSubscriber robotVelocitySubscriber;
+    private DoublePublisher hoodPushed;
 
-    private double shooterSpeed = 70.0;
-    private double hoodPos = 0.0;
+    private double shooterSpeed = 35.0;
+    private double hoodPos = 0.05;
 
     private double hoodCruiseVelocity = 75;
     private final double hoodkP = 0.1;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
-    private final double hoodkS = 0.49;
-    private final double hoodkV = 0.1175;
+    private final double hoodkS = 0.55;
+    private final double hoodkV = 0.135;
 
     private double distanceToHub;
 
@@ -73,6 +75,9 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodPositionPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_HOOD_POSITION).publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
         distanceToHubPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_DISTANCE_TO_HUB).publish();
+        dTHPub = shooterTable.getDoubleTopic("DTH").publish();
+        hoodPushed = shooterTable.getDoubleTopic("HP").publish();
+        hoodPushed.set(0.0);
 
         NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
         robotVelocitySubscriber = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).subscribe(0.0);
@@ -95,8 +100,8 @@ public class ShooterSubsystem extends SubsystemBase {
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
-        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-hoodAbsEncoder.getAbsolutePosition().waitForUpdate(0.1).getValueAsDouble()));
-        hoodAbsEncoder.getConfigurator().apply(cc_cfg);
+        //cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-hoodAbsEncoder.getAbsolutePosition().waitForUpdate(0.1).getValueAsDouble()));
+        //hoodAbsEncoder.getConfigurator().apply(cc_cfg);
     }
 
     private void ConfigureHoodMotor() {
@@ -134,7 +139,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withFeedback(feedbackConfigs);
 
         hoodMotor.getConfigurator().apply(motorConfig);
-        // hoodMotor.setPosition(0.0);
+        hoodMotor.setPosition(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
     }
 
     private void ConfigureShooterMotors() {
@@ -150,11 +155,11 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(110);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.6)
+                .withKP(0.4)
                 .withKI(0.0)
                 .withKD(0.0)
                 .withKS(0.2)
-                .withKV(0.114);
+                .withKV(0.116);
 
         TalonFXConfiguration masterMotorConfig = new TalonFXConfiguration()
                 .withCurrentLimits(currentConfigs)
@@ -172,6 +177,10 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
         distanceToHubPublisher.set(distanceToHub);
+        Pose2d drivetrainPose = drivetrain.getPose();
+        Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
+
+        dTHPub.set(shooterTranslation.getDistance(new Translation2d(4.6,4.0)));
     }
 
     public double getShooterVelocity(){
@@ -179,11 +188,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void increaseShooterSpeed() {
-        shooterSpeed += 5.0;
+        shooterSpeed += 2.0;
     }
 
     public void decreaseShooterSpeed() {
-        shooterSpeed -= 5.0;
+        shooterSpeed -= 2.0;
     }
 
     public void runMasterShooter() {
@@ -225,8 +234,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
         distanceToHub = shooterTranslation.getDistance(virtualTarget);
 
-        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distanceToHub)));
+        //shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(ShooterInterpolationHelper.calculateShooterSpeed(distanceToHub)));
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(ShooterInterpolationHelper.calculateHoodPosition(distanceToHub)));
+        hoodPushed.set(ShooterInterpolationHelper.calculateHoodPosition(distanceToHub));
+
     }
 
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
@@ -235,14 +246,14 @@ public class ShooterSubsystem extends SubsystemBase {
         ChassisSpeeds speeds = drivetrain.getFieldRelativeSpeeds();
         Translation2d virtualTarget = new Translation2d(realTargetX, realTargetY);
         double distance = shooterPos.getDistance(virtualTarget);
-        double timeOfFlight = ShooterInterpolationHelper.calculateToF(distance);
+        double timeOfFlight = 0;//ShooterInterpolationHelper.calculateToF(distance);
         double virtualX = realTargetX;
         double virtualY = realTargetY;
 
 
         for (int i = 0; i < 5; i++) {
             distance = shooterPos.getDistance(virtualTarget);
-            timeOfFlight = ShooterInterpolationHelper.calculateToF(distance);
+            timeOfFlight = 0;//ShooterInterpolationHelper.calculateToF(distance);
 
             virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight);
             virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight);

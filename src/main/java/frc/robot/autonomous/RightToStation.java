@@ -53,16 +53,18 @@ public class RightToStation extends AutonomousRoutine {
                     drivetrain.getAutoPath(firstPath),
                     Commands.runOnce(feeder::runFeeder, feeder),
                     Commands.runOnce(spindexer::runSpindexer, spindexer),
-                    new WaitCommand(4.0),
+                    new WaitCommand(3.0),
                     Commands.runOnce(feeder::stopFeeder, feeder),
                     Commands.runOnce(spindexer::stopSpindexer, spindexer),
-                    new ParallelCommandGroup(drivetrain.getAutoPath(secondPath),
-                            Commands.runOnce(intake::runIntake, intake)),
-                    new WaitCommand(2.0),
-                    drivetrain.getAutoPath(thirdPath)
+                    drivetrain.getAutoPath(secondPath),
+                    new WaitCommand(3.0),
+                    drivetrain.getAutoPath(thirdPath),
+                    Commands.runOnce(feeder::runFeeder, feeder),
+                    Commands.runOnce(spindexer::runSpindexer, spindexer)
+                   
 
-                            );
-                    
+            );
+
         }
 
     }

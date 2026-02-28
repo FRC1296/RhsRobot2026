@@ -67,13 +67,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private DoublePublisher intakePositionPublisher;
 
-    private double intakeDeployPosition = 0.68;
-    private double intakeUndeployPosition = 0.1;
+    private double intakeDeployPosition = 0.30;
+    private double intakeStowPosition = 0.60;
+    private double intakeUndeployPosition = 0.65;
     private double intakeAgitatePosition = 0.39;
 
-    private double deployCruiseVelocity = 10;
+    private double deployCruiseVelocity = 5;
 
-    private final double deploykP = 10.0;
+    private final double deploykP = 0.0;
     private final double deploykI = 0.0;
     private final double deploykD = 0.0;
     private final double deploykG = 0.0;
@@ -96,9 +97,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private void ConfigureAbsoluteEncoder() {
         CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
         cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
-        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(-intakeAbsEncoder.getAbsolutePosition().getValueAsDouble()));
-
+        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
         intakeAbsEncoder.getConfigurator().apply(cc_cfg);
     }
 
@@ -116,7 +116,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private void ConfigureDeployMotor() {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
-                .withNeutralMode(NeutralModeValue.Brake)
+                .withNeutralMode(NeutralModeValue.Coast)
                 .withInverted(InvertedValue.Clockwise_Positive);
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
@@ -127,17 +127,19 @@ public class IntakeSubsystem extends SubsystemBase {
                 .withKG(deploykG)
                 .withKP(deploykP)
                 .withKI(deploykI)
-                .withKD(deploykD);
+                .withKD(deploykD)
+                .withKS(0.6)
+                .withKV(.1);
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(deployCruiseVelocity)
-                .withMotionMagicAcceleration(deployCruiseVelocity * 2).withMotionMagicJerk(0);
+                .withMotionMagicAcceleration(7).withMotionMagicJerk(0);
 
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
                 .withSensorToMechanismRatio(1.0)
-                .withRotorToSensorRatio(30.0);
+                .withRotorToSensorRatio(50.0);
 
         TalonFXConfiguration intakeDeployMotorConfig = new TalonFXConfiguration()
                 .withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig)
@@ -145,7 +147,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 .withFeedback(feedbackConfigs);
 
         intakeDeployMotor.getConfigurator().apply(intakeDeployMotorConfig);
-        intakeDeployMotor.setPosition(0);
+        intakeDeployMotor.setPosition(getIntakePosition());
     }
 
     public void periodic() {
@@ -165,12 +167,12 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public double getIntakePosition() {
-        return intakeDeployMotor.getPosition().getValueAsDouble();
+        return intakeAbsEncoder.getAbsolutePosition().getValueAsDouble();
     }
 
     public void undeployIntake() {
         // TODO : Validate the absolute sensor position
-        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeUndeployPosition));
+        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeStowPosition));
     }
 
     public void deployIntake() {
