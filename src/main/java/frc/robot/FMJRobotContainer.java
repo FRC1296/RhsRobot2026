@@ -87,6 +87,12 @@ public class FMJRobotContainer {
 
     private SendableChooser<Command> autonChooser = new SendableChooser<>();
 
+    /** 
+     * Boolean to tell us if the robot is fully initialized. 
+     * On practice field we need to insure that Alliance is set correctly
+     */
+    private boolean initialized = false;
+
     public FMJRobotContainer() {
 
         drivetrain.getPigeon2().setYaw(0.0);
@@ -109,15 +115,34 @@ public class FMJRobotContainer {
             feedLocation = Constants.RED_FEED_ONE;
         }
 
-        autoRobotHub = new RobotAimAtHub(this, hubLocation.getX(), hubLocation.getY());
-        autoAimFeed = new TurretAimToFeed(this, feedLocation.getX(), feedLocation.getY());
-        autoAaSM = new AutoAimAndShootMoving(this, hubLocation.getX(), hubLocation.getY());
+        autoRobotHub = new RobotAimAtHub(this);
+        autoAimFeed = new TurretAimToFeed(this);
+        autoAaSM = new AutoAimAndShootMoving(this);
         //autoAaS = new AutoAimAndShoot(this);
 
         configureNetworkTable();
         configureDriverBindings();
         configureOperatorBindings();
         configureAutonOptions();
+    }
+
+    private void initialize() {
+        if (initialized == false) {
+            if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+                hubLocation = Constants.BLUE_HUB;
+                feedLocation = Constants.BLUE_FEED_ONE;
+            } else {
+                hubLocation = Constants.RED_HUB;
+                feedLocation = Constants.RED_FEED_ONE;
+            }
+
+            autoRobotHub.setTarget(hubLocation);
+            autoAimFeed.setFeedLocation(hubLocation);
+            autoAaSM.setTarget(hubLocation);
+            //autoAaS.setTarget(hubLocation);
+
+            initialized = true;
+        }
     }
 
     private void configureNetworkTable() {
@@ -193,7 +218,7 @@ public class FMJRobotContainer {
     }
 
     public void autonomousInit() {
-
+        initialize();
     }
 
     public Command getAutonomousCommand() {
@@ -230,6 +255,10 @@ public class FMJRobotContainer {
             Translation2d robotLocation = drivetrain.getPose().plus(shooter.getShooterOffset()).getTranslation();
             robotDistanceToHubPublisher.set(robotLocation.getDistance(hubLocation));
         }
+    }
+
+    public void teleopInit() {
+        initialize();
     }
 
     public void teleopPeriodic() {

@@ -11,6 +11,10 @@ public class TurretAimToFeed extends Command {
     private double targetX;
     private double targetY;
 
+    public TurretAimToFeed(FMJRobotContainer robot) {
+        this(robot, 0.0, 0.0);
+    }
+
     public TurretAimToFeed(FMJRobotContainer robot, double targetX, double targetY) {
         this.turret = robot.getTurret();
         this.targetX = targetX;

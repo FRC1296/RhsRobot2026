@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -14,6 +15,10 @@ public class RobotAimAtHub extends Command {
     private double targetX;
     private double targetY;
     private Timer timer;
+
+    public RobotAimAtHub(FMJRobotContainer robot) {
+        this(robot, 0.0, 0.0);
+    }
 
     public RobotAimAtHub(FMJRobotContainer robot, double targetX, double targetY) {
         this.drivetrain = robot.getDrivetrain();
@@ -50,5 +55,10 @@ public class RobotAimAtHub extends Command {
 
     @Override
     public void end(boolean interrupted) {
+    }
+
+    public void setTarget(Translation2d target) {
+        targetX = target.getX();
+        targetY = target.getY();
     }
 }

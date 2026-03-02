@@ -28,15 +28,15 @@ public class Robot extends TimedRobot {
         // Initialize PathPlanner
         FollowPathCommand.warmupCommand();
 
-        // Start WPILib Data Log
-        // DataLogManager.start(); // stores logs in either USB(diretory logs) or
-        // roborio drive(/home/lvuser/logs)
-        // DriverStation.startDataLog(DataLogManager.getLog());
+        if (DriverStation.isFMSAttached()) {
+            //Start WPILib Data Log
+            DataLogManager.start(); // stores logs in either USB(diretory logs) or roborio drive(/home/lvuser/logs)
+            DriverStation.startDataLog(DataLogManager.getLog());
 
-        // // Start CTRE Data Log - logging will automatically start for FRC match
-        // SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this
-        // location
-        // SignalLogger.start();
+            // Start CTRE Data Log - logging will automatically start for FRC match
+            SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this location
+            SignalLogger.start();
+        }
     }
 
     @Override
@@ -97,12 +97,13 @@ public class Robot extends TimedRobot {
         LimelightHelpers.setPipelineIndex("limelight-b", 0);
         LimelightHelpers.SetThrottle("limelight-a", 0);
         LimelightHelpers.SetThrottle("limelight-b", 0);
+
+        m_robotContainer.teleopInit();
     }
 
     @Override
     public void teleopPeriodic() {
         m_robotContainer.teleopPeriodic();
-
     }
 
     @Override

@@ -13,6 +13,10 @@ public class AutoAimAndShootMoving extends Command {
     private double targetX;
     private double targetY;
 
+    public AutoAimAndShootMoving(FMJRobotContainer robot) {
+        this(robot, 0.0, 0.0);
+    }
+
     public AutoAimAndShootMoving(FMJRobotContainer robot, double targetX, double targetY) {
         this.shooter = robot.getShooter();
         this.turret = robot.getTurret();
@@ -41,5 +45,10 @@ public class AutoAimAndShootMoving extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.stopMasterShooter();
+    }
+
+    public void setTarget(Translation2d target) {
+        targetX = target.getX();
+        targetY = target.getY();
     }
 }
