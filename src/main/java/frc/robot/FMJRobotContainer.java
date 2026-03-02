@@ -2,9 +2,11 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
@@ -21,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.RightToStation;
-import frc.robot.autonomous.TestAuton;
 import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
@@ -243,7 +244,7 @@ public class FMJRobotContainer {
         LocalizationHelpers.updatePose(drivetrain, "limelight-a");
         LocalizationHelpers.updatePose(drivetrain, "limelight-b");
 
-        // getDriveVector();
+        getDriveVector();
         robotVelocityPublisher.set(robotVelocity);
         robotAnglePublisher.set(robotAngle);
 
@@ -289,23 +290,20 @@ public class FMJRobotContainer {
         drivetrain.resetPose(new Pose2d(x, y, drivetrain.getState().Pose.getRotation()));
     }
 
-    // public Vector<N2> getDriveVector() {
-    //     ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
-    //     double vx = cs.vxMetersPerSecond;
-    //     double vy = cs.vyMetersPerSecond;
+    public Vector<N2> getDriveVector() {
+        ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
+        double vx = cs.vxMetersPerSecond;
+        double vy = cs.vyMetersPerSecond;
     
-    //     // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
-    //     double totalV = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));
-    //     robotVelocity = totalV;
+        // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
+        robotVelocity = Math.hypot(vx, vy);
 
-    //     // Direction (Angle): theta = inverse tan(vy/vx)
-    //     double theta = Math.toDegrees(Math.atan2(vy, vx));
-    //     robotAngle = theta;
+        // Direction (Angle): theta = inverse tan(vy/vx)
+        robotAngle = Math.toDegrees(Math.atan2(vy, vx));
 
-    //     Translation2d test = new Translation2d(totalV,theta);
-    //     return test.toVector();
-       
-    // }
+        Translation2d test = new Translation2d(robotVelocity,robotAngle);
+        return test.toVector();
+    }
 
     public TurretSubsystem getTurret() {
         return turret;
