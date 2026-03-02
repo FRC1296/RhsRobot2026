@@ -1,14 +1,16 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ShooterInterpolationHelper {
+public class ShooterInterpolationHelper extends SubsystemBase {
 
-    private InterpolatingDoubleTreeMap shooterSpeedTable = new InterpolatingDoubleTreeMap();
-    private InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
-    private InterpolatingDoubleTreeMap timeOfFlightTable = new InterpolatingDoubleTreeMap();
+    protected InterpolatingDoubleTreeMap shooterSpeedTable = new InterpolatingDoubleTreeMap();
+    protected InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
+    protected InterpolatingDoubleTreeMap timeOfFlightTable = new InterpolatingDoubleTreeMap();
 
-    public ShooterInterpolationHelper() {
+    public ShooterInterpolationHelper(String name) {
+        super(name);
         initializeTables();
     }
 

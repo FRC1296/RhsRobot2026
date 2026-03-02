@@ -83,6 +83,7 @@ public class FMJRobotContainer {
 
     private DoublePublisher shooterVelocityPublisher;
     private DoublePublisher turretAnglePublisher;
+    private DoublePublisher robotDistanceToHubPublisher;
 
     private SendableChooser<Command> autonChooser = new SendableChooser<>();
 
@@ -113,7 +114,13 @@ public class FMJRobotContainer {
         autoAaSM = new AutoAimAndShootMoving(this, hubLocation.getX(), hubLocation.getY());
         //autoAaS = new AutoAimAndShoot(this);
 
+        configureNetworkTable();
+        configureDriverBindings();
+        configureOperatorBindings();
+        configureAutonOptions();
+    }
 
+    private void configureNetworkTable() {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         haveBallPublisher = robotTable.getBooleanTopic(Constants.NT_INTAKE_HAS_BALL).publish();
@@ -125,9 +132,7 @@ public class FMJRobotContainer {
         shooterVelocityPublisher = robotTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
         turretAnglePublisher = robotTable.getDoubleTopic(Constants.NT_TURRET_ANGLE).publish();
 
-        configureDriverBindings();
-        configureOperatorBindings();
-        configureAutonOptions();
+        robotDistanceToHubPublisher = robotTable.getDoubleTopic(Constants.NT_ROBOT_DISTANCE_TO_HUB).publish();
     }
 
     private void configureOperatorBindings() {
@@ -187,7 +192,10 @@ public class FMJRobotContainer {
         SmartDashboard.putData("Auto Choices", autonChooser);
     }
 
-    // is on startup
+    public void autonomousInit() {
+
+    }
+
     public Command getAutonomousCommand() {
         Command auton = autonChooser.getSelected();
 
@@ -217,6 +225,11 @@ public class FMJRobotContainer {
         shooterVelocityPublisher.set(shooter.getShooterVelocity());
         turretAnglePublisher.set(turret.getTurretAngle());
 
+        //Publish the robot distance to the hub
+        if (hubLocation != null) {
+            Translation2d robotLocation = drivetrain.getPose().plus(shooter.getShooterOffset()).getTranslation();
+            robotDistanceToHubPublisher.set(robotLocation.getDistance(hubLocation));
+        }
     }
 
     public void teleopPeriodic() {

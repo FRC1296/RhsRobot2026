@@ -16,7 +16,7 @@ public class Constants {
     public static final String NETWORK_TABLE = "Robot Data";
     public static final String NT_ROBOT_VELOCITY = "Robot Velocity";
     public static final String NT_ROBOT_ANGLE = "Robot Angle";
-    
+    public static final String NT_ROBOT_DISTANCE_TO_HUB = "Robot Distance to Hub";
 
     public static final String NT_DRIVE = "Drive Subsystem";
     public static final String NT_DRIVE_VELOCITY = "Robot Velocity";

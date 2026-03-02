@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.FMJRobotContainer;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -31,7 +32,7 @@ public class RobotAimAtHub extends Command {
         turret.moveTurretToZero();
         double targetAngle = drivetrain.aimRobotAt(targetX, targetY);
         move = SmartMove.move(drivetrain, drivetrain.getPose().getX(), drivetrain.getPose().getY(), targetAngle);
-        move.schedule();
+        CommandScheduler.getInstance().schedule(move);
     }
 
     @Override

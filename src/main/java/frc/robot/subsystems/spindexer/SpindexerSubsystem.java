@@ -22,8 +22,8 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     private TalonFX spindexerMotor;
 
-        private DutyCycleOut dcOut = new DutyCycleOut(0);
-        private VelocityVoltage velocityOut = new VelocityVoltage(0);
+    private DutyCycleOut dcOut = new DutyCycleOut(0);
+    private VelocityVoltage velocityOut = new VelocityVoltage(0);
 
     private double statorCurrentLimit = 80.0;
     private StatusSignal spindexerVelocitySS;
@@ -34,6 +34,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private SpindexerStallCommand stallCommand;
 
     public SpindexerSubsystem() {
+        super("Spindexer");
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable spindexerTable = robotTable.getSubTable(Constants.NT_SPINDEXER);
