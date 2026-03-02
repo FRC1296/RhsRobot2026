@@ -9,8 +9,11 @@ import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -81,6 +84,8 @@ public class FMJRobotContainer {
     private DoublePublisher shooterVelocityPublisher;
     private DoublePublisher turretAnglePublisher;
 
+    private SendableChooser<Command> autonChooser = new SendableChooser<>();
+
     public FMJRobotContainer() {
 
         drivetrain.getPigeon2().setYaw(0.0);
@@ -122,6 +127,7 @@ public class FMJRobotContainer {
 
         configureDriverBindings();
         configureOperatorBindings();
+        configureAutonOptions();
     }
 
     private void configureOperatorBindings() {
@@ -167,10 +173,23 @@ public class FMJRobotContainer {
         // Rotation2d(-joystick.getLeftY(),-joystick.getLeftX()))));
     }
 
+    public void configureAutonOptions() {
+        SendableRegistry.setName(autonChooser, "Autonomous Options");
+        boolean redPath = true;
+        boolean bluePath = false;
+
+        autonChooser.addOption("RightToStation Red", new RightToStation(this, MaxSpeed, MaxAngularRate, redPath));
+        autonChooser.addOption("RightToStation Blue", new RightToStation(this, MaxSpeed, MaxAngularRate, bluePath));
+
+        autonChooser.addOption("LeftToDepot Red", new LeftToDepot(this, MaxSpeed, MaxAngularRate, redPath));
+        autonChooser.addOption("LeftToDepot Blue", new LeftToDepot(this, MaxSpeed, MaxAngularRate, bluePath));
+
+        SmartDashboard.putData("Auto Choices", autonChooser);
+    }
+
     // is on startup
     public Command getAutonomousCommand() {
-        boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-        Command auton = new RightToStation(this, MaxSpeed, MaxAngularRate, isRed);
+        Command auton = autonChooser.getSelected();
 
         if (LocalizationHelpers.tagInVison("limelight-a")) {
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
