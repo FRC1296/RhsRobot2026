@@ -8,10 +8,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -24,6 +20,7 @@ public class ClimberSubsystem extends SubsystemBase {
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
 
     public ClimberSubsystem() {
+        super("Climber");
         climberMotor = new TalonFX(Constants.climberConstants.CLIMBER_MOTOR_ID);
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)

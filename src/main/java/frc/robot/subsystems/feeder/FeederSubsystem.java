@@ -19,7 +19,7 @@ public class FeederSubsystem extends SubsystemBase {
 
 
     public FeederSubsystem() {
-
+        super("Feeder");
         feederMotor = new TalonFX(Constants.feederConstants.FEEDER_MOTOR_ID);
 
         ConfigureFeederMotor();

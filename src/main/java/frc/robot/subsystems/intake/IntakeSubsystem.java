@@ -80,6 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final double deploykG = 0.0;
 
     public IntakeSubsystem() {
+        super("Intake");
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable shooterTable = robotTable.getSubTable(Constants.NT_INTAKE);

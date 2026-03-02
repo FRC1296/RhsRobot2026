@@ -58,7 +58,7 @@ public class TurretSubsystem extends SubsystemBase {
     private CommandSwerveDrivetrain drivetrain;
 
     public TurretSubsystem(CommandSwerveDrivetrain drive) {
-
+        super("Turret");
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable turretTable = robotTable.getSubTable("Turret Subsystem");

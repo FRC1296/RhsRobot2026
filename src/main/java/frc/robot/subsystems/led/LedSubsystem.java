@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
-import frc.robot.LimelightHelpers.PoseEstimate;
 
 public class LedSubsystem extends SubsystemBase {
     /** Creates a new ShooterSubsystem. */
@@ -20,6 +19,7 @@ public class LedSubsystem extends SubsystemBase {
     private final int ledCount = 14;
 
     public LedSubsystem() {
+        super("LED");
         buffer = new AddressableLEDBuffer(ledCount);
         ledStrip = new AddressableLED(0);
         ledStrip.setLength(ledCount);
