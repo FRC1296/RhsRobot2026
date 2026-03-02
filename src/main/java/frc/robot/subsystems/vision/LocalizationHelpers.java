@@ -10,53 +10,6 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
 public class LocalizationHelpers {
 
-    public static void updateFieldPosition(CommandSwerveDrivetrain drivetrain, String LLName) {
-        boolean doRejectUpdate = false;
-        double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
-        double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();// Get current from LL instead
-        double xyStdDev;
-
-        LimelightHelpers.SetRobotOrientation(LLName, currentRotation, angularVelocity, 0, 0, 0, 0);
-        PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LLName);
-
-        double linearVelocity = Math.hypot(
-                drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond,
-                drivetrain.getRobotRelativeSpeeds().vyMetersPerSecond);
-
-        if (MT2 == null) {
-            // updateDynamicCrop(LLName, true);
-            return;
-        }
-
-        if (MT2.avgTagDist > 6.0 || MT2.avgTagArea < 0.08) {
-            // updateDynamicCrop(LLName, true);
-            return;
-        }
-
-        if (Math.abs(angularVelocity) > 720) {
-            doRejectUpdate = true;
-        }
-
-        boolean isInvalid = (MT2.tagCount == 0 || MT2.rawFiducials == null || MT2.rawFiducials.length < 1
-                || doRejectUpdate == true);
-
-        // updateDynamicCrop(LLName, isInvalid);
-
-        if (!Constants.hasInitializedFromVision && !isInvalid) {
-            Pose2d correctPose = new Pose2d(MT2.pose.getX(), MT2.pose.getY(), Rotation2d.fromDegrees(currentRotation));
-            drivetrain.resetPose(correctPose);
-            Constants.hasInitializedFromVision = true;
-        }
-
-        if (!isInvalid) {
-
-            xyStdDev = calculateStdDev(MT2, linearVelocity);
-
-            drivetrain.addVisionMeasurement(MT2.pose, MT2.timestampSeconds,
-                    VecBuilder.fill(xyStdDev, xyStdDev, 9999999));
-        }
-    }
-
     public static void updatePose(CommandSwerveDrivetrain drivetrain, String llName) {
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
         double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();

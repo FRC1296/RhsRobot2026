@@ -4,92 +4,60 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class ShooterInterpolationHelper {
 
-    private static double shortRangeMax = 3.5;
+    private InterpolatingDoubleTreeMap shooterSpeedTable = new InterpolatingDoubleTreeMap();
+    private InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
+    private InterpolatingDoubleTreeMap timeOfFlightTable = new InterpolatingDoubleTreeMap();
 
-    private static double shortRangeHoodPosition = 0.0;
-    private static double mediumRangeHoodPosition = 0.25;
-
-    private static InterpolatingDoubleTreeMap hoodInterpTable = new InterpolatingDoubleTreeMap();
-
-    private static InterpolatingDoubleTreeMap shortRangeTable = new InterpolatingDoubleTreeMap();
-    private static InterpolatingDoubleTreeMap mediumRangeTable = new InterpolatingDoubleTreeMap();
-    //private static InterpolatingDoubleTreeMap timeOfFlightShortTable = new InterpolatingDoubleTreeMap();
-    //private static InterpolatingDoubleTreeMap timeOfFlightMediumTable = new InterpolatingDoubleTreeMap();
-
-
-    static {
-        shortRangeTable.put(1.5, 30.0); // 1m -> 15 RPS
-        shortRangeTable.put(2.0, 35.0); // 1.5m -> 18 RPS
-        shortRangeTable.put(2.5, 67.0); // 2m -> 22 RPS
-        shortRangeTable.put(3.0, 72.0); // 2.5m -> 26 RPS
-        shortRangeTable.put(3.5, 80.0); // 3m -> 30 RPS
-
-        mediumRangeTable.put(3.5, 70.0);
-        mediumRangeTable.put(4.0, 76.0);
-        mediumRangeTable.put(4.5, 82.0);
-        mediumRangeTable.put(5.0, 84.0);
-        mediumRangeTable.put(5.7, 91.0);
-
-        hoodInterpTable.put(0.0, 0.055);
-        hoodInterpTable.put(1.5, 0.055);
-        hoodInterpTable.put(6.0, 0.25);
-        hoodInterpTable.put(100.0, 0.25);
-
-    //     timeOfFlightShortTable.put(1.5, 5.0); //Distance to hub -> Time of Flight sec
-    //     timeOfFlightShortTable.put(2.0, 5.5);
-    //     timeOfFlightShortTable.put(2.5, 6.0);
-    //     timeOfFlightShortTable.put(3.0, 6.5);
-    //     timeOfFlightShortTable.put(3.5, 7.5);
-
-    //     timeOfFlightMediumTable.put(3.5, 70.0);
-    //     timeOfFlightMediumTable.put(4.0, 76.0);
-    //     timeOfFlightMediumTable.put(4.5, 82.0);
-    //     timeOfFlightMediumTable.put(5.0, 84.0);
-    //     timeOfFlightMediumTable.put(5.7, 91.0);
+    public ShooterInterpolationHelper() {
+        initializeTables();
     }
 
-    // public static double calculateToF(double distance) {
+    public void initializeTables() {
+        shooterSpeedTable.put(1.5, 30.0); // 1m -> 15 RPS
+        shooterSpeedTable.put(2.0, 35.0);
+        shooterSpeedTable.put(2.5, 67.0);
+        shooterSpeedTable.put(3.0, 72.0);
+        shooterSpeedTable.put(3.5, 80.0);
 
-    //     if (distance <= shortRangeMax) {
-    //         // Short range: use short range table and hood position
-    //         double ToF = timeOfFlightShortTable.get(distance);
-    //         return ToF;
-    //     } else {
-    //         // Medium range: use medium range table and hood position
-    //         double ToF = mediumRangeTable.get(distance);
-    //         return ToF;
-    //     }
-    // }
+        hoodTable.put(1.5, 0.05); //Distance to hub -> Hood Position
+        hoodTable.put(2.0, 0.10);
+        hoodTable.put(2.5, 0.15);
+        hoodTable.put(3.0, 0.20);
+        hoodTable.put(3.5, 0.25);
 
-    public static double calculateShooterSpeed(double distance) {
-
-        if (distance <= shortRangeMax) {
-            // Short range: use short range table and hood position
-            double velocity = shortRangeTable.get(distance);
-            return velocity;
-        } else {
-            // Medium range: use medium range table and hood position
-            double velocity = mediumRangeTable.get(distance);
-            return velocity;
-        }
+        timeOfFlightTable.put(1.5, 5.0); //Distance to hub -> Time of Flight sec
+        timeOfFlightTable.put(2.0, 5.5);
+        timeOfFlightTable.put(2.5, 6.0);
+        timeOfFlightTable.put(3.0, 6.5);
+        timeOfFlightTable.put(3.5, 7.5);
     }
 
-    public static double calculateHoodPosition(double distance) {
-        double hoodpos = 0.055;
-        
-        if(distance <= 1.5){
-            return hoodpos;
-        } else if(distance > 6.0){
-            return 0.5;
-        } else {
-            return ((0.043333 * distance) - 0.01);
-        }
+    public double calculateToF(double distance) {
+        return timeOfFlightTable.get(distance);
+    }
 
-        //return hoodInterpTable.get(distance);
+    public double calculateShooterSpeed(double distance) {
+        return shooterSpeedTable.get(distance);
         // if (distance <= shortRangeMax) {
-        //     return shortRangeHoodPosition;
+        //     double velocity = shortRangeTable.get(distance);
+        //     return velocity;
         // } else {
-        //     return mediumRangeHoodPosition;
+        //     double velocity = mediumRangeTable.get(distance);
+        //     return velocity;
         // }
+    }
+
+    public double calculateHoodPosition(double distance) {
+        return hoodTable.get(distance);
+        // double hoodpos = 0.055;
+        
+        // if(distance <= 1.5){
+        //     return hoodpos;
+        // } else if(distance > 6.0){
+        //     return 0.5;
+        // } else {
+        //     return ((0.043333 * distance) - 0.01);
+        // }
+
     }
 }

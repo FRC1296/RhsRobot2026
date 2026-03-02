@@ -3,11 +3,8 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
@@ -15,7 +12,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -23,12 +19,9 @@ import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.RightToStation;
 import frc.robot.autonomous.TestAuton;
-import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.AutoAimAndShootMoving;
-import frc.robot.commands.AutoShooter;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
-import frc.robot.commands.TurretAimAtHub;
 import frc.robot.commands.TurretAimToFeed;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
@@ -140,13 +133,7 @@ public class FMJRobotContainer {
         //operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
         operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
         operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
-
-        // operatorJoystick.povRight().whileTrue(new
-        // InstantCommand(turret::runTurret)).onFalse(new
-        // InstantCommand(turret::stopTurret));
-        // operatorJoystick.povLeft().whileTrue(new
-        // InstantCommand(turret::reverseTurret)).onFalse(new
-        // InstantCommand(turret::stopTurret));
+        
         operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
         operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
 
@@ -167,8 +154,6 @@ public class FMJRobotContainer {
         // driverJoystick.leftBumper().onTrue(new
         // InstantCommand(intake::undeployIntake));
         driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
-        // driverJoystick.y().onTrue(new InstantCommand(shooter::moveToPositionOne));
-        // driverJoystick.a().onTrue(new InstantCommand(shooter::moveToZero));
 
         driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
@@ -216,13 +201,13 @@ public class FMJRobotContainer {
     }
 
     public void teleopPeriodic() {
-        if (drivetrain.getState().Pose.getX() < 4.6 || drivetrain.getState().Pose.getX() > 11.9) {
-            LimelightHelpers.SetThrottle("limelight-a", 0);
-            LimelightHelpers.SetThrottle("limelight-b", 0);
-        } else {
-            LimelightHelpers.SetThrottle("limelight-a", 50);
-            LimelightHelpers.SetThrottle("limelight-b", 50);
-        }
+        // if (drivetrain.getState().Pose.getX() < 4.6 || drivetrain.getState().Pose.getX() > 11.9) {
+        //     LimelightHelpers.SetThrottle("limelight-a", 0);
+        //     LimelightHelpers.SetThrottle("limelight-b", 0);
+        // } else {
+        //     LimelightHelpers.SetThrottle("limelight-a", 50);
+        //     LimelightHelpers.SetThrottle("limelight-b", 50);
+        // }
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             if (drivetrain.getPose().getY() > 4.0) {
