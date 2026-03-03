@@ -44,7 +44,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
     private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
-    //private DoublePublisher dTHPub;
     private DoubleSubscriber robotVelocitySubscriber;
     private DoubleSubscriber robotDistanceToHubSubscriber;
 
@@ -84,8 +83,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         NetworkTable shooterTable = robotTable.getSubTable(Constants.NT_SHOOTER);
         hoodPositionPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_HOOD_POSITION).publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
-
-        //dTHPub = shooterTable.getDoubleTopic("DTH").publish();
 
         NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
         robotVelocitySubscriber = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).subscribe(0.0);
@@ -149,7 +146,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(110);
+                .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKP(0.4)
@@ -173,10 +170,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     public void periodic() {
         hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
-
-        // Pose2d drivetrainPose = drivetrain.getPose();
-        // Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
-        // dTHPub.set(shooterTranslation.getDistance(new Translation2d(4.6,4.0)));
     }
 
     public double getShooterVelocity(){
@@ -199,12 +192,17 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         shooterMasterMotor.setControl(dcOut.withOutput(0.0));
     }
 
+    public void moveHoodUp() {
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(.4));
+    }
+
+    public void moveHoodZero() {
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.00));
+    }
+
     public void runHood() {
         hoodPos += 0.05;
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
-    }
-    public void moveHood() {
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(.3));
     }
 
     public void reverseHood() {
@@ -215,16 +213,23 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void setAutoShooter(double targetX, double targetY) {
-        // Translation2d virtualTarget = new Translation2d(targetX, targetY);
-        // if(robotVelocitySubscriber.getAsDouble() > 0.1){
-        //     virtualTarget = calculateVirtualTarget(targetX, targetY);
-        // }
+        Translation2d virtualTarget = new Translation2d(targetX, targetY);
+        if(robotVelocitySubscriber.getAsDouble() > 0.1){
+            virtualTarget = calculateVirtualTarget(targetX, targetY);
+        }
 
-        Double distanceToHub = robotDistanceToHubSubscriber.get();
+        Pose2d drivetrainPose = drivetrain.getPose();
+        Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
+        double distanceToHub = shooterTranslation.getDistance(virtualTarget);
+
+        if (distanceToHub < 3.0) {
+            moveHoodZero();
+        } else {
+            moveHoodUp();
+        }
 
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(calculateShooterSpeed(distanceToHub)));
-        //hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(calculateHoodPosition(distanceToHub)));
-    }
+        }
 
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
         Pose2d pose = drivetrain.getPose();

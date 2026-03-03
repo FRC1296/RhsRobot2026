@@ -168,7 +168,7 @@ public class FMJRobotContainer {
         //operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
         //operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
-        operatorJoystick.b().onTrue(new InstantCommand(shooter::moveHood));
+        operatorJoystick.b().onTrue(new InstantCommand(shooter::moveHoodUp));
         operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
         operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
         

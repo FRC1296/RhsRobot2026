@@ -37,10 +37,9 @@ public class AutoAimAndShootMoving extends Command {
 
     @Override
     public void execute() {
-        //TODO : this does not seem to use the virtual target for the shooter
         Translation2d virtualTarget = shooter.getVirtualTarget(targetX, targetY);
         turret.turretAimAt(virtualTarget);
-        shooter.setAutoShooter(targetX, targetY);
+        shooter.setAutoShooter(virtualTarget.getX(), virtualTarget.getY());
     }
 
     @Override
