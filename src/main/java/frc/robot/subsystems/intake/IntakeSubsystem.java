@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -72,12 +73,19 @@ public class IntakeSubsystem extends SubsystemBase {
     private double intakeUndeployPosition = 0.65;
     private double intakeAgitatePosition = 0.39;
 
-    private double deployCruiseVelocity = 5;
+    private double deployCruiseVelocity = 10;
+    private double deployCruiseAcceleration = 10;
+    private double deployCruiseJerk = 0;
+    
 
-    private final double deploykP = 0.0;
+    private final double deploykP = 2.0;
     private final double deploykI = 0.0;
     private final double deploykD = 0.0;
-    private final double deploykG = 0.0;
+    private final double deploykG = 0.22;
+    private final double deployKA = 0.0;
+    private final double deployKS = 0.0;
+    private final double deployKV = 1.0;
+
 
     public IntakeSubsystem() {
         super("Intake");
@@ -117,7 +125,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private void ConfigureDeployMotor() {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
-                .withNeutralMode(NeutralModeValue.Coast)
+                .withNeutralMode(NeutralModeValue.Brake)
                 .withInverted(InvertedValue.Clockwise_Positive);
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
@@ -129,12 +137,14 @@ public class IntakeSubsystem extends SubsystemBase {
                 .withKP(deploykP)
                 .withKI(deploykI)
                 .withKD(deploykD)
-                .withKS(0.6)
-                .withKV(.1);
+                .withKA(deployKA)
+                .withKS(deployKS)
+                .withKV(deployKV)
+                .withGravityType(GravityTypeValue.Arm_Cosine);
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(deployCruiseVelocity)
-                .withMotionMagicAcceleration(7).withMotionMagicJerk(0);
+                .withMotionMagicAcceleration(deployCruiseAcceleration).withMotionMagicJerk(deployCruiseJerk);
 
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
@@ -144,11 +154,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
         TalonFXConfiguration intakeDeployMotorConfig = new TalonFXConfiguration()
                 .withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig)
-                .withSlot0(slotZeroConfigs).withMotionMagic(mmConfigs)
-                .withFeedback(feedbackConfigs);
+                .withSlot0(slotZeroConfigs).withMotionMagic(mmConfigs);
+                //.withFeedback(feedbackConfigs);
 
         intakeDeployMotor.getConfigurator().apply(intakeDeployMotorConfig);
-        intakeDeployMotor.setPosition(getIntakePosition());
+        intakeDeployMotor.setPosition(0.0);
     }
 
     public void periodic() {

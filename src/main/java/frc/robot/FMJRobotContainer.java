@@ -168,6 +168,7 @@ public class FMJRobotContainer {
         //operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
         //operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
+        operatorJoystick.b().onTrue(new InstantCommand(shooter::moveHood));
         operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
         operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
         
@@ -225,7 +226,7 @@ public class FMJRobotContainer {
     public Command getAutonomousCommand() {
         Command auton = autonChooser.getSelected();
 
-        if (LocalizationHelpers.tagInVison("limelight-a")) {
+        if (LocalizationHelpers.tagInVison("limelight-a") || LocalizationHelpers.tagInVison("limelight-b")) {
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
         } else {
             drivetrain.resetPose(((IAuto) auton).getInitialPose());
@@ -244,7 +245,7 @@ public class FMJRobotContainer {
         LocalizationHelpers.updatePose(drivetrain, "limelight-a");
         LocalizationHelpers.updatePose(drivetrain, "limelight-b");
 
-        getDriveVector();
+        //getDriveVector();
         robotVelocityPublisher.set(robotVelocity);
         robotAnglePublisher.set(robotAngle);
 
@@ -290,20 +291,21 @@ public class FMJRobotContainer {
         drivetrain.resetPose(new Pose2d(x, y, drivetrain.getState().Pose.getRotation()));
     }
 
-    public Vector<N2> getDriveVector() {
-        ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
-        double vx = cs.vxMetersPerSecond;
-        double vy = cs.vyMetersPerSecond;
+    // public Vector<N2> getDriveVector() {
+
+    //     ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
+    //     double vx = cs.vxMetersPerSecond;
+    //     double vy = cs.vyMetersPerSecond;
     
-        // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
-        robotVelocity = Math.hypot(vx, vy);
+    //     // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
+    //     robotVelocity = Math.hypot(vx, vy);
 
-        // Direction (Angle): theta = inverse tan(vy/vx)
-        robotAngle = Math.toDegrees(Math.atan2(vy, vx));
+    //     // Direction (Angle): theta = inverse tan(vy/vx)
+    //     robotAngle = Math.toDegrees(Math.atan2(vy, vx));
 
-        Translation2d test = new Translation2d(robotVelocity,robotAngle);
-        return test.toVector();
-    }
+    //     Translation2d test = new Translation2d(robotVelocity,robotAngle);
+    //     return test.toVector();
+    // }
 
     public TurretSubsystem getTurret() {
         return turret;

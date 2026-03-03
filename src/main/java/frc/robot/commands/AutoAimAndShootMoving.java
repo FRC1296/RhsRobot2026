@@ -4,12 +4,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.FMJRobotContainer;
+import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
 public class AutoAimAndShootMoving extends Command {
     private ShooterSubsystem shooter;
     private TurretSubsystem turret;
+    private FeederSubsystem feeder;
     private double targetX;
     private double targetY;
 
@@ -20,6 +22,8 @@ public class AutoAimAndShootMoving extends Command {
     public AutoAimAndShootMoving(FMJRobotContainer robot, double targetX, double targetY) {
         this.shooter = robot.getShooter();
         this.turret = robot.getTurret();
+        this.feeder = robot.getFeeder();
+        
         this.targetX = targetX;
         this.targetY = targetY;
         addRequirements(shooter, turret);
@@ -28,6 +32,7 @@ public class AutoAimAndShootMoving extends Command {
     public void initialize() {
         turret.turretAimToFeedBool(false);
         turret.turretAimAtHubBool(true);
+        feeder.runFeeder();
     }
 
     @Override
@@ -46,6 +51,7 @@ public class AutoAimAndShootMoving extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.stopMasterShooter();
+        feeder.stopFeeder();
     }
 
     public void setTarget(Translation2d target) {

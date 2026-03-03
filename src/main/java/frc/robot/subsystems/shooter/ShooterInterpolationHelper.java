@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterInterpolationHelper extends SubsystemBase {
 
-    protected InterpolatingDoubleTreeMap shooterSpeedTable = new InterpolatingDoubleTreeMap();
-    protected InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
+    protected InterpolatingDoubleTreeMap shooterSpeedShortTable = new InterpolatingDoubleTreeMap();
+    protected InterpolatingDoubleTreeMap shooterSpeedLongTable = new InterpolatingDoubleTreeMap();
+
+    //protected InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
     protected InterpolatingDoubleTreeMap timeOfFlightTable = new InterpolatingDoubleTreeMap();
 
     public ShooterInterpolationHelper(String name) {
@@ -15,17 +17,15 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     }
 
     public void initializeTables() {
-        shooterSpeedTable.put(1.5, 30.0); // 1m -> 15 RPS
-        shooterSpeedTable.put(2.0, 35.0);
-        shooterSpeedTable.put(2.5, 67.0);
-        shooterSpeedTable.put(3.0, 72.0);
-        shooterSpeedTable.put(3.5, 80.0);
+        shooterSpeedShortTable.put(1.5, 31.0);
+        shooterSpeedShortTable.put(1.75, 32.0); 
+        shooterSpeedShortTable.put(2.0, 33.0);
+        shooterSpeedShortTable.put(2.5, 35.0); 
 
-        hoodTable.put(1.5, 0.05); //Distance to hub -> Hood Position
-        hoodTable.put(2.0, 0.10);
-        hoodTable.put(2.5, 0.15);
-        hoodTable.put(3.0, 0.20);
-        hoodTable.put(3.5, 0.25);
+        shooterSpeedLongTable.put(3.0, 37.0);
+        shooterSpeedLongTable.put(3.5, 41.0);
+        shooterSpeedLongTable.put(4.0, 45.0);
+        shooterSpeedLongTable.put(4.5, 30.0);
 
         timeOfFlightTable.put(1.5, 5.0); //Distance to hub -> Time of Flight sec
         timeOfFlightTable.put(2.0, 5.5);
@@ -39,27 +39,23 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     }
 
     public double calculateShooterSpeed(double distance) {
-        return shooterSpeedTable.get(distance);
-        // if (distance <= shortRangeMax) {
-        //     double velocity = shortRangeTable.get(distance);
-        //     return velocity;
-        // } else {
-        //     double velocity = mediumRangeTable.get(distance);
-        //     return velocity;
-        // }
+        double speed = 40.0;
+        if (distance <= 3.0) {
+            speed = shooterSpeedShortTable.get(distance);
+        } else {
+            speed = shooterSpeedLongTable.get(distance);
+        }
+        return speed;       
     }
 
     public double calculateHoodPosition(double distance) {
-        return hoodTable.get(distance);
-        // double hoodpos = 0.055;
-        
-        // if(distance <= 1.5){
-        //     return hoodpos;
-        // } else if(distance > 6.0){
-        //     return 0.5;
-        // } else {
-        //     return ((0.043333 * distance) - 0.01);
-        // }
+        double hood = 0.09;
+        if (distance <= 3) {
+            hood = 0.09;
+        } else {
+            hood = 0.3;
+        }
+        return hood;
 
     }
 }

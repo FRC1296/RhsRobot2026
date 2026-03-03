@@ -132,11 +132,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
                 .withMotorOutput(outputConfigs)
                 .withCurrentLimits(currentConfigs)
                 .withSlot0(slotZeroConfigs)
-                .withMotionMagic(mmConfigs)
-                .withFeedback(feedbackConfigs);
+                .withMotionMagic(mmConfigs);
+                //.withFeedback(feedbackConfigs);
 
         hoodMotor.getConfigurator().apply(motorConfig);
-        hoodMotor.setPosition(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
+        hoodMotor.setPosition(0);
     }
 
     private void ConfigureShooterMotors() {
@@ -184,11 +184,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void increaseShooterSpeed() {
-        shooterSpeed += 2.0;
+        shooterSpeed += 1.0;
     }
 
     public void decreaseShooterSpeed() {
-        shooterSpeed -= 2.0;
+        shooterSpeed -= 1.0;
     }
 
     public void runMasterShooter() {
@@ -203,6 +203,9 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         hoodPos += 0.05;
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
     }
+    public void moveHood() {
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(.3));
+    }
 
     public void reverseHood() {
         if ((hoodPos - 0.05) > 0) {
@@ -212,15 +215,15 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void setAutoShooter(double targetX, double targetY) {
-        Translation2d virtualTarget = new Translation2d(targetX, targetY);
-        if(robotVelocitySubscriber.getAsDouble() > 0.1){
-            virtualTarget = calculateVirtualTarget(targetX, targetY);
-        }
+        // Translation2d virtualTarget = new Translation2d(targetX, targetY);
+        // if(robotVelocitySubscriber.getAsDouble() > 0.1){
+        //     virtualTarget = calculateVirtualTarget(targetX, targetY);
+        // }
 
         Double distanceToHub = robotDistanceToHubSubscriber.get();
 
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(calculateShooterSpeed(distanceToHub)));
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(calculateHoodPosition(distanceToHub)));
+        //hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(calculateHoodPosition(distanceToHub)));
     }
 
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
