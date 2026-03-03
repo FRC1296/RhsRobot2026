@@ -1,18 +1,23 @@
 package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Rotations;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.ForwardLimitSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -20,6 +25,8 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -86,6 +93,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private final double deployKS = 0.0;
     private final double deployKV = 1.0;
 
+    private StatusSignal<Boolean> deployMMAtSetpoint;
+    private StatusSignal<Voltage> deployVoltage;
+    private StatusSignal<Boolean> deployMMEnabled;
 
     public IntakeSubsystem() {
         super("Intake");
@@ -146,11 +156,11 @@ public class IntakeSubsystem extends SubsystemBase {
                 .withMotionMagicCruiseVelocity(deployCruiseVelocity)
                 .withMotionMagicAcceleration(deployCruiseAcceleration).withMotionMagicJerk(deployCruiseJerk);
 
-        FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
-                .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
-                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
-                .withSensorToMechanismRatio(1.0)
-                .withRotorToSensorRatio(50.0);
+        // FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
+        //         .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
+        //         .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+        //         .withSensorToMechanismRatio(1.0)
+        //         .withRotorToSensorRatio(50.0);
 
         TalonFXConfiguration intakeDeployMotorConfig = new TalonFXConfiguration()
                 .withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig)
@@ -159,10 +169,22 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeDeployMotor.getConfigurator().apply(intakeDeployMotorConfig);
         intakeDeployMotor.setPosition(0.0);
+
+        deployMMAtSetpoint = intakeDeployMotor.getMotionMagicAtTarget();
+        deployMMEnabled = intakeDeployMotor.getMotionMagicIsRunning();
+        deployVoltage = intakeDeployMotor.getMotorVoltage();
     }
 
     public void periodic() {
+        BaseStatusSignal.refreshAll(deployMMAtSetpoint, deployMMEnabled, deployVoltage);
+        if (deployMMEnabled.getValue() && deployMMAtSetpoint.getValue()) {
+            resetMotorEncoder();
+        }
         intakePositionPublisher.set(getIntakePosition());
+    }
+
+    protected void resetMotorEncoder() {
+        //TODO : implement 
     }
 
     public void runIntake() {

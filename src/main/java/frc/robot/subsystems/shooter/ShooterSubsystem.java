@@ -1,6 +1,8 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Rotations;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -28,6 +30,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
@@ -59,6 +62,10 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
     private Transform2d shooterOffset = new Transform2d(new Translation2d(0.0, 0.0381),new Rotation2d());
     private CommandSwerveDrivetrain drivetrain;
+
+    private StatusSignal<Boolean> hoodMMAtSetpoint;
+    private StatusSignal<Voltage> hoodVoltage;
+    private StatusSignal<Boolean> hoodMMEnabled;
 
     public ShooterSubsystem(CommandSwerveDrivetrain drive) {
         super("Shooter");
@@ -93,7 +100,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private void ConfigureAbsoluteEncoder() {
         CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
         cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
-        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
     }
@@ -105,7 +112,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(120);
+                .withStatorCurrentLimit(60);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKS(hoodkS)
@@ -119,11 +126,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
                 .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
                 .withMotionMagicJerk(0);
 
-        FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
-                .withFeedbackRemoteSensorID(Constants.shooterConstants.HOOD_ENCODER_ID)
-                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
-                .withSensorToMechanismRatio(1.0)
-                .withRotorToSensorRatio(1.0);
+        // FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
+        //         .withFeedbackRemoteSensorID(Constants.shooterConstants.HOOD_ENCODER_ID)
+        //         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+        //         .withSensorToMechanismRatio(1.0)
+        //         .withRotorToSensorRatio(1.0);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration()
                 .withMotorOutput(outputConfigs)
@@ -134,6 +141,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         hoodMotor.getConfigurator().apply(motorConfig);
         hoodMotor.setPosition(0);
+        hoodMotor.clearStickyFaults();
+
+        hoodMMAtSetpoint = hoodMotor.getMotionMagicAtTarget();
+        hoodMMEnabled = hoodMotor.getMotionMagicIsRunning();
+        hoodVoltage = hoodMotor.getMotorVoltage();
     }
 
     private void ConfigureShooterMotors() {
@@ -168,8 +180,17 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
     @Override
     public void periodic() {
+        BaseStatusSignal.refreshAll(hoodMMAtSetpoint, hoodMMEnabled, hoodVoltage);
+        if (hoodMMEnabled.getValue() && hoodMMAtSetpoint.getValue()) {
+            resetMotorEncoder();
+        }
+
         hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
+    }
+
+    protected void resetMotorEncoder() {
+        //TODO : implement 
     }
 
     public double getShooterVelocity(){
