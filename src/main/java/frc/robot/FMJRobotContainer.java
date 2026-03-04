@@ -243,12 +243,12 @@ public class FMJRobotContainer {
     public Command getAutonomousCommand() {
         Command auton = autonChooser.getSelected();
 
-        drivetrain.resetPose(((IAuto) auton).getInitialPose());
-        // if (LocalizationHelpers.tagInVison("limelight-a") || LocalizationHelpers.tagInVison("limelight-b")) {
-        //     LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
-        // } else {
-        //     drivetrain.resetPose(((IAuto) auton).getInitialPose());
-        // }
+        //drivetrain.resetPose(((IAuto) auton).getInitialPose());
+        if (LocalizationHelpers.tagInVison("limelight-a") || LocalizationHelpers.tagInVison("limelight-b")) {
+            LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
+        } else {
+            drivetrain.resetPose(((IAuto) auton).getInitialPose());
+        }
 
         shooter.setDefaultCommand(new AutoAimAndShootMoving(this, hubLocation.getX(), hubLocation.getY()));
         return auton;
@@ -278,8 +278,8 @@ public class FMJRobotContainer {
 
     public void teleopInit() {
         initialize();
-        Command auton = new LeftToDepot(this, MaxSpeed, MaxAngularRate, true);
-        drivetrain.resetPose(((IAuto) auton).getInitialPose());
+        // Command auton = new LeftToDepot(this, MaxSpeed, MaxAngularRate, true);
+        // drivetrain.resetPose(((IAuto) auton).getInitialPose());
 
     }
 

@@ -84,7 +84,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void reverseSpindexer() {
-        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(-6.0));
+        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(-20.0));
     }
 
     public void stopSpindexer() {
