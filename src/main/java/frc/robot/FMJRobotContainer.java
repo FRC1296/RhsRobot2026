@@ -12,6 +12,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -68,6 +69,8 @@ public class FMJRobotContainer {
     private ClimberSubsystem climber;
     private SpindexerSubsystem spindexer;
     private LedSubsystem LED;
+
+    DigitalInput turretSensor = new DigitalInput(0);
 
     //private AutoAimAndShoot autoAaS;
     private AutoAimAndShootMoving autoAaSM;
@@ -357,5 +360,9 @@ public class FMJRobotContainer {
 
     public Translation2d getHubLocation() {
         return hubLocation;
+    }
+
+    public DigitalInput getTurretSensor() {
+        return turretSensor;
     }
 }

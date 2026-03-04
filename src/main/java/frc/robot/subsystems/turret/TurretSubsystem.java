@@ -165,4 +165,8 @@ public class TurretSubsystem extends SubsystemBase {
         turretMotor.setControl(dcOut.withOutput(0.0));
     }
 
+    public void resetTurretZero() {
+        //TODO : set a real position for the hall effect sensor re-zero
+        turretMotor.setPosition(0.0);
+    }
 }
