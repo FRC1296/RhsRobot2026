@@ -80,6 +80,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private double intakeUndeployPosition = 0.65;
     private double intakeAgitatePosition = 0.39;
 
+    private double intakeDeploySpeed = 0.10;
+
     private double deployCruiseVelocity = 10;
     private double deployCruiseAcceleration = 10;
     private double deployCruiseJerk = 0;
@@ -135,7 +137,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private void ConfigureDeployMotor() {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
-                .withNeutralMode(NeutralModeValue.Coast)
+                .withNeutralMode(NeutralModeValue.Brake)
                 .withInverted(InvertedValue.Clockwise_Positive);
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
@@ -204,13 +206,33 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void undeployIntake() {
-        // TODO : Validate the absolute sensor position
-        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeStowPosition));
+        intakeDeployMotor.setControl(dcOut.withOutput(-intakeDeploySpeed));
+    }
+
+    public void stopDeployIntake() {
+        intakeDeployMotor.setControl(dcOut.withOutput(0));
     }
 
     public void deployIntake() {
-        // TODO : Validate the absolute sensor position
-        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
+        intakeDeployMotor.setControl(dcOut.withOutput(intakeDeploySpeed));
+    }
+
+    public void setDeployCoast() {
+        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig);
+
+        intakeDeployMotor.getConfigurator().apply(intakeMotorConfig);
+
+    }
+
+    public void setDeployBrake() {
+        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig);
+
+        intakeDeployMotor.getConfigurator().apply(intakeMotorConfig);
+
     }
 
     public void moveIntakeToAgitate() {
