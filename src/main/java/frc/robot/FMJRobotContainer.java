@@ -33,6 +33,7 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.intake.AgitateBalls;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -164,7 +165,7 @@ public class FMJRobotContainer {
     }
 
     private void configureOperatorBindings() {
-        operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
+        // operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
         operatorJoystick.leftBumper().whileTrue(new ParallelCommandGroup(
@@ -175,13 +176,16 @@ public class FMJRobotContainer {
         operatorJoystick.leftTrigger().onTrue(autoAaSM);
         //operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
+        operatorJoystick.a().onTrue(new InstantCommand(shooter::fullCourtShoot));
+
         //operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
-        operatorJoystick.b().onTrue(new InstantCommand(shooter::moveHoodUp));
-        operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
-        operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
+        // operatorJoystick.b().onTrue(new InstantCommand(shooter::moveHoodUp));
+         operatorJoystick.y().onTrue(new AgitateBalls(intake));
+        // operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
         
-        operatorJoystick.povUp().onTrue(new InstantCommand(shooter::runHood));
-        operatorJoystick.povDown().onTrue(new InstantCommand(shooter::reverseHood));
+       
+        operatorJoystick.povLeft().whileTrue(new InstantCommand(intake::undeployIntake)).whileFalse(new InstantCommand(intake::stopDeployIntake));
+        operatorJoystick.povRight().whileTrue(new InstantCommand(intake::deployIntake)).whileFalse(new InstantCommand(intake::stopDeployIntake));
 
         operatorJoystick.back().onTrue(autoRobotHub);
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
@@ -200,6 +204,11 @@ public class FMJRobotContainer {
         // driverJoystick.leftBumper().onTrue(new
         // InstantCommand(intake::undeployIntake));
         driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
+
+        driverJoystick.povLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
+        driverJoystick.povRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
+        driverJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
+        driverJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
 
         driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));

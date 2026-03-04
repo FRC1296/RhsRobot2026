@@ -30,9 +30,9 @@ public class RightToStation extends AutonomousRoutine {
 
         boolean pathLoaded = true;
         try {
-            firstPath = PathPlannerPath.fromPathFile("Right To Shoot Pos");
-            secondPath = PathPlannerPath.fromPathFile("Shoot Pos To Station");
-            thirdPath = PathPlannerPath.fromPathFile("Station To Shoot Pos");
+            firstPath = PathPlannerPath.fromPathFile("Right To Station");
+            secondPath = PathPlannerPath.fromPathFile("Station To Shoot Pos");
+           
         } catch (Exception e) {
             System.err.println("Unable to load PathPlanner file - " + e.getLocalizedMessage());
             pathLoaded = false;
@@ -42,7 +42,7 @@ public class RightToStation extends AutonomousRoutine {
             if (isRedAlliance) {
                 firstPath = firstPath.flipPath();
                 secondPath = secondPath.flipPath();
-                thirdPath = thirdPath.flipPath();
+               
             }
 
             this.initialPose = firstPath.getStartingHolonomicPose().get();
@@ -51,14 +51,8 @@ public class RightToStation extends AutonomousRoutine {
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
                     drivetrain.getAutoPath(firstPath),
-                    Commands.runOnce(feeder::runFeeder, feeder),
-                    Commands.runOnce(spindexer::runSpindexer, spindexer),
-                    new WaitCommand(3.0),
-                    Commands.runOnce(feeder::stopFeeder, feeder),
-                    Commands.runOnce(spindexer::stopSpindexer, spindexer),
+                      new WaitCommand(4.0),
                     drivetrain.getAutoPath(secondPath),
-                    new WaitCommand(3.0),
-                    drivetrain.getAutoPath(thirdPath),
                     Commands.runOnce(feeder::runFeeder, feeder),
                     Commands.runOnce(spindexer::runSpindexer, spindexer)
                    

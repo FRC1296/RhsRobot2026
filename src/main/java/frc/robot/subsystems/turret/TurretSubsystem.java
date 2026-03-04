@@ -46,14 +46,14 @@ public class TurretSubsystem extends SubsystemBase {
     private final double kS = 0.4;
     private final double kV = 0.067;
 
-    private final double gearRatio = 184.0/10.0;
+    private final double gearRatio = 184.0 / 10.0;
     private Transform2d turretOffset = new Transform2d(
-        new Translation2d(0.0,0.0381),
-        new Rotation2d()
-    );
+            new Translation2d(0.0, 0.0381),
+            new Rotation2d());
 
     private final double minAngle = -180.0;
     private final double maxAngle = 180.0;
+    private double turretAngleAdjustment = 0;
 
     private CommandSwerveDrivetrain drivetrain;
 
@@ -68,26 +68,25 @@ public class TurretSubsystem extends SubsystemBase {
 
         turretMotor = new TalonFX(Constants.turretConstants.TURRET_MOTOR_ID);
         hallEffect = new DigitalInput(Constants.turretConstants.HALL_EFFECT_ID);
-        
+
         configureTurretMotor();
     }
 
     private void configureTurretMotor() {
-        MotorOutputConfigs outputConfigs =
-                new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake).withInverted(InvertedValue.Clockwise_Positive);
-        CurrentLimitsConfigs currentConfigs =
-                new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
-                        .withStatorCurrentLimit(60);
+        MotorOutputConfigs outputConfigs = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.Clockwise_Positive);
+        CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(60);
         Slot0Configs slotZeroConfigs = new Slot0Configs().withKS(kS).withKP(kP).withKI(kI).withKD(kD).withKV(kV);
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs().withMotionMagicCruiseVelocity(cruiseVelocity)
                 .withMotionMagicAcceleration(cruiseVelocity * 2)
                 .withMotionMagicJerk(0);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration()
-            .withMotorOutput(outputConfigs)
-            .withCurrentLimits(currentConfigs)
-            .withSlot0(slotZeroConfigs)
-            .withMotionMagic(mmConfigs);
+                .withMotorOutput(outputConfigs)
+                .withCurrentLimits(currentConfigs)
+                .withSlot0(slotZeroConfigs)
+                .withMotionMagic(mmConfigs);
 
         turretMotor.getConfigurator().apply(motorConfig);
         turretMotor.setPosition(0);
@@ -108,14 +107,16 @@ public class TurretSubsystem extends SubsystemBase {
 
     public void setTurretAngle(double degrees) {
         double aimAngle = MathUtil.inputModulus(getTurretAngle() + degrees, minAngle, maxAngle);
-        turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle)));
+        turretMotor.setControl(
+                motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle + turretAngleAdjustment)));
     }
 
     public double calculateTurretAngleDelta(Translation2d targetTranslation) {
         Pose2d drivetrainPose = drivetrain.getState().Pose;
         Translation2d turreTranslation = (drivetrainPose.plus(turretOffset)).getTranslation();
         Translation2d vectorToTarget = targetTranslation.minus(turreTranslation);
-        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees(), minAngle, maxAngle) - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
+        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees(), minAngle, maxAngle)
+                - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
         return angleToTarget;
     }
 
@@ -124,11 +125,11 @@ public class TurretSubsystem extends SubsystemBase {
         setTurretAngle(desiredAngle);
     }
 
-    public void turretAimAtHubBool(boolean bool){
+    public void turretAimAtHubBool(boolean bool) {
         Constants.turretConstants.turretAimAtHub = bool;
     }
 
-    public void turretAimToFeedBool(boolean bool){
+    public void turretAimToFeedBool(boolean bool) {
         Constants.turretConstants.turretAimToFeed = bool;
     }
 
@@ -138,6 +139,14 @@ public class TurretSubsystem extends SubsystemBase {
 
     public double getTurretPosition() {
         return turretMotor.getPosition().getValueAsDouble();
+    }
+
+    public void increaseTurretAngle() {
+        turretAngleAdjustment = turretAngleAdjustment + 1;
+    }
+
+    public void decreaseTurretAngle() {
+        turretAngleAdjustment = turretAngleAdjustment - 1;
     }
 
     public void moveTurretToZero() {

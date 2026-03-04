@@ -202,6 +202,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         //TODO : implement 
     }
 
+    public void fullCourtShoot() {
+        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(95.0));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.5));
+    }
+
     public double getShooterVelocity(){
         return shooterMasterMotor.getVelocity().getValueAsDouble();
     }
@@ -214,6 +219,13 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         shooterSpeed -= 1.0;
     }
 
+    public void increaseShooterInterpSpeed() {
+        shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment + 2;
+    }
+     public void decreaseShooterInterpSpeed() {
+        shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment - 2;
+    }
+    
     public void runMasterShooter() {
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(shooterSpeed));
     }

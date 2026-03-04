@@ -8,6 +8,8 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     protected InterpolatingDoubleTreeMap shooterSpeedTable = new InterpolatingDoubleTreeMap();
     protected InterpolatingDoubleTreeMap timeOfFlightTable = new InterpolatingDoubleTreeMap();
     protected InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
+    protected double shooterInterpSpeedAdjustment = 0;
+
 
     public ShooterInterpolationHelper(String name) {
         super(name);
@@ -36,7 +38,7 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     }
 
     public double calculateShooterSpeed(double distance) {
-        return shooterSpeedTable.get(distance);
+        return shooterSpeedTable.get(distance) + shooterInterpSpeedAdjustment;
     }
 
     public double calculateHoodPosition(double distance) {

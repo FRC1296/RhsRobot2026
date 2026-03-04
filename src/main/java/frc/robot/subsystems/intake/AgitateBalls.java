@@ -10,12 +10,12 @@ public class AgitateBalls extends SequentialCommandGroup {
 
     addCommands(
             new InstantCommand(intake::undeployIntake),
-            new WaitCommand(0.5),
+            new WaitCommand(1.0),
             new InstantCommand(intake::stopDeployIntake),
             new WaitCommand(0.5),
             new InstantCommand(intake::setDeployCoast),
             new InstantCommand(intake::deployIntake),
-            new WaitCommand(0.2),
+            new WaitCommand(0.5),
             new InstantCommand(intake::stopDeployIntake),
             new InstantCommand(intake::setDeployBrake)
     );
