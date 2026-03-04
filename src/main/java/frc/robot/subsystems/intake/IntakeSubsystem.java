@@ -135,7 +135,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private void ConfigureDeployMotor() {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
-                .withNeutralMode(NeutralModeValue.Brake)
+                .withNeutralMode(NeutralModeValue.Coast)
                 .withInverted(InvertedValue.Clockwise_Positive);
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()

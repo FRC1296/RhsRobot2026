@@ -42,6 +42,10 @@ public class FeederSubsystem extends SubsystemBase {
         feederMotor.setControl(dcOut.withOutput(Constants.feederConstants.feederSpeed));
     }
 
+    public void reverseFeeder() {
+        feederMotor.setControl(dcOut.withOutput(-Constants.feederConstants.feederSpeed));
+    }
+
     public void stopFeeder() {
         feederMotor.setControl(dcOut.withOutput(0.0));
     }

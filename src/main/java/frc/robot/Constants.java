@@ -39,8 +39,8 @@ public class Constants {
 
         public static boolean driveAimAtHub = false;
 
-        public static final double driveSpeed = 0.5; // meters per sec
-        public static final double rotationSpeed = 1.0; // rotations per sec
+        public static final double driveSpeed = 1.5; // meters per sec
+        public static final double rotationSpeed = 1.5; // rotations per sec
     }
     
     public class turretConstants {
@@ -72,7 +72,7 @@ public class Constants {
         public static final int FEEDER_MOTOR_ID = 16;
         
         public static final double feederSpeed = 0.8;
-        public static final double SPINDEXER_SPEED = 36.0;
+        public static final double SPINDEXER_SPEED = 48.0;
 
     }
 

@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
@@ -164,6 +166,12 @@ public class FMJRobotContainer {
     private void configureOperatorBindings() {
         operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
+        operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
+        operatorJoystick.leftBumper().whileTrue(new ParallelCommandGroup(
+            new InstantCommand(spindexer::reverseSpindexer),
+            new InstantCommand(feeder::reverseFeeder)
+        ));
+
         operatorJoystick.leftTrigger().onTrue(autoAaSM);
         //operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
@@ -199,7 +207,7 @@ public class FMJRobotContainer {
         driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        //driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         // joystick.b().whileTrue(drivetrain.applyRequest(() ->
         // point.withModuleDirection(new
         // Rotation2d(-joystick.getLeftY(),-joystick.getLeftX()))));
@@ -226,19 +234,19 @@ public class FMJRobotContainer {
     public Command getAutonomousCommand() {
         Command auton = autonChooser.getSelected();
 
-        if (LocalizationHelpers.tagInVison("limelight-a") || LocalizationHelpers.tagInVison("limelight-b")) {
-            LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
-        } else {
-            drivetrain.resetPose(((IAuto) auton).getInitialPose());
-        }
+        drivetrain.resetPose(((IAuto) auton).getInitialPose());
+        // if (LocalizationHelpers.tagInVison("limelight-a") || LocalizationHelpers.tagInVison("limelight-b")) {
+        //     LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
+        // } else {
+        //     drivetrain.resetPose(((IAuto) auton).getInitialPose());
+        // }
 
         shooter.setDefaultCommand(new AutoAimAndShootMoving(this, hubLocation.getX(), hubLocation.getY()));
         return auton;
     }
 
     public void autonomousExit() {
-        shooter.setDefaultCommand(null);
-        turret.setDefaultCommand(null);
+        turret.turretAimAtHubBool(false);
     }
 
     public void robotPeriodic() {
@@ -261,6 +269,9 @@ public class FMJRobotContainer {
 
     public void teleopInit() {
         initialize();
+        Command auton = new LeftToDepot(this, MaxSpeed, MaxAngularRate, true);
+        drivetrain.resetPose(((IAuto) auton).getInitialPose());
+
     }
 
     public void teleopPeriodic() {

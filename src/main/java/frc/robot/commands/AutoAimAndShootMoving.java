@@ -32,7 +32,7 @@ public class AutoAimAndShootMoving extends Command {
     public void initialize() {
         turret.turretAimToFeedBool(false);
         turret.turretAimAtHubBool(true);
-        feeder.runFeeder();
+        //feeder.runFeeder();
     }
 
     @Override

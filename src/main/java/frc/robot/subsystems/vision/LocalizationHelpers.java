@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
@@ -13,6 +15,10 @@ public class LocalizationHelpers {
     public static void updatePose(CommandSwerveDrivetrain drivetrain, String llName) {
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
         double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();
+
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Blue) {
+            currentRotation += 180.0;
+        }
 
         LimelightHelpers.SetRobotOrientation(llName, currentRotation, angularVelocity, 0, 0, 0, 0);
         PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName);
@@ -28,6 +34,7 @@ public class LocalizationHelpers {
             }
 
             if (!Constants.hasInitializedFromVision && isValid) {
+                
                 Pose2d correctPose = new Pose2d(
                         MT2.pose.getX(),
                         MT2.pose.getY(),
@@ -99,6 +106,10 @@ public class LocalizationHelpers {
     public static void resetToLimelightPose(CommandSwerveDrivetrain drivetrain, String LLName1, String LLName2) {
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
         double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();
+
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Blue) {
+            currentRotation += 180.0;
+        }
 
         LimelightHelpers.SetRobotOrientation(LLName1, currentRotation, angularVelocity, 0, 0, 0, 0);
         LimelightHelpers.SetRobotOrientation(LLName2, currentRotation, angularVelocity, 0, 0, 0, 0);

@@ -51,14 +51,21 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private DoubleSubscriber robotDistanceToHubSubscriber;
 
     private double shooterSpeed = 35.0;
+
+    // Hood Absolute Encoder positions
     private double hoodPos = 0.05;
 
-    private double hoodCruiseVelocity = 75;
-    private final double hoodkP = 0.1;
+    // Hood Motor Encoder Positions (zero down at start)
+    private double hoodStartPosition = 0.0;
+    private double hoodUp100Percent = 0.70;
+    private double hoodUp50Percent = 0.35;
+
+    private double hoodCruiseVelocity = 10;
+    private final double hoodkP = 5.0;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
-    private final double hoodkS = 0.55;
-    private final double hoodkV = 0.135;
+    private final double hoodkS = 0.3;
+    private final double hoodkV = 0.05;
 
     private Transform2d shooterOffset = new Transform2d(new Translation2d(0.0, 0.0381),new Rotation2d());
     private CommandSwerveDrivetrain drivetrain;
@@ -103,6 +110,8 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
         hoodAbsEncoder.getConfigurator().apply(cc_cfg);
+        hoodAbsEncoder.clearStickyFaults();
+        hoodAbsEncoder.setPosition(0.0);
     }
 
     private void ConfigureHoodMotor() {
@@ -123,7 +132,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(hoodCruiseVelocity)
-                .withMotionMagicAcceleration(hoodCruiseVelocity * 2)
+                .withMotionMagicAcceleration(hoodCruiseVelocity / 2)
                 .withMotionMagicJerk(0);
 
         // FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
@@ -214,11 +223,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void moveHoodUp() {
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(.4));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodUp50Percent));
     }
 
     public void moveHoodZero() {
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.00));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodStartPosition));
     }
 
     public void runHood() {
@@ -243,13 +252,8 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
         double distanceToHub = shooterTranslation.getDistance(virtualTarget);
 
-        if (distanceToHub < 3.0) {
-            moveHoodZero();
-        } else {
-            moveHoodUp();
-        }
-
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(calculateShooterSpeed(distanceToHub)));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(calculateHoodPosition(distanceToHub)));
         }
 
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {

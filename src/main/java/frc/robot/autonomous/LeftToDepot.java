@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
 import frc.robot.commands.AutoAimAndShoot;
+import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.SmartMove;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
@@ -18,8 +20,8 @@ public class LeftToDepot extends AutonomousRoutine {
 
         CommandSwerveDrivetrain drivetrain = robot.getDrivetrain();
         IntakeSubsystem intake = robot.getIntake();
-        ShooterSubsystem shooter = robot.getShooter();
         SpindexerSubsystem spindexer = robot.getSpindexer();
+        FeederSubsystem feeder = robot.getFeeder();
 
         PathPlannerPath firstPath = null;
         PathPlannerPath secondPath = null;
@@ -27,7 +29,7 @@ public class LeftToDepot extends AutonomousRoutine {
 
         boolean pathLoaded = true;
         try {
-               firstPath = PathPlannerPath.fromPathFile("Left To Shoot Pos");
+            firstPath = PathPlannerPath.fromPathFile("Left To Shoot Pos");
             secondPath = PathPlannerPath.fromPathFile("Collect Depot Ball");
             thirdPath = PathPlannerPath.fromPathFile("Depot Ball To Shoot Pos");
         } catch (Exception e) {
@@ -47,30 +49,26 @@ public class LeftToDepot extends AutonomousRoutine {
             addCommands(
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
-                    new ParallelCommandGroup(
-                            drivetrain.getAutoPath(firstPath),
-                            new InstantCommand(intake::deployIntake),
-                            new AutoAimAndShoot(robot),
-                            new SequentialCommandGroup(
-                                    new WaitCommand(3.0),
-                                    new InstantCommand(spindexer::runSpindexer),
-                                    new WaitCommand(5.0),
-                                    new InstantCommand(spindexer::stopSpindexer),
-                                    new InstantCommand(shooter::stopAutoAimAndShoot))),
-                    new ParallelCommandGroup(
-                            drivetrain.getAutoPath(secondPath),
-                            new InstantCommand(intake::runIntake)),
-                            new WaitCommand(3),
-                            new InstantCommand(intake::stopIntake),
-                            drivetrain.getAutoPath(thirdPath),
-                            new ParallelCommandGroup(
-                                    new AutoAimAndShoot(robot),
-                                    new SequentialCommandGroup(
-                                            new WaitCommand(0.2),
-                                            new InstantCommand(spindexer::runSpindexer),
-                                            new WaitCommand(3.0),
-                                            new InstantCommand(spindexer::stopSpindexer),
-                                            new InstantCommand(shooter::stopAutoAimAndShoot))));
+                   // Commands.runOnce(intake::deployIntake,intake),
+                    drivetrain.getAutoPath(firstPath),
+                    Commands.runOnce(feeder::runFeeder, feeder),
+                    Commands.runOnce(spindexer::runSpindexer, spindexer),
+                    new WaitCommand(4.0),
+                    Commands.runOnce(feeder::stopFeeder, feeder),
+                    Commands.runOnce(spindexer::stopSpindexer, spindexer),
+                    new ParallelCommandGroup(drivetrain.getAutoPath(secondPath),
+                            Commands.runOnce(intake::runIntake, intake)),
+                    new WaitCommand(2.0),
+                     Commands.runOnce(intake::stopIntake, intake),
+                    drivetrain.getAutoPath(thirdPath),
+                     Commands.runOnce(feeder::runFeeder, feeder),
+                    Commands.runOnce(spindexer::runSpindexer, spindexer),
+                    new WaitCommand(5.0),
+                    Commands.runOnce(feeder::stopFeeder, feeder),
+                    Commands.runOnce(spindexer::stopSpindexer, spindexer)
+
+                            );
+                    
         }
 
     }
