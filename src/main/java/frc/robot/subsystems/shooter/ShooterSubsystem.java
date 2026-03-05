@@ -219,6 +219,9 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         shooterSpeed -= 1.0;
     }
 
+    public void setShooterSafeVelocity() {
+        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(37));
+    }
     public void increaseShooterInterpSpeed() {
         shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment + 2;
     }

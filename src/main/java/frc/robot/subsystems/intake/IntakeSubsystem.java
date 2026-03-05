@@ -75,15 +75,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private DoublePublisher intakePositionPublisher;
 
-    private double intakeDeployPosition = 0.30;
-    private double intakeStowPosition = 0.60;
-    private double intakeUndeployPosition = 0.65;
-    private double intakeAgitatePosition = 0.39;
+    private double intakeDeployPosition = 16;
+    private double intakeStowPosition = 0;
+    private double intakeUndeployPosition = 8;
+    private double intakeAgitatePosition = 8;
+    private double intakeAbsDeployPosition = 0.875;
+    private double intakeAbsStowPosition = 0.53;
+
 
     private double intakeDeploySpeed = 0.10;
 
-    private double deployCruiseVelocity = 10;
-    private double deployCruiseAcceleration = 10;
+    private double deployCruiseVelocity = 20;
+    private double deployCruiseAcceleration = 20;
     private double deployCruiseJerk = 0;
     
 
@@ -142,7 +145,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(120);
+                .withStatorCurrentLimit(15);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(deploykG)
@@ -170,7 +173,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 //.withFeedback(feedbackConfigs);
 
         intakeDeployMotor.getConfigurator().apply(intakeDeployMotorConfig);
-        intakeDeployMotor.setPosition(0.0);
+        intakeDeployMotor.setPosition(intakeStowPosition);
 
         deployMMAtSetpoint = intakeDeployMotor.getMotionMagicAtTarget();
         deployMMEnabled = intakeDeployMotor.getMotionMagicIsRunning();
@@ -206,7 +209,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void undeployIntake() {
-        intakeDeployMotor.setControl(dcOut.withOutput(-intakeDeploySpeed));
+        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeUndeployPosition));
     }
 
     public void stopDeployIntake() {
@@ -214,7 +217,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void deployIntake() {
-        intakeDeployMotor.setControl(dcOut.withOutput(intakeDeploySpeed));
+        intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
     }
 
     public void setDeployCoast() {

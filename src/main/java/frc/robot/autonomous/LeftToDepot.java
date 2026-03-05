@@ -1,5 +1,7 @@
 package frc.robot.autonomous;
 
+import javax.print.attribute.SetOfIntegerSyntax;
+
 import com.pathplanner.lib.path.*;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.FMJRobotContainer;
@@ -29,8 +31,11 @@ public class LeftToDepot extends AutonomousRoutine {
 
         boolean pathLoaded = true;
         try {
-            firstPath = PathPlannerPath.fromPathFile("Left To Depot");
-            secondPath = PathPlannerPath.fromPathFile("Depot To Shoot Pos");
+            firstPath = PathPlannerPath.fromPathFile("Left To Midway");
+            secondPath = PathPlannerPath.fromPathFile("Midway To Depot");
+            thirdPath = PathPlannerPath.fromPathFile("Depot To Shoot Pos");
+
+            
          
         } catch (Exception e) {
             System.err.println("Unable to load PathPlanner file - " + e.getLocalizedMessage());
@@ -41,7 +46,7 @@ public class LeftToDepot extends AutonomousRoutine {
             if (isRedAlliance) {
                 firstPath = firstPath.flipPath();
                 secondPath = secondPath.flipPath();
-                
+                thirdPath = thirdPath.flipPath();
             }
 
             this.initialPose = firstPath.getStartingHolonomicPose().get();
@@ -49,22 +54,28 @@ public class LeftToDepot extends AutonomousRoutine {
             addCommands(
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
-                   // Commands.runOnce(intake::deployIntake,intake),
-                    new ParallelCommandGroup(drivetrain.getAutoPath(firstPath),
-                    Commands.runOnce(intake::runIntake, intake)),
-                    new WaitCommand(3.0),
-                     Commands.runOnce(intake::stopIntake, intake),
+                    Commands.runOnce(intake::deployIntake,intake),
+                    new ParallelCommandGroup(
+                        drivetrain.getAutoPath(firstPath),
+                        Commands.runOnce(intake::runIntake, intake)
+                    ),
+                    drivetrain.getAutoPath(secondPath),
+                    new WaitCommand(1),
+                    Commands.runOnce(intake::stopIntake, intake),
+                    Commands.runOnce(intake::undeployIntake,intake),
                     //drivetrain.getAutoPath(firstPath),
                     // new ParallelCommandGroup(drivetrain.getAutoPath(secondPath),
                     //         Commands.runOnce(intake::runIntake, intake)),
-                    drivetrain.getAutoPath(secondPath),
-                     Commands.runOnce(feeder::runFeeder, feeder),
-                    Commands.runOnce(spindexer::runSpindexer, spindexer),
-                    new WaitCommand(5.0),
-                    Commands.runOnce(feeder::stopFeeder, feeder),
-                    Commands.runOnce(spindexer::stopSpindexer, spindexer)
-
-                            );
+                    drivetrain.getAutoPath(thirdPath),
+                    new InstantCommand(feeder::runFeeder, feeder),
+                    new InstantCommand(spindexer::runSpindexer, spindexer)
+                    // new WaitCommand(2)
+                    // Commands.runOnce(feeder::runFeeder, feeder),
+                    // Commands.runOnce(spindexer::runSpindexer, spindexer),
+                    // new WaitCommand(9.0),
+                    // Commands.runOnce(feeder::stopFeeder, feeder),
+                    // Commands.runOnce(spindexer::stopSpindexer, spindexer)
+            );
                     
         }
 

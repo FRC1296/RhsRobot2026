@@ -38,6 +38,8 @@ public class TurretSubsystem extends SubsystemBase {
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
     private DoublePublisher turretPositionPublisher;
+    private DoublePublisher turretAnglePublisher;
+
     private double cruiseVelocity = 75;
 
     private final double kP = 0.55;
@@ -63,6 +65,7 @@ public class TurretSubsystem extends SubsystemBase {
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable turretTable = robotTable.getSubTable("Turret Subsystem");
         turretPositionPublisher = turretTable.getDoubleTopic("Turret Position").publish();
+        turretAnglePublisher = turretTable.getDoubleTopic("Turret Angle").publish();
 
         drivetrain = drive;
 
@@ -92,9 +95,14 @@ public class TurretSubsystem extends SubsystemBase {
         turretMotor.setPosition(0);
     }
 
+    public DigitalInput getTurretSensor() {
+        return hallEffect;
+    }
+
     @Override
     public void periodic() {
         turretPositionPublisher.set(getTurretPosition());
+        turretAnglePublisher.set(getTurretAngle());
     }
 
     private double degreesToMotorRotations(double turretDegrees) {
@@ -154,11 +162,11 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void runTurret() {
-        turretMotor.setControl(dcOut.withOutput(0.05));
+        turretMotor.setControl(dcOut.withOutput(0.04));
     }
 
     public void reverseTurret() {
-        turretMotor.setControl(dcOut.withOutput(-0.05));
+        turretMotor.setControl(dcOut.withOutput(-0.04));
     }
 
     public void stopTurret() {
@@ -166,7 +174,6 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void resetTurretZero() {
-        //TODO : set a real position for the hall effect sensor re-zero
         turretMotor.setPosition(0.0);
     }
 }

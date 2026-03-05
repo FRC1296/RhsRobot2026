@@ -1,3 +1,7 @@
+//Johnny was here, 03/04/2025, one day before belton competition, we are cooked, they gave me one hour with auton.
+//It better works
+//updates will be written if everything goes alright
+//god bless
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -39,6 +43,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
+import frc.robot.subsystems.turret.TurretResetHome;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.LocalizationHelpers;
 
@@ -69,8 +74,6 @@ public class FMJRobotContainer {
     private ClimberSubsystem climber;
     private SpindexerSubsystem spindexer;
     private LedSubsystem LED;
-
-    DigitalInput turretSensor = new DigitalInput(0);
 
     //private AutoAimAndShoot autoAaS;
     private AutoAimAndShootMoving autoAaSM;
@@ -168,7 +171,7 @@ public class FMJRobotContainer {
     }
 
     private void configureOperatorBindings() {
-        // operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
+        operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
         operatorJoystick.leftBumper().whileTrue(new ParallelCommandGroup(
@@ -179,16 +182,17 @@ public class FMJRobotContainer {
         operatorJoystick.leftTrigger().onTrue(autoAaSM);
         //operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
-        operatorJoystick.a().onTrue(new InstantCommand(shooter::fullCourtShoot));
+        //operatorJoystick.a().onTrue(new InstantCommand(shooter::fullCourtShoot));
 
         //operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
         // operatorJoystick.b().onTrue(new InstantCommand(shooter::moveHoodUp));
-         operatorJoystick.y().onTrue(new AgitateBalls(intake));
-        // operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
+         //operatorJoystick.y().onTrue(new AgitateBalls(intake));
+        operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
+        operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
         
        
-        operatorJoystick.povLeft().whileTrue(new InstantCommand(intake::undeployIntake)).whileFalse(new InstantCommand(intake::stopDeployIntake));
-        operatorJoystick.povRight().whileTrue(new InstantCommand(intake::deployIntake)).whileFalse(new InstantCommand(intake::stopDeployIntake));
+        operatorJoystick.povLeft().onTrue(new InstantCommand(intake::undeployIntake));
+        operatorJoystick.povRight().onTrue(new InstantCommand(intake::deployIntake));
 
         operatorJoystick.back().onTrue(autoRobotHub);
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
@@ -199,7 +203,8 @@ public class FMJRobotContainer {
                 drivetrain.applyRequest(() -> drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)));
-
+        driverJoystick.a().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
+        driverJoystick.x().whileTrue(new InstantCommand(turret::runTurret)).whileFalse(new InstantCommand(turret::stopTurret));
         driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
         // driverJoystick.leftTrigger().onTrue(new
@@ -360,9 +365,5 @@ public class FMJRobotContainer {
 
     public Translation2d getHubLocation() {
         return hubLocation;
-    }
-
-    public DigitalInput getTurretSensor() {
-        return turretSensor;
     }
 }

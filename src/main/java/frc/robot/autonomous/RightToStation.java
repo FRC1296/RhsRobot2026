@@ -50,11 +50,16 @@ public class RightToStation extends AutonomousRoutine {
             addCommands(
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
-                    drivetrain.getAutoPath(firstPath),
+                     new ParallelCommandGroup(
+                        drivetrain.getAutoPath(firstPath),
+                        Commands.runOnce(intake::runIntake, intake)
+                    ),
                       new WaitCommand(4.0),
                     drivetrain.getAutoPath(secondPath),
                     Commands.runOnce(feeder::runFeeder, feeder),
-                    Commands.runOnce(spindexer::runSpindexer, spindexer)
+                    Commands.runOnce(spindexer::runSpindexer, spindexer),
+                    Commands.runOnce(intake::stopIntake, intake)
+
                    
 
             );

@@ -17,15 +17,14 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     }
 
     public void initializeTables() {
-        shooterSpeedTable.put(1.5, 33.0);
-        shooterSpeedTable.put(2.0, 34.0);
-        shooterSpeedTable.put(2.5, 36.0);
-        shooterSpeedTable.put(3.0, 40.0);
-        shooterSpeedTable.put(3.5, 42.0);
-        shooterSpeedTable.put(4.0, 45.0);
-        shooterSpeedTable.put(4.5, 48.0);
-        shooterSpeedTable.put(5.0, 49.0);
-        shooterSpeedTable.put(5.738, 53.0);
+        shooterSpeedTable.put(1.5, 34.0);
+        shooterSpeedTable.put(2.0, 37.0);
+        shooterSpeedTable.put(2.5, 40.0);
+        shooterSpeedTable.put(3.0, 43.0);
+        shooterSpeedTable.put(3.5, 46.0);
+        shooterSpeedTable.put(4.0, 48.0);
+        shooterSpeedTable.put(4.5, 51.0);
+        shooterSpeedTable.put(5.68, 54.0);
 
         hoodTable.put(1.5, 0.0);
         hoodTable.put(6.0, 0.35);

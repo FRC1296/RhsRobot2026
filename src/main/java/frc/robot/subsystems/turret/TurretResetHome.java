@@ -4,8 +4,13 @@
 
 package frc.robot.subsystems.turret;
 
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.FMJRobotContainer;
 
 /*
@@ -18,10 +23,17 @@ public class TurretResetHome extends Command {
     private DigitalInput turretSensor;
     private boolean done = false;
 
+    private DoubleSubscriber turretAngleSubscriber;
+
     /** Creates a new TurretResetHome. */
     public TurretResetHome(FMJRobotContainer robot) {
         this.turret = robot.getTurret();
-        this.turretSensor = robot.getTurretSensor();
+        this.turretSensor = turret.getTurretSensor();
+
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
+        NetworkTable turretTable = robotTable.getSubTable("Turret Subsystem");
+        turretAngleSubscriber = turretTable.getDoubleTopic("Turret Angle").subscribe(0);
 
         addRequirements(turret);
     }
@@ -30,14 +42,14 @@ public class TurretResetHome extends Command {
     @Override
     public void initialize() {
         done = false;
-        turret.setTurretAngle(0);
+        turret.setTurretAngle(10);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (turretSensor.get()){
-            turret.runTurret();
+        if (turretSensor.get()) {
+            turret.reverseTurret();
         } else {
             turret.stopTurret();
             done = true;
@@ -47,7 +59,7 @@ public class TurretResetHome extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        turret.resetTurretZero();
+        // turret.resetTurretZero();
     }
 
     // Returns true when the command should end.
