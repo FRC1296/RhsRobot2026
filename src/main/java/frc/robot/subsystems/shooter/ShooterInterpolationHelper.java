@@ -41,7 +41,7 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     }
 
     public double calculateToF(double distance) {
-        return timeOfFlightTable.get(distance);
+        return timeOfFlightTable.get(distance) - ToFInterpAdjustment;
     }
 
     public double calculateShooterSpeed(double distance) {

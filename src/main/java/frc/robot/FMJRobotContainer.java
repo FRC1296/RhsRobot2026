@@ -1,7 +1,11 @@
-//Johnny was here, 03/04/2025, one day before belton competition, we are cooked, they gave me one hour with auton.
+//Johnny was here, 03/04/2026 7:15PM, one day before belton competition, we are cooked, they gave me one hour with auton.
 //It better works
 //updates will be written if everything goes alright
 //god bless
+//8:15PM luck is on my side
+//it worked
+//03/05/2026 10:26AM 3 hours before leaving and go to Belton, we went through an hour of shenanigans, we finally got to testing
+//we better cook at Belton, may god bless us again 
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -183,9 +187,16 @@ public class FMJRobotContainer {
         ));
 
         //operatorJoystick.leftBumper().onTrue(autoAimFeed);
+        operatorJoystick.leftTrigger().onTrue(autoAaSM);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
 
-        operatorJoystick.back().onTrue(autoRobotHub);
+        operatorJoystick.povRight().onTrue(new InstantCommand(shooter::increaseToF));
+        operatorJoystick.povLeft().onTrue(new InstantCommand(shooter::decreaseToF));
+        operatorJoystick.povUp().onTrue(new InstantCommand(shooter::increaseDis));
+        operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseDis));
+
+
+        //operatorJoystick.back().onTrue(autoRobotHub);
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
     }
 

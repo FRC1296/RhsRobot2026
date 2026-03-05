@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class SpindexerStallCommand extends Command {
     private SpindexerSubsystem spindexer;
     private long startTime;
-    private static final double TIME_TO_REVERSE_MS = 1500;
+    private static final double TIME_TO_REVERSE_MS = 500;
 
     public SpindexerStallCommand(SpindexerSubsystem spindexer) {
         this.spindexer = spindexer;

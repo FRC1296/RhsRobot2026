@@ -49,6 +49,8 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private DoublePublisher shooterSpeedPublisher;
     private DoubleSubscriber robotVelocitySubscriber;
     private DoubleSubscriber robotDistanceToHubSubscriber;
+    private DoublePublisher TofAd;
+    private DoublePublisher Dis;
 
     private double shooterSpeed = 35.0;
 
@@ -59,6 +61,8 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private double hoodStartPosition = 0.0;
     private double hoodUp100Percent = 0.70;
     private double hoodUp50Percent = 0.35;
+
+    private double shooterDisModfier = 0.0;
 
     private double hoodCruiseVelocity = 10;
     private final double hoodkP = 5.0;
@@ -97,6 +101,9 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         NetworkTable shooterTable = robotTable.getSubTable(Constants.NT_SHOOTER);
         hoodPositionPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_HOOD_POSITION).publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
+        TofAd = shooterTable.getDoubleTopic("TOF AD").publish();
+        Dis = shooterTable.getDoubleTopic("Dis").publish();
+
 
         NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
         robotVelocitySubscriber = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).subscribe(0.0);
@@ -196,6 +203,8 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
+        TofAd.set(ToFInterpAdjustment);
+        Dis.set(shooterDisModfier);
     }
 
     protected void resetMotorEncoder() {
@@ -237,6 +246,14 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
     public void decreaseToF() {
         ToFInterpAdjustment = ToFInterpAdjustment - 0.05;
+    }
+
+    public void increaseDis() {
+        shooterDisModfier += 0.25;
+    }
+
+    public void decreaseDis() {
+        shooterDisModfier -= 0.25;
     }
     
     public void runMasterShooter() {
@@ -292,12 +309,12 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         double virtualY = realTargetY;
 
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 1; i++) {
             distance = shooterPos.getDistance(virtualTarget);
             timeOfFlight = calculateToF(distance);
 
-            virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight);
-            virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight);
+            virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight * .9);
+            virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight * .9);
 
             virtualTarget = new Translation2d(virtualX, virtualY);
         }

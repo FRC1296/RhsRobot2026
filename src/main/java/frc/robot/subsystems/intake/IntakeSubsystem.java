@@ -145,7 +145,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(75);
+                .withStatorCurrentLimit(15);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(deploykG)
