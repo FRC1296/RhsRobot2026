@@ -6,26 +6,25 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.Vector;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
@@ -33,17 +32,17 @@ import frc.robot.autonomous.RightToStation;
 import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
-import frc.robot.commands.TurretAimToFeed;
+import frc.robot.commands.FeedAimAndShootMoving;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.hid.ControlPanel;
 import frc.robot.subsystems.intake.AgitateBalls;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
-import frc.robot.subsystems.turret.TurretResetHome;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.LocalizationHelpers;
 
@@ -64,6 +63,7 @@ public class FMJRobotContainer {
 
     private final CommandXboxController driverJoystick = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
+    private final ControlPanel controlPanel = new ControlPanel(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -77,8 +77,8 @@ public class FMJRobotContainer {
 
     //private AutoAimAndShoot autoAaS;
     private AutoAimAndShootMoving autoAaSM;
+    private FeedAimAndShootMoving autoAimFeed;
     private RobotAimAtHub autoRobotHub;
-    private TurretAimToFeed autoAimFeed;
     private ShootBalls shootBalls;
 
     private BooleanPublisher haveBallPublisher;
@@ -126,7 +126,7 @@ public class FMJRobotContainer {
         }
 
         autoRobotHub = new RobotAimAtHub(this);
-        autoAimFeed = new TurretAimToFeed(this);
+        autoAimFeed = new FeedAimAndShootMoving(this);
         autoAaSM = new AutoAimAndShootMoving(this);
         //autoAaS = new AutoAimAndShoot(this);
 
@@ -147,7 +147,7 @@ public class FMJRobotContainer {
             }
 
             autoRobotHub.setTarget(hubLocation);
-            autoAimFeed.setFeedLocation(hubLocation);
+            autoAimFeed.setTarget(feedLocation);
             autoAaSM.setTarget(hubLocation);
             //autoAaS.setTarget(hubLocation);
 
@@ -171,6 +171,9 @@ public class FMJRobotContainer {
     }
 
     private void configureOperatorBindings() {
+        CommandScheduler.getInstance().getActiveButtonLoop().clear();
+        configureDriverBindings();
+
         operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
@@ -179,23 +182,21 @@ public class FMJRobotContainer {
             new InstantCommand(feeder::reverseFeeder)
         ));
 
-        operatorJoystick.leftTrigger().onTrue(autoAaSM);
         //operatorJoystick.leftBumper().onTrue(autoAimFeed);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
-        //operatorJoystick.a().onTrue(new InstantCommand(shooter::fullCourtShoot));
-
-        //operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
-        // operatorJoystick.b().onTrue(new InstantCommand(shooter::moveHoodUp));
-         //operatorJoystick.y().onTrue(new AgitateBalls(intake));
-        operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
-        operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
-        
-       
-        operatorJoystick.povLeft().onTrue(new InstantCommand(intake::undeployIntake));
-        operatorJoystick.povRight().onTrue(new InstantCommand(intake::deployIntake));
 
         operatorJoystick.back().onTrue(autoRobotHub);
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+    }
+
+    private void configureOperatorBindingsManual() {
+        CommandScheduler.getInstance().getActiveButtonLoop().clear();
+        configureDriverBindings();
+
+
+        operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
+        operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
+
     }
 
     private void configureDriverBindings() {
@@ -203,15 +204,16 @@ public class FMJRobotContainer {
                 drivetrain.applyRequest(() -> drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)));
-        driverJoystick.a().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
-        driverJoystick.x().whileTrue(new InstantCommand(turret::runTurret)).whileFalse(new InstantCommand(turret::stopTurret));
-        driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
+        //driverJoystick.a().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
 
-        // driverJoystick.leftTrigger().onTrue(new
-        // InstantCommand(intake::deployIntake));
-        // driverJoystick.leftBumper().onTrue(new
-        // InstantCommand(intake::undeployIntake));
-        driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).whileFalse(new InstantCommand(intake::stopIntake));
+        driverJoystick.rightTrigger().toggleOnTrue(Commands.startEnd(intake::runIntake, intake::stopIntake, intake));
+        driverJoystick.rightBumper().onTrue(new AgitateBalls(intake));
+        driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
+        driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
+
+        driverJoystick.povRight().whileTrue(drivetrain.applyRequest(() -> brake));
+
+        driverJoystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         driverJoystick.povLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
         driverJoystick.povRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
@@ -223,11 +225,13 @@ public class FMJRobotContainer {
         driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         drivetrain.registerTelemetry(logger::telemeterize);
+    }
 
-        //driverJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-        // joystick.b().whileTrue(drivetrain.applyRequest(() ->
-        // point.withModuleDirection(new
-        // Rotation2d(-joystick.getLeftY(),-joystick.getLeftX()))));
+    public void configureControlPanelBindings() {
+        Trigger operatorModeTrigger = new Trigger(controlPanel::getOperatorMode);
+
+        operatorModeTrigger.onTrue(new InstantCommand(this::configureOperatorBindings));
+        operatorModeTrigger.onFalse(new InstantCommand(this::configureOperatorBindingsManual));
     }
 
     public void configureAutonOptions() {
@@ -251,7 +255,6 @@ public class FMJRobotContainer {
     public Command getAutonomousCommand() {
         Command auton = autonChooser.getSelected();
 
-        //drivetrain.resetPose(((IAuto) auton).getInitialPose());
         if (LocalizationHelpers.tagInVison("limelight-a") || LocalizationHelpers.tagInVison("limelight-b")) {
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
         } else {
@@ -263,7 +266,6 @@ public class FMJRobotContainer {
     }
 
     public void autonomousExit() {
-        turret.turretAimAtHubBool(false);
     }
 
     public void robotPeriodic() {
@@ -286,9 +288,8 @@ public class FMJRobotContainer {
 
     public void teleopInit() {
         initialize();
-        // Command auton = new LeftToDepot(this, MaxSpeed, MaxAngularRate, true);
-        // drivetrain.resetPose(((IAuto) auton).getInitialPose());
-
+        shooter.removeDefaultCommand();
+        turret.turretAimAtHubBool(false);
     }
 
     public void teleopPeriodic() {
@@ -302,15 +303,15 @@ public class FMJRobotContainer {
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             if (drivetrain.getPose().getY() > 4.0) {
-                autoAimFeed.setFeedLocation(Constants.BLUE_FEED_ONE);
+                autoAimFeed.setTarget(Constants.BLUE_FEED_ONE);
             } else {
-                autoAimFeed.setFeedLocation(Constants.BLUE_FEED_TWO);
+                autoAimFeed.setTarget(Constants.BLUE_FEED_TWO);
             }
         } else {
             if (drivetrain.getPose().getY() > 4.0) {
-                autoAimFeed.setFeedLocation(Constants.RED_FEED_ONE);
+                autoAimFeed.setTarget(Constants.RED_FEED_ONE);
             } else {
-                autoAimFeed.setFeedLocation(Constants.RED_FEED_TWO);
+                autoAimFeed.setTarget(Constants.RED_FEED_TWO);
             }
         }
     }

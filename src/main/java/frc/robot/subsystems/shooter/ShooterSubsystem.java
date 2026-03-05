@@ -202,10 +202,10 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         //TODO : implement 
     }
 
-    public void fullCourtShoot() {
-        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(95.0));
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.5));
-    }
+    // public void fullCourtShoot() {
+    //     shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(95.0));
+    //     hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.5));
+    // }
 
     public double getShooterVelocity(){
         return shooterMasterMotor.getVelocity().getValueAsDouble();
@@ -222,11 +222,21 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     public void setShooterSafeVelocity() {
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(37));
     }
+
     public void increaseShooterInterpSpeed() {
         shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment + 2;
     }
-     public void decreaseShooterInterpSpeed() {
+
+    public void decreaseShooterInterpSpeed() {
         shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment - 2;
+    }
+
+    public void increaseToF() {
+        ToFInterpAdjustment = ToFInterpAdjustment + 0.05;
+    }
+
+    public void decreaseToF() {
+        ToFInterpAdjustment = ToFInterpAdjustment - 0.05;
     }
     
     public void runMasterShooter() {
@@ -277,14 +287,14 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         ChassisSpeeds speeds = drivetrain.getFieldRelativeSpeeds();
         Translation2d virtualTarget = new Translation2d(realTargetX, realTargetY);
         double distance = shooterPos.getDistance(virtualTarget);
-        double timeOfFlight = 0;//interpolationHelper.calculateToF(distance);
+        double timeOfFlight = calculateToF(distance);
         double virtualX = realTargetX;
         double virtualY = realTargetY;
 
 
         for (int i = 0; i < 5; i++) {
             distance = shooterPos.getDistance(virtualTarget);
-            timeOfFlight = 0;//interpolationHelper.calculateToF(distance);
+            timeOfFlight = calculateToF(distance);
 
             virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight);
             virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight);

@@ -7,17 +7,17 @@ import frc.robot.FMJRobotContainer;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
-public class AutoAimAndShootMoving extends Command {
+public class FeedAimAndShootMoving extends Command {
     private ShooterSubsystem shooter;
     private TurretSubsystem turret;
     private double targetX;
     private double targetY;
 
-    public AutoAimAndShootMoving(FMJRobotContainer robot) {
+    public FeedAimAndShootMoving(FMJRobotContainer robot) {
         this(robot, 0.0, 0.0);
     }
 
-    public AutoAimAndShootMoving(FMJRobotContainer robot, double targetX, double targetY) {
+    public FeedAimAndShootMoving(FMJRobotContainer robot, double targetX, double targetY) {
         this.shooter = robot.getShooter();
         this.turret = robot.getTurret();
         
@@ -27,8 +27,8 @@ public class AutoAimAndShootMoving extends Command {
     }
 
     public void initialize() {
-        turret.turretAimToFeedBool(false);
-        turret.turretAimAtHubBool(true);
+        turret.turretAimAtHubBool(false);
+        turret.turretAimToFeedBool(true);
     }
 
     @Override

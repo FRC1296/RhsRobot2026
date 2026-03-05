@@ -9,7 +9,7 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     protected InterpolatingDoubleTreeMap timeOfFlightTable = new InterpolatingDoubleTreeMap();
     protected InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
     protected double shooterInterpSpeedAdjustment = 0;
-
+    protected double ToFInterpAdjustment = 0;
 
     public ShooterInterpolationHelper(String name) {
         super(name);
@@ -29,7 +29,15 @@ public class ShooterInterpolationHelper extends SubsystemBase {
         hoodTable.put(1.5, 0.0);
         hoodTable.put(6.0, 0.35);
 
-        timeOfFlightTable.put(1.5, 5.0); //Distance to hub -> Time of Flight sec
+        //Distance to hub -> Time of Flight sec
+        timeOfFlightTable.put(1.5, 1.01);
+        timeOfFlightTable.put(2.0, 1.10);
+        timeOfFlightTable.put(2.5, 1.20);
+        timeOfFlightTable.put(3.0, 1.28);
+        timeOfFlightTable.put(3.5, 1.33);
+        timeOfFlightTable.put(4.0, 1.3775);
+        timeOfFlightTable.put(4.5, 1.5475);
+        timeOfFlightTable.put(5.68, 1.57);
     }
 
     public double calculateToF(double distance) {

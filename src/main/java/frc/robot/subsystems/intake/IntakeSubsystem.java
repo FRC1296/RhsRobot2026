@@ -145,7 +145,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(15);
+                .withStatorCurrentLimit(75);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(deploykG)
@@ -218,24 +218,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void deployIntake() {
         intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
-    }
-
-    public void setDeployCoast() {
-        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
-                .withInverted(InvertedValue.Clockwise_Positive);
-        TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig);
-
-        intakeDeployMotor.getConfigurator().apply(intakeMotorConfig);
-
-    }
-
-    public void setDeployBrake() {
-        MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)
-                .withInverted(InvertedValue.Clockwise_Positive);
-        TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig);
-
-        intakeDeployMotor.getConfigurator().apply(intakeMotorConfig);
-
     }
 
     public void moveIntakeToAgitate() {

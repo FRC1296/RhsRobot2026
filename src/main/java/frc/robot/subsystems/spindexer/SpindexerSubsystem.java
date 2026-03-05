@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -104,7 +105,7 @@ public class SpindexerSubsystem extends SubsystemBase {
                     && spindexerStatorCurrentSS.getValueAsDouble() > (statorCurrentLimit - 5.0)) {
                 isStall = true;
                 if (stallCommand.isScheduled() == false) {
-                    //CommandScheduler.getInstance().schedule(stallCommand);
+                    CommandScheduler.getInstance().schedule(stallCommand);
                 }
             }
         }

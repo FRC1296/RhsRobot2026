@@ -114,17 +114,15 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void setTurretAngle(double degrees) {
-        double aimAngle = MathUtil.inputModulus(getTurretAngle() + degrees, minAngle, maxAngle);
-        turretMotor.setControl(
-                motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle + turretAngleAdjustment)));
+        double aimAngle = MathUtil.inputModulus(getTurretAngle() + degrees + turretAngleAdjustment, minAngle, maxAngle);
+        turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(degreesToMotorRotations(aimAngle)));
     }
 
     public double calculateTurretAngleDelta(Translation2d targetTranslation) {
         Pose2d drivetrainPose = drivetrain.getState().Pose;
         Translation2d turreTranslation = (drivetrainPose.plus(turretOffset)).getTranslation();
         Translation2d vectorToTarget = targetTranslation.minus(turreTranslation);
-        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees(), minAngle, maxAngle)
-                - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
+        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees(), minAngle, maxAngle) - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
         return angleToTarget;
     }
 
