@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.RightToStation;
+import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
@@ -41,7 +42,6 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
-import frc.robot.subsystems.hid.ControlPanel;
 import frc.robot.subsystems.intake.AgitateBalls;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
@@ -67,7 +67,6 @@ public class FMJRobotContainer {
 
     private final CommandXboxController driverJoystick = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
-    private final ControlPanel controlPanel = new ControlPanel(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -174,11 +173,9 @@ public class FMJRobotContainer {
         robotDistanceToHubPublisher = robotTable.getDoubleTopic(Constants.NT_ROBOT_DISTANCE_TO_HUB).publish();
     }
 
-    private void configureOperatorBindings() {
-        CommandScheduler.getInstance().getActiveButtonLoop().clear();
-        configureDriverBindings();
+    private void configureOperatorBindings() {;
 
-        operatorJoystick.rightTrigger().toggleOnTrue(shootBalls);
+        operatorJoystick.leftTrigger().toggleOnTrue(shootBalls);
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
         operatorJoystick.leftBumper().whileTrue(new ParallelCommandGroup(
@@ -186,28 +183,17 @@ public class FMJRobotContainer {
             new InstantCommand(feeder::reverseFeeder)
         ));
 
-        //operatorJoystick.leftBumper().onTrue(autoAimFeed);
-        operatorJoystick.leftTrigger().onTrue(autoAaSM);
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
+        operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
+        operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseToF));
+        operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseToF));
 
-        operatorJoystick.povRight().onTrue(new InstantCommand(shooter::increaseToF));
-        operatorJoystick.povLeft().onTrue(new InstantCommand(shooter::decreaseToF));
-        operatorJoystick.povUp().onTrue(new InstantCommand(shooter::increaseDis));
-        operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseDis));
+        operatorJoystick.povRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
+        operatorJoystick.povLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
+        operatorJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
+        operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
 
-
-        //operatorJoystick.back().onTrue(autoRobotHub);
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
-    }
-
-    private void configureOperatorBindingsManual() {
-        CommandScheduler.getInstance().getActiveButtonLoop().clear();
-        configureDriverBindings();
-
-
-        operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
-        operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
-
     }
 
     private void configureDriverBindings() {
@@ -217,32 +203,25 @@ public class FMJRobotContainer {
                         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)));
         //driverJoystick.a().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
 
-        driverJoystick.rightTrigger().toggleOnTrue(Commands.startEnd(intake::runIntake, intake::stopIntake, intake));
+        driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).onFalse(new InstantCommand(intake::stopIntake));
         driverJoystick.rightBumper().onTrue(new AgitateBalls(intake));
         driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
         driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
 
-        driverJoystick.povRight().whileTrue(drivetrain.applyRequest(() -> brake));
+        driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
         driverJoystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        driverJoystick.povLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
-        driverJoystick.povRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
-        driverJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
-        driverJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
+        driverJoystick.povLeft().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
+        driverJoystick.povRight().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
+        driverJoystick.povUp().onTrue(autoAaSM);
+        driverJoystick.povDown().onTrue(autoAimFeed);
 
         driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         drivetrain.registerTelemetry(logger::telemeterize);
-    }
-
-    public void configureControlPanelBindings() {
-        Trigger operatorModeTrigger = new Trigger(controlPanel::getOperatorMode);
-
-        operatorModeTrigger.onTrue(new InstantCommand(this::configureOperatorBindings));
-        operatorModeTrigger.onFalse(new InstantCommand(this::configureOperatorBindingsManual));
     }
 
     public void configureAutonOptions() {

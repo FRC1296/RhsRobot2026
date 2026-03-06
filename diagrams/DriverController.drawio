@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="0tmS47P77ek5C62ZnIjc" name="Page-1">
-        <mxGraphModel dx="1882" dy="568" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#FFFFFF,#FFFFFF)" math="0" shadow="0">
+        <mxGraphModel dx="1775" dy="493" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#FFFFFF,#FFFFFF)" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -28,7 +28,7 @@
                         <mxPoint x="-128.07999999999993" y="244.89599999999996" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="20" value="Undeploy Intake" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="20" value="&lt;div&gt;&lt;span style=&quot;color: rgb(255, 128, 0);&quot;&gt;&amp;lt;Bumper&amp;gt;&lt;/span&gt;&lt;/div&gt;Undeploy Intake" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="-189" y="126" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="24" value="&lt;font size=&quot;1&quot; color=&quot;#ff8000&quot;&gt;&lt;b style=&quot;font-size: 38px&quot;&gt;&lt;u&gt;Driver Control&lt;/u&gt;&lt;/b&gt;&lt;/font&gt;" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" parent="1" vertex="1">
@@ -65,7 +65,7 @@
                 <mxCell id="74" value="&amp;lt;Bumper&amp;gt;&lt;div&gt;Agitate&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
                     <mxGeometry x="124" y="126" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="75" value="Drivetrain Brake" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
+                <mxCell id="75" value="" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
                     <mxGeometry x="320" y="450" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="77" style="edgeStyle=none;html=1;entryX=0.84;entryY=-0.003;entryDx=0;entryDy=0;strokeColor=#000000;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="75" edge="1">
@@ -125,7 +125,7 @@
                 <mxCell id="95" value="Slow" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
                     <mxGeometry x="320" y="209" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="97" value="" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="97" value="Decrease Shooter Speed" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="-401" y="334" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="98" style="edgeStyle=none;html=1;strokeColor=#001DBC;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fillColor=#0050ef;strokeWidth=3;" parent="1" source="97" edge="1">
@@ -145,6 +145,15 @@
                 </mxCell>
                 <mxCell id="103" value="" style="rounded=1;whiteSpace=wrap;html=1;labelBorderColor=none;strokeColor=#000000;fontColor=#FF8000;" parent="1" vertex="1">
                     <mxGeometry x="-52" y="129" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" style="edgeStyle=none;html=1;entryX=0.365;entryY=0.752;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="106">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-81.20000000000005" y="362.4479999999999" as="targetPoint"/>
+                        <mxPoint x="-295" y="623" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="106" value="Increase Shooter Speed" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="-277" y="603" width="120" height="60" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
