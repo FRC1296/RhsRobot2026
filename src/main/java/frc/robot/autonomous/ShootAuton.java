@@ -48,7 +48,7 @@ public class ShootAuton extends AutonomousRoutine {
                 drivetrain.getAutoPath(firstPath),
                     new InstantCommand(spindexer::runSpindexer, spindexer),
                     new InstantCommand(feeder::runFeeder, feeder),
-                    new WaitCommand(5),
+                    new WaitCommand(8),
                     new ParallelCommandGroup(
                             new InstantCommand(spindexer::stopSpindexer),
                             new InstantCommand(feeder::stopFeeder)),

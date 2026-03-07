@@ -313,8 +313,8 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
             distance = shooterPos.getDistance(virtualTarget);
             timeOfFlight = calculateToF(distance);
 
-            virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight * .9);
-            virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight * .9);
+            virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight * 0.0);
+            virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight * 0.0);
 
             virtualTarget = new Translation2d(virtualX, virtualY);
         }

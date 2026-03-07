@@ -1,19 +1,19 @@
 package frc.robot.autonomous;
 
-import javax.print.attribute.SetOfIntegerSyntax;
+import com.pathplanner.lib.path.PathPlannerPath;
 
-import com.pathplanner.lib.path.*;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
-import frc.robot.commands.AutoAimAndShoot;
-import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.SmartMove;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
+import frc.robot.subsystems.vision.LocalizationHelpers;
 
 public class LeftToDepot extends AutonomousRoutine {
     public LeftToDepot(FMJRobotContainer robot, double velocity, double acceleration,
@@ -52,6 +52,7 @@ public class LeftToDepot extends AutonomousRoutine {
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
+                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
                     Commands.runOnce(intake::deployIntake,intake),
@@ -68,7 +69,8 @@ public class LeftToDepot extends AutonomousRoutine {
                     //         Commands.runOnce(intake::runIntake, intake)),
                     drivetrain.getAutoPath(thirdPath),
                     new InstantCommand(feeder::runFeeder, feeder),
-                    new InstantCommand(spindexer::runSpindexer, spindexer)
+                    new InstantCommand(spindexer::runSpindexer, spindexer),
+                    new InstantCommand(intake::runIntakeReverse, intake)
                     // new WaitCommand(2)
                     // Commands.runOnce(feeder::runFeeder, feeder),
                     // Commands.runOnce(spindexer::runSpindexer, spindexer),
@@ -80,4 +82,5 @@ public class LeftToDepot extends AutonomousRoutine {
         }
 
     }
+
 }

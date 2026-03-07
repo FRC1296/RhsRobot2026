@@ -200,8 +200,8 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeRollerMotor.setControl(dcOut.withOutput(0.0));
     }
 
-    public void runIntakeReverse(double speed) {
-        intakeRollerMotor.setControl(dcOut.withOutput(speed));
+    public void runIntakeReverse() {
+        intakeRollerMotor.setControl(dcOut.withOutput(-0.8));
     }
 
     public double getIntakePosition() {
@@ -222,5 +222,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void moveIntakeToAgitate() {
         intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeAgitatePosition));
+    }
+
+     public void manuelUndeployIntake() {
+        intakeDeployMotor.setControl(dcOut.withOutput(-intakeDeploySpeed));
+    }
+
+     public void manuelDeployIntake() {
+        intakeDeployMotor.setControl(dcOut.withOutput(intakeDeploySpeed));
+    }
+
+    public void intakeSetDeployPosition() {
+                intakeDeployMotor.setPosition(intakeDeployPosition);
     }
 }

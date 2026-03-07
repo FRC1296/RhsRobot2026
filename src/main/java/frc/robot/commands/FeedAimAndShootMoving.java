@@ -40,7 +40,7 @@ public class FeedAimAndShootMoving extends Command {
 
     @Override
     public boolean isFinished() {
-        return Constants.turretConstants.turretAimAtHub == false;
+        return Constants.turretConstants.turretAimToFeed == false;
     }
 
     @Override

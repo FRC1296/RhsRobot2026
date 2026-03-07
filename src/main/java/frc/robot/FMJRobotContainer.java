@@ -1,11 +1,3 @@
-//Johnny was here, 03/04/2026 7:15PM, one day before belton competition, we are cooked, they gave me one hour with auton.
-//It better works
-//updates will be written if everything goes alright
-//god bless
-//8:15PM luck is on my side
-//it worked
-//03/05/2026 10:26AM 3 hours before leaving and go to Belton, we went through an hour of shenanigans, we finally got to testing
-//we better cook at Belton, may god bless us again 
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -33,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.RightToStation;
+import frc.robot.autonomous.ShootAuton;
 import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.RobotAimAtHub;
@@ -176,12 +169,13 @@ public class FMJRobotContainer {
     private void configureOperatorBindings() {;
 
         operatorJoystick.leftTrigger().toggleOnTrue(shootBalls);
-        operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
-        operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
         operatorJoystick.leftBumper().whileTrue(new ParallelCommandGroup(
             new InstantCommand(spindexer::reverseSpindexer),
             new InstantCommand(feeder::reverseFeeder)
         ));
+        operatorJoystick.rightTrigger().whileTrue(new InstantCommand(intake::manuelDeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
+        operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
+        operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
 
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
         operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
@@ -194,6 +188,8 @@ public class FMJRobotContainer {
         operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
 
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        operatorJoystick.back().onTrue(new InstantCommand(intake::intakeSetDeployPosition));
+
     }
 
     private void configureDriverBindings() {
@@ -201,14 +197,22 @@ public class FMJRobotContainer {
                 drivetrain.applyRequest(() -> drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)));
+        driverJoystick.y().whileTrue(drivetrain.applyRequest(() -> drive
+            .withVelocityX(-driverJoystick.getLeftY() * MaxSpeed * 0.5)
+            .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed * 0.5)
+            .withRotationalRate(-driverJoystick.getRightX() * 2  )));
         //driverJoystick.a().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
 
         driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).onFalse(new InstantCommand(intake::stopIntake));
-        driverJoystick.rightBumper().onTrue(new AgitateBalls(intake));
+        driverJoystick.rightBumper().whileTrue(new InstantCommand(intake::runIntakeReverse)).onFalse(new InstantCommand(intake::stopIntake));
         driverJoystick.leftTrigger().onTrue(new InstantCommand(intake::deployIntake));
         driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
 
         driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
+        driverJoystick.a().whileTrue(new InstantCommand(intake::manuelUndeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
+
+        //driverJoystick.y().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
+        //driverJoystick.y().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
 
         driverJoystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
@@ -217,10 +221,11 @@ public class FMJRobotContainer {
         driverJoystick.povUp().onTrue(autoAaSM);
         driverJoystick.povDown().onTrue(autoAimFeed);
 
-        driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        //for tuning the drivetrain
+        // driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
@@ -234,6 +239,9 @@ public class FMJRobotContainer {
 
         autonChooser.addOption("LeftToDepot Red", new LeftToDepot(this, MaxSpeed, MaxAngularRate, redPath));
         autonChooser.addOption("LeftToDepot Blue", new LeftToDepot(this, MaxSpeed, MaxAngularRate, bluePath));
+
+        autonChooser.addOption("ShootAuton Red", new ShootAuton(this, MaxSpeed, MaxAngularRate, redPath));
+        autonChooser.addOption("ShootAuton Blue", new ShootAuton(this, MaxSpeed, MaxAngularRate, bluePath));
 
         SmartDashboard.putData("Auto Choices", autonChooser);
     }
@@ -280,6 +288,9 @@ public class FMJRobotContainer {
         initialize();
         shooter.removeDefaultCommand();
         turret.turretAimAtHubBool(false);
+        feeder.stopFeeder();
+        spindexer.stopSpindexer();
+        intake.stopIntake();
     }
 
     public void teleopPeriodic() {
