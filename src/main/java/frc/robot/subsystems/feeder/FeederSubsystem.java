@@ -21,7 +21,6 @@ public class FeederSubsystem extends SubsystemBase {
     public FeederSubsystem() {
         super("Feeder");
         feederMotor = new TalonFX(Constants.feederConstants.FEEDER_MOTOR_ID);
-
         ConfigureFeederMotor();
     }
 
@@ -48,6 +47,7 @@ public class FeederSubsystem extends SubsystemBase {
 
     public void stopFeeder() {
         feederMotor.setControl(dcOut.withOutput(0.0));
+        
     }
 
 }

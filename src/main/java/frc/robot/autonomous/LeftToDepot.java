@@ -70,7 +70,7 @@ public class LeftToDepot extends AutonomousRoutine {
                     drivetrain.getAutoPath(thirdPath),
                     new InstantCommand(feeder::runFeeder, feeder),
                     new InstantCommand(spindexer::runSpindexer, spindexer),
-                    new InstantCommand(intake::runIntakeReverse, intake)
+                    new InstantCommand(intake::runIntake, intake)
                     // new WaitCommand(2)
                     // Commands.runOnce(feeder::runFeeder, feeder),
                     // Commands.runOnce(spindexer::runSpindexer, spindexer),

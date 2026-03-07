@@ -174,8 +174,10 @@ public class FMJRobotContainer {
             new InstantCommand(feeder::reverseFeeder)
         ));
         operatorJoystick.rightTrigger().whileTrue(new InstantCommand(intake::manuelDeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
-        operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
-        operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
+        operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer))
+        .onFalse(new InstantCommand(spindexer::stopSpindexer));
+        operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder).andThen(new InstantCommand(feeder::runFeeder).withTimeout(1)))
+        .onFalse(new InstantCommand(feeder::stopFeeder));
 
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
         operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
