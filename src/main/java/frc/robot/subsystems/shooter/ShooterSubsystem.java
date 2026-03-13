@@ -268,6 +268,12 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodUp50Percent));
     }
 
+    public void resetHoodPosition() {
+        //TODO : implement
+        double absolutePosition = hoodAbsEncoder.getAbsolutePosition().getValueAsDouble();
+        //determine the position to set the motor to
+        //hoodMotor.setPosition(???);
+    }
     public void moveHoodZero() {
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodStartPosition));
     }

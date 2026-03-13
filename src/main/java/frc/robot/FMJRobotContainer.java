@@ -300,6 +300,21 @@ public class FMJRobotContainer {
         feeder.stopFeeder();
         spindexer.stopSpindexer();
         intake.stopIntake();
+
+        // If we are testing teleop - not connected to a real match then zero all mechanisms
+        if (DriverStation.isFMSAttached() == false) {
+            // Intake - set position based on absolute encoder
+            intake.intakeSetDeployPosition();
+
+            // Hood - set positon based on absolute encoder
+            shooter.resetHoodPosition();
+
+            // Turret - use command to move turret to zero position
+            turret.moveTurretToZero();
+
+            // Limelight - set robot position based on limelights
+            LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
+        }
     }
 
     public void teleopPeriodic() {
