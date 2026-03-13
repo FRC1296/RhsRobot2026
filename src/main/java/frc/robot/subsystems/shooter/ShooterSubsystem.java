@@ -308,21 +308,25 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         double virtualX = realTargetX;
         double virtualY = realTargetY;
 
+        distance = shooterPos.getDistance(virtualTarget);
+        timeOfFlight = calculateToF(distance);
+        for (int i = 0; i < 5; i++) {
+            //distance = shooterPos.getDistance(virtualTarget);
+            //timeOfFlight = calculateToF(distance);
 
-        for (int i = 0; i < 1; i++) {
-            distance = shooterPos.getDistance(virtualTarget);
+            virtualX = realTargetX - (speeds.vxMetersPerSecond * (timeOfFlight)) * 0.5;
+            virtualY = realTargetY - (speeds.vyMetersPerSecond * (timeOfFlight)) * 0.5;
+
+            Translation2d testTarget = new Translation2d(virtualX, virtualY);
+            distance = shooterPos.getDistance(testTarget);
             timeOfFlight = calculateToF(distance);
-
-            virtualX = virtualX - (speeds.vxMetersPerSecond * timeOfFlight * 0.0);
-            virtualY = virtualY - (speeds.vyMetersPerSecond * timeOfFlight * 0.0);
-
-            virtualTarget = new Translation2d(virtualX, virtualY);
         }
 
         return new Translation2d(virtualX, virtualY);
     }
 
     public Translation2d getVirtualTarget(double targetX, double targetY) {
+
         if(robotVelocitySubscriber.getAsDouble() < 0.1){
             return new Translation2d(targetX, targetY);
         }
