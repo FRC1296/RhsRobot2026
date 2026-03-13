@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="0tmS47P77ek5C62ZnIjc" name="Page-1">
-        <mxGraphModel dx="2122" dy="568" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#FFFFFF,#FFFFFF)" math="0" shadow="0">
+        <mxGraphModel dx="2526" dy="864" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="light-dark(#FFFFFF,#FFFFFF)" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -28,7 +28,7 @@
                         <mxPoint x="-128.07999999999993" y="244.89599999999996" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="20" value="&lt;div&gt;&lt;span style=&quot;color: rgb(255, 128, 0);&quot;&gt;&amp;lt;Bumper&amp;gt;&lt;/span&gt;&lt;/div&gt;Undeploy Intake" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
+                <mxCell id="20" value="&lt;div&gt;&lt;span style=&quot;color: rgb(255, 128, 0);&quot;&gt;&amp;lt;Bumper-Hold&amp;gt;&lt;/span&gt;&lt;/div&gt;Undeploy Intake" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="-189" y="126" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="24" value="&lt;font size=&quot;1&quot; color=&quot;#ff8000&quot;&gt;&lt;b style=&quot;font-size: 38px&quot;&gt;&lt;u&gt;Driver Control&lt;/u&gt;&lt;/b&gt;&lt;/font&gt;" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" parent="1" vertex="1">
@@ -54,7 +54,7 @@
                         <mxPoint x="218" y="249" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="72" value="&lt;span style=&quot;color: rgb(255, 128, 0);&quot;&gt;&amp;lt;Trigger&amp;gt;&lt;/span&gt;&lt;br style=&quot;color: rgb(255, 128, 0);&quot;&gt;&lt;font color=&quot;#ff8000&quot;&gt;Run Intake&lt;br&gt;hold&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#910000;" parent="1" vertex="1">
+                <mxCell id="72" value="&lt;span style=&quot;color: rgb(255, 128, 0);&quot;&gt;&amp;lt;Trigger-Hold&amp;gt;&lt;/span&gt;&lt;br style=&quot;color: rgb(255, 128, 0);&quot;&gt;&lt;font color=&quot;#ff8000&quot;&gt;Intake&lt;br&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#910000;" parent="1" vertex="1">
                     <mxGeometry x="254" y="99" width="129" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="73" style="edgeStyle=none;html=1;fontSize=24;strokeColor=#000000;entryX=0.806;entryY=-0.016;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="74" edge="1">
@@ -62,7 +62,7 @@
                         <mxPoint x="187.1199999999999" y="240.89599999999996" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="74" value="&amp;lt;Bumper&amp;gt;&lt;div&gt;Agitate&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
+                <mxCell id="74" value="&amp;lt;Bumper-Hold&amp;gt;&lt;div&gt;Intake Reverse&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
                     <mxGeometry x="124" y="126" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="75" value="&lt;br&gt;&lt;span style=&quot;color: rgb(255, 128, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;manuel intake undeploy&lt;/span&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;" parent="1" vertex="1">
@@ -134,7 +134,7 @@
                         <mxPoint x="-191" y="368" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="99" value="&lt;span style=&quot;color: rgb(255, 128, 0);&quot;&gt;&amp;lt;Trigger&amp;gt;&lt;/span&gt;&lt;br style=&quot;color: rgb(255, 128, 0);&quot;&gt;Deploy Intake" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#910000;" parent="1" vertex="1">
+                <mxCell id="99" value="&lt;span style=&quot;color: rgb(255, 128, 0);&quot;&gt;&amp;lt;Trigger-Hold&amp;gt;&lt;/span&gt;&lt;br style=&quot;color: rgb(255, 128, 0);&quot;&gt;Deploy Intake" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#910000;" parent="1" vertex="1">
                     <mxGeometry x="-349" y="106.5" width="129" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="102" style="edgeStyle=none;html=1;strokeColor=#000000;strokeWidth=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" parent="1" source="103" edge="1">
@@ -143,7 +143,7 @@
                         <mxPoint x="-27" y="318" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="103" value="" style="rounded=1;whiteSpace=wrap;html=1;labelBorderColor=none;strokeColor=#000000;fontColor=#FF8000;" parent="1" vertex="1">
+                <mxCell id="103" value="Feed Field Centric" style="rounded=1;whiteSpace=wrap;html=1;labelBorderColor=none;strokeColor=#000000;fontColor=#FF8000;" parent="1" vertex="1">
                     <mxGeometry x="-52" y="129" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="105" style="edgeStyle=none;html=1;entryX=0.365;entryY=0.752;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="106" edge="1">
@@ -154,6 +154,12 @@
                 </mxCell>
                 <mxCell id="106" value="Increase Shooter Speed" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#FF8000;strokeColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="-277" y="603" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="108" style="edgeStyle=none;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="107" target="53">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="107" value="&amp;lt;Press Down&amp;gt;&lt;div&gt;Rotate Around Hub&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;labelBorderColor=none;strokeColor=#000000;fontColor=#FF8000;" vertex="1" parent="1">
+                    <mxGeometry x="197" y="639" width="121" height="53" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

@@ -203,6 +203,13 @@ public class FMJRobotContainer {
             .withVelocityX(-driverJoystick.getLeftY() * MaxSpeed * 0.5)
             .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed * 0.5)
             .withRotationalRate(-driverJoystick.getRightX() * 2  )));
+        driverJoystick.rightStick().whileTrue(
+            drivetrain.applyRequest(() -> drive
+                .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate * 0.5  )
+                .withCenterOfRotation(hubLocation)
+            )
+        );
+
         //driverJoystick.a().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
 
         driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).onFalse(new InstantCommand(intake::stopIntake));
