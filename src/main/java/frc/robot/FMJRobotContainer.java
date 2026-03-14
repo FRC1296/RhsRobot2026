@@ -16,30 +16,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.RightToStation;
 import frc.robot.autonomous.ShootAuton;
-import frc.robot.commands.AutoAimAndShoot;
 import frc.robot.commands.AutoAimAndShootMoving;
+import frc.robot.commands.FeedAimAndShootMoving;
 import frc.robot.commands.RobotAimAtHub;
 import frc.robot.commands.ShootBalls;
-import frc.robot.commands.FeedAimAndShootMoving;
 import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
-import frc.robot.subsystems.intake.AgitateBalls;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
+import frc.robot.subsystems.turret.TurretResetHome;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.LocalizationHelpers;
 
@@ -190,7 +186,7 @@ public class FMJRobotContainer {
         operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
 
         operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
-        operatorJoystick.back().onTrue(new InstantCommand(intake::intakeSetDeployPosition));
+        operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
 
     }
 
@@ -210,7 +206,7 @@ public class FMJRobotContainer {
             )
         );
 
-        //driverJoystick.a().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
+        //driverJoystick.x().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
 
         driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).onFalse(new InstantCommand(intake::stopIntake));
         driverJoystick.rightBumper().whileTrue(new InstantCommand(intake::runIntakeReverse)).onFalse(new InstantCommand(intake::stopIntake));
@@ -304,13 +300,13 @@ public class FMJRobotContainer {
         // If we are testing teleop - not connected to a real match then zero all mechanisms
         if (DriverStation.isFMSAttached() == false) {
             // Intake - set position based on absolute encoder
-            intake.intakeSetDeployPosition();
+            intake.resetDeployPosition();
 
             // Hood - set positon based on absolute encoder
             shooter.resetHoodPosition();
 
             // Turret - use command to move turret to zero position
-            turret.moveTurretToZero();
+            CommandScheduler.getInstance().schedule(new TurretResetHome(this));
 
             // Limelight - set robot position based on limelights
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");

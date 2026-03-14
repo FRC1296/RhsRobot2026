@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.turret;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -173,5 +174,13 @@ public class TurretSubsystem extends SubsystemBase {
 
     public void resetTurretZero() {
         turretMotor.setPosition(0.0);
+    }
+
+    public StatusSignal<Boolean> getTurretAtTarget(){
+        return turretMotor.getMotionMagicAtTarget();
+    }
+
+    public void resetStartPosition() {
+        turretMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.5));
     }
 }

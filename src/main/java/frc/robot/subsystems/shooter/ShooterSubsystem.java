@@ -55,11 +55,12 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private double shooterSpeed = 35.0;
 
     // Hood Absolute Encoder positions
-    private double hoodPos = 0.05;
+    private double hoodAbsClosed = 0.00;
+    private double hoodAbsFull = 0.75;
 
     // Hood Motor Encoder Positions (zero down at start)
-    private double hoodStartPosition = 0.0;
-    private double hoodUp100Percent = 0.70;
+    private double hoodStartPosition = 0.00;
+    private double hoodUp100Percent = 0.75;
     private double hoodUp50Percent = 0.35;
 
     private double shooterDisModfier = 0.0;
@@ -269,25 +270,12 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void resetHoodPosition() {
-        //TODO : implement
         double absolutePosition = hoodAbsEncoder.getAbsolutePosition().getValueAsDouble();
         //determine the position to set the motor to
-        //hoodMotor.setPosition(???);
+        hoodMotor.setPosition(absolutePosition);
     }
     public void moveHoodZero() {
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodStartPosition));
-    }
-
-    public void runHood() {
-        hoodPos += 0.05;
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
-    }
-
-    public void reverseHood() {
-        if ((hoodPos - 0.05) > 0) {
-            hoodPos -= 0.05;
-            hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodPos));
-        }
     }
 
     public void setAutoShooter(double targetX, double targetY) {

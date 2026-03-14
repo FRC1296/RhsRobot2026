@@ -79,8 +79,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private double intakeStowPosition = 0;
     private double intakeUndeployPosition = 8;
     private double intakeAgitatePosition = 8;
-    private double intakeAbsDeployPosition = 0.875;
-    private double intakeAbsStowPosition = 0.53;
+    private double intakeAbsDeployPosition = 0.87;
+    private double intakeAbsStowPosition = 0.55;
 
 
     private double intakeDeploySpeed = 0.10;
@@ -232,7 +232,14 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeDeployMotor.setControl(dcOut.withOutput(intakeDeploySpeed));
     }
 
-    public void intakeSetDeployPosition() {
-                intakeDeployMotor.setPosition(intakeDeployPosition);
+    public void resetDeployPosition() {
+        double absPos = intakeAbsEncoder.getAbsolutePosition().getValueAsDouble();
+        if (absPos >= intakeAbsDeployPosition - .5 && absPos <= intakeAbsDeployPosition + .5) {
+            intakeDeployMotor.setPosition(intakeDeployPosition);
+        } else {
+            if (absPos >= intakeAbsStowPosition - .5 && absPos <= intakeAbsStowPosition + .5) {
+                intakeDeployMotor.setPosition(intakeStowPosition);
+            }
+        }
     }
 }

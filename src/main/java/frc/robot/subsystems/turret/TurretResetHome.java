@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems.turret;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -22,18 +25,15 @@ public class TurretResetHome extends Command {
     private TurretSubsystem turret;
     private DigitalInput turretSensor;
     private boolean done = false;
+    private boolean atTarget = false;
 
-    private DoubleSubscriber turretAngleSubscriber;
+    private StatusSignal<Boolean> turretAtTarget;
 
     /** Creates a new TurretResetHome. */
     public TurretResetHome(FMJRobotContainer robot) {
         this.turret = robot.getTurret();
         this.turretSensor = turret.getTurretSensor();
-
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
-        NetworkTable turretTable = robotTable.getSubTable("Turret Subsystem");
-        turretAngleSubscriber = turretTable.getDoubleTopic("Turret Angle").subscribe(0);
+        turretAtTarget = turret.getTurretAtTarget();
 
         addRequirements(turret);
     }
@@ -42,24 +42,31 @@ public class TurretResetHome extends Command {
     @Override
     public void initialize() {
         done = false;
-        turret.setTurretAngle(10);
+        atTarget = false;
+        turret.resetStartPosition();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (turretSensor.get()) {
-            turret.reverseTurret();
-        } else {
-            turret.stopTurret();
-            done = true;
+        BaseStatusSignal.refreshAll(turretAtTarget);
+        if (turretAtTarget.getValue()) {
+            atTarget = true;
+        }
+        if (atTarget){
+            if (turretSensor.get()) {
+                turret.reverseTurret();
+            } else {
+                turret.stopTurret();
+                done = true;
+            }
         }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        // turret.resetTurretZero();
+        turret.resetTurretZero();
     }
 
     // Returns true when the command should end.
