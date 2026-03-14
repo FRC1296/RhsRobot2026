@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,8 +20,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.autonomous.FullMidSwipe;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftToDepot;
+import frc.robot.autonomous.LeftToMiddle;
 import frc.robot.autonomous.RightToStation;
 import frc.robot.autonomous.ShootAuton;
 import frc.robot.commands.AutoAimAndShootMoving;
@@ -126,6 +129,8 @@ public class FMJRobotContainer {
         configureDriverBindings();
         configureOperatorBindings();
         configureAutonOptions();
+
+        NamedCommands.registerCommand("runIntake", new InstantCommand(intake::runIntake));
     }
 
     private void initialize() {
@@ -247,6 +252,11 @@ public class FMJRobotContainer {
 
         autonChooser.addOption("ShootAuton Red", new ShootAuton(this, MaxSpeed, MaxAngularRate, redPath));
         autonChooser.addOption("ShootAuton Blue", new ShootAuton(this, MaxSpeed, MaxAngularRate, bluePath));
+
+        autonChooser.addOption("LeftToMiddle Red", new LeftToMiddle(this, MaxSpeed, MaxAngularRate, redPath));
+        autonChooser.addOption("LeftToMiddle Blue", new LeftToMiddle(this, MaxSpeed, MaxAngularRate, bluePath));
+
+        autonChooser.addOption("FullMidSwipe Blue", new FullMidSwipe(this, 3, MaxAngularRate, bluePath));
 
         SmartDashboard.putData("Auto Choices", autonChooser);
     }

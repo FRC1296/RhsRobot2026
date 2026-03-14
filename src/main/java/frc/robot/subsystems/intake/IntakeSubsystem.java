@@ -193,7 +193,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntake() {
-        intakeRollerMotor.setControl(dcOut.withOutput(0.80));
+        intakeRollerMotor.setControl(dcOut.withOutput(0.90));
     }
 
     public void stopIntake() {
@@ -201,7 +201,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntakeReverse() {
-        intakeRollerMotor.setControl(dcOut.withOutput(-0.8));
+        intakeRollerMotor.setControl(dcOut.withOutput(-0.90));
     }
 
     public double getIntakePosition() {
