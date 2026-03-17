@@ -25,7 +25,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
@@ -122,9 +121,12 @@ public class TurretSubsystem extends SubsystemBase {
 
     public double calculateTurretAngleDelta(Translation2d targetTranslation) {
         Pose2d drivetrainPose = drivetrain.getState().Pose;
-        Translation2d turreTranslation = (drivetrainPose.plus(turretOffset)).getTranslation();
-        Translation2d vectorToTarget = targetTranslation.minus(turreTranslation);
-        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees(), minAngle, maxAngle) - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
+        Translation2d turretTranslation = (drivetrainPose.plus(turretOffset)).getTranslation();
+        double distanceToTarget = targetTranslation.getDistance(turretTranslation);
+
+        double offsetCorrection = Math.toDegrees(Math.asin(MathUtil.clamp(turretOffset.getTranslation().getY() / distanceToTarget, -1.0, 1.0)));
+        Translation2d vectorToTarget = targetTranslation.minus(turretTranslation);
+        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees() + offsetCorrection, minAngle, maxAngle) - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
         return angleToTarget;
     }
 

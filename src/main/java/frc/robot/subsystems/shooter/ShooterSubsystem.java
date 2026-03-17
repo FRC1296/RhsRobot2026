@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -280,14 +281,9 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void setAutoShooter(double targetX, double targetY) {
-        Translation2d virtualTarget = new Translation2d(targetX, targetY);
-        if(robotVelocitySubscriber.getAsDouble() > 0.1){
-            virtualTarget = calculateVirtualTarget(targetX, targetY);
-        }
-
         Pose2d drivetrainPose = drivetrain.getPose();
         Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
-        double distanceToHub = shooterTranslation.getDistance(virtualTarget);
+        double distanceToHub = shooterTranslation.getDistance(new Translation2d(targetX, targetY));
 
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(calculateShooterSpeed(distanceToHub)));
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(calculateHoodPosition(distanceToHub)));
@@ -319,7 +315,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
             distance = shooterPos.getDistance(testTarget);
             timeOfFlight = calculateToF(distance);
         }
-
         return new Translation2d(virtualX, virtualY);
     }
 
