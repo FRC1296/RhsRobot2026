@@ -15,6 +15,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -293,23 +294,26 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         }
 
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
-        Pose2d pose = drivetrain.getPose();
-        Translation2d shooterPos = (pose.plus(shooterOffset)).getTranslation();
-        ChassisSpeeds speeds = drivetrain.getFieldRelativeSpeeds();
+        double ToFFudgeFactor = 0.5;
+        
+        double[] robotData = calculateRobotMetric();
+
+        // Gets the xFinal and yFinal of the robot
+        Translation2d shooterPos = new Translation2d(robotData[0], robotData[1]);
+        // Gets the vxFinal and vyFinal of the robot
+        double velocityX = robotData[2];
+        double velocityY = robotData[3];
+
         Translation2d virtualTarget = new Translation2d(realTargetX, realTargetY);
         double distance = shooterPos.getDistance(virtualTarget);
         double timeOfFlight = calculateToF(distance);
         double virtualX = realTargetX;
         double virtualY = realTargetY;
 
-        distance = shooterPos.getDistance(virtualTarget);
-        timeOfFlight = calculateToF(distance);
         for (int i = 0; i < 5; i++) {
-            //distance = shooterPos.getDistance(virtualTarget);
-            //timeOfFlight = calculateToF(distance);
-
-            virtualX = realTargetX - (speeds.vxMetersPerSecond * (timeOfFlight)) * 0.5;
-            virtualY = realTargetY - (speeds.vyMetersPerSecond * (timeOfFlight)) * 0.5;
+            virtualX = realTargetX - (velocityX * (timeOfFlight)) * ToFFudgeFactor;
+            virtualY = realTargetY - (velocityY * (timeOfFlight)) * ToFFudgeFactor;
+            
 
             Translation2d testTarget = new Translation2d(virtualX, virtualY);
             distance = shooterPos.getDistance(testTarget);
@@ -317,6 +321,50 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         }
 
         return new Translation2d(virtualX, virtualY);
+    }
+
+    public double[] calculateRobotMetric(){
+        double deltaT = 0.2;
+
+        double[] variables = new double[4];
+
+        double xInitial = (drivetrain.getPose().plus(shooterOffset)).getTranslation().getX();
+        double yInitial = (drivetrain.getPose().plus(shooterOffset)).getTranslation().getY();
+        double vxInitial = drivetrain.getFieldRelativeSpeeds().vxMetersPerSecond;
+        double vyInitial = drivetrain.getFieldRelativeSpeeds().vyMetersPerSecond;
+        // Gets the accelerations of the robot
+        double accelerationX = calculateRobotAcceleration()[0];
+        double accelerationY = calculateRobotAcceleration()[1];
+
+        double vxFinal = vxInitial + (accelerationX * deltaT);
+        double vyFinal = vyInitial + (accelerationY * deltaT);
+
+        double xFinal = xInitial + (vxInitial * deltaT) + (0.5 * accelerationX * deltaT * deltaT);
+        double yFinal = yInitial + (vyInitial * deltaT) + (0.5 * accelerationY * deltaT * deltaT);
+
+        variables[0] = xFinal;
+        variables[1] = yFinal;
+        variables[2] = vxFinal;
+        variables[3] = vyFinal;
+
+        return variables;
+    }
+
+    public double[] calculateRobotAcceleration(){
+        // G is 9.80665
+        Pigeon2 pigeon = drivetrain.getPigeon2();
+
+        double robotAx = pigeon.getAccelerationX().getValueAsDouble() * 9.80665;
+        double robotAy = pigeon.getAccelerationY().getValueAsDouble() * 9.80665;
+
+        Rotation2d yaw = pigeon.getRotation2d();
+        double yawCos = yaw.getCos();
+        double yawSin = yaw.getSin();
+
+        double fieldAx = robotAx * yawCos - robotAy * yawSin;
+        double fieldAy = robotAx * yawSin + robotAy * yawCos;
+
+        return new double[]{fieldAx, fieldAy};
     }
 
     public Translation2d getVirtualTarget(double targetX, double targetY) {
