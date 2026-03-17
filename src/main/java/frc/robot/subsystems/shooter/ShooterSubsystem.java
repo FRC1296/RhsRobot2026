@@ -294,7 +294,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         }
 
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
-        double ToFFudgeFactor = 0.5;
+        double ToFFudgeFactor = 0.6;
         
         double[] robotData = calculateRobotMetric();
 
@@ -324,7 +324,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public double[] calculateRobotMetric(){
-        double deltaT = 0.2;
+        double deltaT = 0.020;
 
         double[] variables = new double[4];
 

@@ -16,12 +16,15 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autonomous.FullMidSwipe;
 import frc.robot.autonomous.IAuto;
+import frc.robot.autonomous.LeftMidShoot;
+import frc.robot.autonomous.LeftMidShootDepot;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.LeftToMiddle;
 import frc.robot.autonomous.RightToStation;
@@ -125,12 +128,17 @@ public class FMJRobotContainer {
         autoAaSM = new AutoAimAndShootMoving(this);
         //autoAaS = new AutoAimAndShoot(this);
 
+        NamedCommands.registerCommand("runIntake", Commands.runOnce(intake::runIntake, intake));
+        NamedCommands.registerCommand("resetLLP", Commands.runOnce(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        NamedCommands.registerCommand("runFeeder", Commands.runOnce(feeder::runFeeder, feeder));
+        NamedCommands.registerCommand("runSpindexer", Commands.runOnce(spindexer::runSpindexer, spindexer));
+
+
         configureNetworkTable();
         configureDriverBindings();
         configureOperatorBindings();
         configureAutonOptions();
 
-        NamedCommands.registerCommand("runIntake", new InstantCommand(intake::runIntake));
     }
 
     private void initialize() {
@@ -258,6 +266,10 @@ public class FMJRobotContainer {
 
         autonChooser.addOption("FullMidSwipe Blue", new FullMidSwipe(this, 3, MaxAngularRate, bluePath));
 
+        autonChooser.addOption("LeftMidShoot Blue", new LeftMidShoot(this, 3, MaxAngularRate, bluePath));
+
+        autonChooser.addOption("LeftMidShootDepot Blue", new LeftMidShootDepot(this, 3, MaxAngularRate, bluePath));
+
         SmartDashboard.putData("Auto Choices", autonChooser);
     }
 
@@ -308,19 +320,20 @@ public class FMJRobotContainer {
         intake.stopIntake();
 
         // If we are testing teleop - not connected to a real match then zero all mechanisms
-        if (DriverStation.isFMSAttached() == false) {
-            // Intake - set position based on absolute encoder
-            intake.resetDeployPosition();
+        // if (DriverStation.isFMSAttached() == false) {
+        //     // Intake - set position based on absolute encoder
+        //     intake.resetDeployPosition();
 
-            // Hood - set positon based on absolute encoder
-            shooter.resetHoodPosition();
+        //     // Hood - set positon based on absolute encoder
+        //     shooter.resetHoodPosition();
 
-            // Turret - use command to move turret to zero position
-            CommandScheduler.getInstance().schedule(new TurretResetHome(this));
+        //     // Turret - use command to move turret to zero position
+        //     CommandScheduler.getInstance().schedule(new TurretResetHome(this));
+        
 
-            // Limelight - set robot position based on limelights
-            LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
-        }
+        //     // Limelight - set robot position based on limelights
+        //     LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
+        // }
     }
 
     public void teleopPeriodic() {
