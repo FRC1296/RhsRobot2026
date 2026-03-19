@@ -5,7 +5,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -17,7 +16,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -26,8 +24,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -50,7 +46,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
     private DoubleSubscriber robotVelocitySubscriber;
-    private DoubleSubscriber robotDistanceToHubSubscriber;
     private DoublePublisher TofAd;
     private DoublePublisher Dis;
 
@@ -110,8 +105,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
         robotVelocitySubscriber = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).subscribe(0.0);
-
-        robotDistanceToHubSubscriber = robotTable.getDoubleTopic(Constants.NT_ROBOT_DISTANCE_TO_HUB).subscribe(0.0);
     }
 
     private void ConfigureAbsoluteEncoder() {
@@ -249,14 +242,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
     public void decreaseToF() {
         ToFInterpAdjustment = ToFInterpAdjustment - 0.05;
-    }
-
-    public void increaseDis() {
-        shooterDisModfier += 0.25;
-    }
-
-    public void decreaseDis() {
-        shooterDisModfier -= 0.25;
     }
     
     public void runMasterShooter() {

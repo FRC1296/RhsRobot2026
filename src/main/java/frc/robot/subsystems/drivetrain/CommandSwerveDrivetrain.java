@@ -21,6 +21,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -50,7 +51,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private double m_lastSimTime;
 
     private DoublePublisher robotSpeedPublisher;
-
+    private final TimeInterpolatableBuffer<Pose2d> poseHistory = TimeInterpolatableBuffer.createBuffer(1.5);
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -265,6 +266,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         robotSpeedPublisher.set(Math.hypot(
             this.getRobotRelativeSpeeds().vxMetersPerSecond,
             this.getRobotRelativeSpeeds().vyMetersPerSecond));
+
+        poseHistory.addSample(Utils.getCurrentTimeSeconds(), this.getState().Pose);
+    }
+
+    public Pose2d getPoseAtTimestamp(double timestampSeconds) {
+        return poseHistory.getSample(timestampSeconds).orElse(this.getState().Pose);
     }
 
     private void startSimThread() {

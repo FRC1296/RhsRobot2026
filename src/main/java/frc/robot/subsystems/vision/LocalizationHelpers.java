@@ -12,42 +12,44 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
 public class LocalizationHelpers {
 
-    public static void updatePose(CommandSwerveDrivetrain drivetrain, String llName) {
-        double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
-        double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();
+    // public static void updatePose(CommandSwerveDrivetrain drivetrain, String llName) {
+    //     double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
+    //     double currentRotation = drivetrain.getPigeon2().getYaw().getValueAsDouble();
 
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Blue) {
-            currentRotation += 180.0;
-        }
+    //     if (DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Blue) {
+    //         currentRotation += 180.0;
+    //     }
 
-        LimelightHelpers.SetRobotOrientation(llName, currentRotation, angularVelocity, 0, 0, 0, 0);
-        PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName);
+    //     LimelightHelpers.SetRobotOrientation(llName, currentRotation, angularVelocity, 0, 0, 0, 0);
+    //     PoseEstimate MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName);
 
-        double linearVelocity = Math.hypot(
-                drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond,
-                drivetrain.getRobotRelativeSpeeds().vyMetersPerSecond);
+    //     double linearVelocity = Math.hypot(
+    //             drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond,
+    //             drivetrain.getRobotRelativeSpeeds().vyMetersPerSecond);
 
-        if (MT2 != null && MT2.avgTagDist <= 6.0 && MT2.avgTagArea >= 0.08) {
-            boolean isValid = false;
-            if (Math.abs(angularVelocity) <= 720 && isValidTarget(MT2)) {
-                isValid = true;
-            }
+    //     if (MT2 != null && MT2.avgTagDist <= 6.0 && MT2.avgTagArea >= 0.08) {
+    //         boolean isValid = false;
+    //         if (Math.abs(angularVelocity) <= 720 && isValidTarget(MT2)) {
+    //             isValid = true;
+    //         }
 
-            if (!Constants.hasInitializedFromVision && isValid) {
+    //         if (!Constants.hasInitializedFromVision && isValid) {
                 
-                Pose2d correctPose = new Pose2d(
-                        MT2.pose.getX(),
-                        MT2.pose.getY(),
-                        Rotation2d.fromDegrees(currentRotation));
-                    drivetrain.resetPose(correctPose);
-                    Constants.hasInitializedFromVision = true;
-            } else if (Constants.hasInitializedFromVision && isValid) {
-                double xyStdDev = calculateStdDev(MT2, linearVelocity);
-                drivetrain.addVisionMeasurement(MT2.pose, MT2.timestampSeconds,
-                        VecBuilder.fill(xyStdDev, xyStdDev, 9999999));
-            }
-        }
-    }
+    //             Pose2d correctPose = new Pose2d(
+    //                     MT2.pose.getX(),
+    //                     MT2.pose.getY(),
+    //                     Rotation2d.fromDegrees(currentRotation));
+    //                 drivetrain.resetPose(correctPose);
+    //                 Constants.hasInitializedFromVision = true;
+    //         } else if (Constants.hasInitializedFromVision && isValid) {
+    //             double xyStdDev = calculateStdDev(MT2, linearVelocity);
+    //             drivetrain.addVisionMeasurement(MT2.pose, MT2.timestampSeconds,
+    //                     VecBuilder.fill(xyStdDev, xyStdDev, 9999999));
+    //         }
+    //     }
+    // }
+
+    
 
     private static boolean isValidTarget(PoseEstimate target) {
         boolean retVal = false;

@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -41,8 +40,8 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
-import frc.robot.subsystems.turret.TurretResetHome;
 import frc.robot.subsystems.turret.TurretSubsystem;
+import frc.robot.subsystems.vision.Localization;
 import frc.robot.subsystems.vision.LocalizationHelpers;
 
 
@@ -71,7 +70,7 @@ public class FMJRobotContainer {
     private FeederSubsystem feeder;
     private ClimberSubsystem climber;
     private SpindexerSubsystem spindexer;
-    private LedSubsystem LED;
+    //private LedSubsystem LED;
 
     //private AutoAimAndShoot autoAaS;
     private AutoAimAndShootMoving autoAaSM;
@@ -102,25 +101,24 @@ public class FMJRobotContainer {
     private boolean initialized = false;
 
     public FMJRobotContainer() {
-
-        drivetrain.getPigeon2().setYaw(0.0);
-
         shooter = new ShooterSubsystem(drivetrain);
         turret = new TurretSubsystem(drivetrain);
         intake = new IntakeSubsystem();
         feeder = new FeederSubsystem();
         climber = new ClimberSubsystem();
         spindexer = new SpindexerSubsystem();
-        LED = new LedSubsystem();
+        //LED = new LedSubsystem();
 
         shootBalls = new ShootBalls(this);
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             hubLocation = Constants.BLUE_HUB;
             feedLocation = Constants.BLUE_FEED_ONE;
+            drivetrain.getPigeon2().setYaw(0.0);
         } else {
             hubLocation = Constants.RED_HUB;
             feedLocation = Constants.RED_FEED_ONE;
+            drivetrain.getPigeon2().setYaw(180.0);
         }
 
         autoRobotHub = new RobotAimAtHub(this);
@@ -129,7 +127,7 @@ public class FMJRobotContainer {
         //autoAaS = new AutoAimAndShoot(this);
 
         NamedCommands.registerCommand("runIntake", Commands.runOnce(intake::runIntake, intake));
-        NamedCommands.registerCommand("resetLLP", Commands.runOnce(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        NamedCommands.registerCommand("resetLLP", Commands.runOnce(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
         NamedCommands.registerCommand("runFeeder", Commands.runOnce(feeder::runFeeder, feeder));
         NamedCommands.registerCommand("runSpindexer", Commands.runOnce(spindexer::runSpindexer, spindexer));
 
@@ -181,24 +179,27 @@ public class FMJRobotContainer {
         operatorJoystick.leftBumper().whileTrue(new ParallelCommandGroup(
             new InstantCommand(spindexer::reverseSpindexer),
             new InstantCommand(feeder::reverseFeeder)
+        )).onFalse(new ParallelCommandGroup(
+            new InstantCommand(spindexer::stopSpindexer),
+            new InstantCommand(feeder::stopFeeder)
         ));
         operatorJoystick.rightTrigger().whileTrue(new InstantCommand(intake::manuelDeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer))
         .onFalse(new InstantCommand(spindexer::stopSpindexer));
-        operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder).andThen(new InstantCommand(feeder::runFeeder).withTimeout(1)))
-        .onFalse(new InstantCommand(feeder::stopFeeder));
+        operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder))
+        .onFalse(new InstantCommand(feeder::runFeeder).withTimeout(1.0).andThen(new InstantCommand(feeder::stopFeeder)));
 
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
         operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
-        operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseToF));
-        operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseToF));
+        //operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseToF));
+        //operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseToF));
 
         operatorJoystick.povRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
         operatorJoystick.povLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
-        operatorJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
-        operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
+        //operatorJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
+        //operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
 
-        operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        operatorJoystick.start().onTrue(new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
         operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
 
     }
@@ -212,12 +213,12 @@ public class FMJRobotContainer {
             .withVelocityX(-driverJoystick.getLeftY() * MaxSpeed * 0.5)
             .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed * 0.5)
             .withRotationalRate(-driverJoystick.getRightX() * 2  )));
-        driverJoystick.rightStick().whileTrue(
-            drivetrain.applyRequest(() -> drive
-                .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate * 0.5  )
-                .withCenterOfRotation(hubLocation)
-            )
-        );
+        // driverJoystick.rightStick().whileTrue(
+        //     drivetrain.applyRequest(() -> drive
+        //         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate * 0.5  )
+        //         .withCenterOfRotation(hubLocation)
+        //     )
+        // );
 
         //driverJoystick.x().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
 
@@ -227,7 +228,7 @@ public class FMJRobotContainer {
         driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
 
         driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
-        driverJoystick.x().onTrue(new InstantCommand(shooter::stopMasterShooter));
+        //driverJoystick.x().onTrue(new InstantCommand(shooter::stopMasterShooter));
         driverJoystick.a().whileTrue(new InstantCommand(intake::manuelUndeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
 
         //driverJoystick.y().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
@@ -281,8 +282,8 @@ public class FMJRobotContainer {
     public Command getAutonomousCommand() {
         Command auton = autonChooser.getSelected();
 
-        if (LocalizationHelpers.tagInVison("limelight-a") || LocalizationHelpers.tagInVison("limelight-b")) {
-            LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
+        if (Localization.tagInView("limelight-a", "limelight-b")) {
+            Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
         } else {
             drivetrain.resetPose(((IAuto) auton).getInitialPose());
         }
@@ -295,8 +296,9 @@ public class FMJRobotContainer {
     }
 
     public void robotPeriodic() {
-        LocalizationHelpers.updatePose(drivetrain, "limelight-a");
-        LocalizationHelpers.updatePose(drivetrain, "limelight-b");
+        // LocalizationHelpers.updatePose(drivetrain, "limelight-a");
+        // LocalizationHelpers.updatePose(drivetrain, "limelight-b");
+        Localization.updatePose(drivetrain, "limelight-a", "limelight-b");
 
         //getDriveVector();
         robotVelocityPublisher.set(robotVelocity);
