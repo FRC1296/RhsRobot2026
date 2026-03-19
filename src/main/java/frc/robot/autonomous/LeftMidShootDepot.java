@@ -13,6 +13,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
+import frc.robot.subsystems.vision.Localization;
 import frc.robot.subsystems.vision.LocalizationHelpers;
 
 /** Add your docs here. */
@@ -59,14 +60,14 @@ public class LeftMidShootDepot extends AutonomousRoutine{
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
-                    new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
+                    new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
-                    //new InstantCommand(intake::resetDeployPosition),
+                    // new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
+                    new InstantCommand(intake::resetDeployPosition),
                     new InstantCommand(intake::deployIntake), 
                     drivetrain.getAutoPath(firstPath),
                     new WaitCommand(0.3),
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new ParallelCommandGroup(
                         Commands.runOnce(intake::undeployIntake, intake),
                         new InstantCommand(feeder::runFeeder, feeder),
