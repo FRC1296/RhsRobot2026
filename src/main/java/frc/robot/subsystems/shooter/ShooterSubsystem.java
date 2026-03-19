@@ -180,7 +180,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
                 .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.4)
+                .withKP(0.6)
                 .withKI(0.0)
                 .withKD(0.0)
                 .withKS(0.2)
@@ -224,11 +224,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void increaseShooterSpeed() {
-        shooterSpeed += 1.0;
+        shooterSpeed += 0.5;
     }
 
     public void decreaseShooterSpeed() {
-        shooterSpeed -= 1.0;
+        shooterSpeed -= 0.5;
     }
 
     public void setShooterSafeVelocity() {
@@ -290,7 +290,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         }
 
     public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
-        double ToFFudgeFactor = 0.6;
+        double ToFFudgeFactor = 1;
         
         double[] robotData = calculateRobotMetric();
 
@@ -306,7 +306,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         double virtualX = realTargetX;
         double virtualY = realTargetY;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             virtualX = realTargetX - (velocityX * (timeOfFlight)) * ToFFudgeFactor;
             virtualY = realTargetY - (velocityY * (timeOfFlight)) * ToFFudgeFactor;
             

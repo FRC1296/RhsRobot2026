@@ -96,15 +96,15 @@
     },
     {
       "anchor": {
-        "x": 5.307950450450451,
+        "x": 5.583727477477478,
         "y": 5.546666666666668
       },
       "prevControl": {
-        "x": 5.841534799249575,
+        "x": 6.117311826276602,
         "y": 5.401213954043653
       },
       "nextControl": {
-        "x": 4.774366101651327,
+        "x": 5.050143128678354,
         "y": 5.692119379289682
       },
       "isLocked": false,
@@ -161,11 +161,11 @@
     {
       "anchor": {
         "x": 2.0394819819819823,
-        "y": 5.046182432432434
+        "y": 5.403671171171172
       },
       "prevControl": {
         "x": 1.4879279279279283,
-        "y": 5.607950450450451
+        "y": 5.965439189189189
       },
       "nextControl": null,
       "isLocked": false,
@@ -263,6 +263,28 @@
     {
       "name": "resetLLP",
       "waypointRelativePos": 1.256732495511669,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "resetLLP"
+        }
+      }
+    },
+    {
+      "name": "resetLLP",
+      "waypointRelativePos": 3.084745762711865,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "resetLLP"
+        }
+      }
+    },
+    {
+      "name": "resetLLP",
+      "waypointRelativePos": 3.423728813559324,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -372,7 +394,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.28940686250042
+    "rotation": -41.63353933657013
   },
   "reversed": false,
   "folder": "Left Mid",

@@ -227,6 +227,7 @@ public class FMJRobotContainer {
         driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
 
         driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
+        driverJoystick.x().onTrue(new InstantCommand(shooter::stopMasterShooter));
         driverJoystick.a().whileTrue(new InstantCommand(intake::manuelUndeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
 
         //driverJoystick.y().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
