@@ -4,7 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "Full Mid Swipe",
-    "Left Mid"
+    "Left and Right Mid"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
@@ -32,6 +32,6 @@
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
   "robotFeatures": [
-    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.55,\"y\":0.0},\"size\":{\"width\":0.673,\"length\":0.254},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.55,\"y\":0.0},\"size\":{\"width\":0.673,\"length\":0.254},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":true}}"
   ]
 }

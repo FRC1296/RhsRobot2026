@@ -3,7 +3,6 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.BooleanPublisher;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -42,7 +40,6 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.subsystems.vision.Localization;
-import frc.robot.subsystems.vision.LocalizationHelpers;
 
 
 public class FMJRobotContainer {
@@ -126,11 +123,15 @@ public class FMJRobotContainer {
         autoAaSM = new AutoAimAndShootMoving(this);
         //autoAaS = new AutoAimAndShoot(this);
 
-        NamedCommands.registerCommand("runIntake", Commands.runOnce(intake::runIntake, intake));
-        NamedCommands.registerCommand("resetLLP", Commands.runOnce(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
-        NamedCommands.registerCommand("runFeeder", Commands.runOnce(feeder::runFeeder, feeder));
-        NamedCommands.registerCommand("runSpindexer", Commands.runOnce(spindexer::runSpindexer, spindexer));
-
+        NamedCommands.registerCommand("runIntake", new InstantCommand(intake::runIntake));
+        NamedCommands.registerCommand("resetLLP", new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        NamedCommands.registerCommand("runFeeder", new InstantCommand(feeder::runFeeder, feeder));
+        NamedCommands.registerCommand("runSpindexer", new InstantCommand(spindexer::runSpindexer));
+        NamedCommands.registerCommand("stopSpindexer", new InstantCommand(spindexer::stopSpindexer));
+        NamedCommands.registerCommand("stopIntake", new InstantCommand(intake::stopIntake));
+        NamedCommands.registerCommand("stopFeeder", new InstantCommand(feeder::stopFeeder));
+        NamedCommands.registerCommand("deployIntake", new InstantCommand(intake::deployIntake));
+        NamedCommands.registerCommand("undeployIntake", new InstantCommand(intake::undeployIntake));
 
         configureNetworkTable();
         configureDriverBindings();

@@ -65,14 +65,14 @@ public class LeftMidShootDepot extends AutonomousRoutine{
                     // new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(intake::resetDeployPosition),
                     new InstantCommand(intake::deployIntake), 
-                    drivetrain.getAutoPath(firstPath),
-                    new WaitCommand(0.3),
-                    new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
-                    new ParallelCommandGroup(
-                        Commands.runOnce(intake::undeployIntake, intake),
-                        new InstantCommand(feeder::runFeeder, feeder),
-                        new InstantCommand(spindexer::runSpindexer, spindexer)
-                    )
+                    drivetrain.getAutoPath(firstPath)
+                    // new WaitCommand(0.3),
+                    // new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    // new ParallelCommandGroup(
+                    //     Commands.runOnce(intake::undeployIntake, intake),
+                    //     new InstantCommand(feeder::runFeeder, feeder),
+                    //     new InstantCommand(spindexer::runSpindexer, spindexer)
+                    //)
 
             );
                     
