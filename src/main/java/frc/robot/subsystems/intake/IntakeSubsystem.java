@@ -79,18 +79,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double intakeDeploySpeed = 0.10;
 
-    private double deployCruiseVelocity = 20;
-    private double deployCruiseAcceleration = 20;
+    private double deployCruiseVelocity = 50;
+    private double deployCruiseAcceleration = 50;
     private double deployCruiseJerk = 0;
     
 
-    private final double deploykP = 2.0;
+    private final double deploykP = 9.5;
     private final double deploykI = 0.0;
     private final double deploykD = 0.0;
-    private final double deploykG = 0.22;
+    private final double deploykG = 0.35;
     private final double deployKA = 0.0;
-    private final double deployKS = 0.0;
-    private final double deployKV = 1.0;
+    private final double deployKS = 0.6;
+    private final double deployKV = 0.125;
 
     private StatusSignal<Boolean> deployMMAtSetpoint;
     private StatusSignal<Voltage> deployVoltage;
@@ -105,20 +105,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeRollerMotor = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_ID);
         intakeDeployMotor = new TalonFX(Constants.intakeConstants.INTAKE_DEPLOY_MOTOR_ID);
-        intakeAbsEncoder = new CANcoder(Constants.intakeConstants.INTAKE_ENCODER_ID);
+        //intakeAbsEncoder = new CANcoder(Constants.intakeConstants.INTAKE_ENCODER_ID);
 
-        ConfigureAbsoluteEncoder();
+        //ConfigureAbsoluteEncoder();
         ConfigureIntakeRollerMotor();
         ConfigureDeployMotor();
     }
 
-    private void ConfigureAbsoluteEncoder() {
-        CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
-        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
-        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-        cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
-        intakeAbsEncoder.getConfigurator().apply(cc_cfg);
-    }
+    // private void ConfigureAbsoluteEncoder() {
+    //     CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
+    //     cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
+    //     cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    //     cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
+    //     intakeAbsEncoder.getConfigurator().apply(cc_cfg);
+    // }
 
     private void ConfigureIntakeRollerMotor() {
         MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
@@ -139,7 +139,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(15);
+                .withStatorCurrentLimit(35);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(deploykG)
@@ -179,7 +179,7 @@ public class IntakeSubsystem extends SubsystemBase {
         if (deployMMEnabled.getValue() && deployMMAtSetpoint.getValue()) {
             resetMotorEncoder();
         }
-        intakePositionPublisher.set(getIntakePosition());
+        //intakePositionPublisher.set(getIntakePosition());
     }
 
     protected void resetMotorEncoder() {
@@ -198,9 +198,9 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeRollerMotor.setControl(dcOut.withOutput(-0.90));
     }
 
-    public double getIntakePosition() {
-        return intakeAbsEncoder.getAbsolutePosition().getValueAsDouble();
-    }
+    //public double getIntakePosition() {
+        //return intakeAbsEncoder.getAbsolutePosition().getValueAsDouble();
+    //}
 
     public void undeployIntake() {
         intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeUndeployPosition));
@@ -226,14 +226,14 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeDeployMotor.setControl(dcOut.withOutput(intakeDeploySpeed));
     }
 
-    public void resetDeployPosition() {
-        double absPos = intakeAbsEncoder.getAbsolutePosition().getValueAsDouble();
-        if (absPos >= intakeAbsDeployPosition - .5 && absPos <= intakeAbsDeployPosition + .5) {
-            intakeDeployMotor.setPosition(intakeDeployPosition);
-        } else {
-            if (absPos >= intakeAbsStowPosition - .5 && absPos <= intakeAbsStowPosition + .5) {
-                intakeDeployMotor.setPosition(intakeStowPosition);
-            }
-        }
-    }
+    // public void resetDeployPosition() {
+    //     double absPos = intakeAbsEncoder.getAbsolutePosition().getValueAsDouble();
+    //     if (absPos >= intakeAbsDeployPosition - .5 && absPos <= intakeAbsDeployPosition + .5) {
+    //         intakeDeployMotor.setPosition(intakeDeployPosition);
+    //     } else {
+    //         if (absPos >= intakeAbsStowPosition - .5 && absPos <= intakeAbsStowPosition + .5) {
+    //             intakeDeployMotor.setPosition(intakeStowPosition);
+    //         }
+    //     }
+    // }
 }

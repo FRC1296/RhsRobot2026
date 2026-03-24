@@ -62,11 +62,11 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(0.0)
-                .withKP(0.505)
+                .withKP(0.5)
                 .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.3)
-                .withKV(0.095);
+                .withKS(0.42)
+                .withKV(0.1);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration()
                 .withMotorOutput(outputConfig)

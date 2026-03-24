@@ -200,7 +200,7 @@ public class FMJRobotContainer {
         //operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
 
         operatorJoystick.start().onTrue(new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
-        operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
+        //operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
 
     }
 

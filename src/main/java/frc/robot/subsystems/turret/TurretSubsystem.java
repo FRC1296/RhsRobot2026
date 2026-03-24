@@ -43,7 +43,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double cruiseVelocity = 75;
 
-    private final double kP = 7.0;
+    private final double kP = 7.75;
     private final double kI = 0.0;
     private final double kD = 0.0;
     private final double kS = 0.4;

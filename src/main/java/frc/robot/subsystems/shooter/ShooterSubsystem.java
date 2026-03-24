@@ -63,11 +63,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private double shooterDisModfier = 0.0;
 
     private double hoodCruiseVelocity = 10;
-    private final double hoodkP = 5.0;
+    private final double hoodkP = 8.0;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
-    private final double hoodkS = 0.3;
-    private final double hoodkV = 0.05;
+    private final double hoodkS = 0.5;
+    private final double hoodkV = 0.055;
 
     private Transform2d shooterOffset = new Transform2d(new Translation2d(0.0, 0.0381),new Rotation2d());
     private CommandSwerveDrivetrain drivetrain;
@@ -173,11 +173,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
                 .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.6)
+                .withKP(0.5)
                 .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.2)
-                .withKV(0.116);
+                .withKS(0.3)
+                .withKV(0.118);
 
         TalonFXConfiguration masterMotorConfig = new TalonFXConfiguration()
                 .withCurrentLimits(currentConfigs)
