@@ -31,6 +31,6 @@ public class SpindexerStallCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        spindexer.stopSpindexer();
+        spindexer.runSpindexer();
     }
 }

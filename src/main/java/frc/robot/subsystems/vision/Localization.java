@@ -163,36 +163,48 @@ public class Localization {
      */
     public static void resetToLimelightPose(CommandSwerveDrivetrain drivetrain, String... llNames) {
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
-        double orientationDeg = drivetrain.getPigeon2().getYaw().getValueAsDouble();
+        double currentYaw = drivetrain.getPigeon2().getYaw().getValueAsDouble();
 
+        double orientationDeg = currentYaw;
         if (DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Blue) {
             orientationDeg += 180.0;
         }
 
+        // Send orientation to all cameras so MT2 has a valid gyro hint
         for (String llName : llNames) {
             LimelightHelpers.SetIMUMode(llName, 1);
             LimelightHelpers.SetRobotOrientation(llName, orientationDeg, angularVelocity, 0, 0, 0, 0);
         }
 
-        // Try MT1 from each camera, pick the one with the closest tag
-        PoseEstimate bestMT1 = null;
+        // Use MT2 for XY — works at 2-5m with 1-2 tags, no close-range requirement
+        // Keep Pigeon rotation — more accurate than MT1 heading at typical reset
+        // distances
+        PoseEstimate bestMT2 = null;
         double bestDist = Double.MAX_VALUE;
 
         for (String llName : llNames) {
-            PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(llName);
-            if (isValidMT1Seed(mt1) && mt1.avgTagDist < bestDist) {
-                bestDist = mt1.avgTagDist;
-                bestMT1 = mt1;
+            PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName);
+            if (mt2 != null
+                    && mt2.tagCount > 0
+                    && mt2.rawFiducials != null
+                    && mt2.rawFiducials.length > 0
+                    && mt2.avgTagDist <= 6.0
+                    && mt2.avgTagArea >= MIN_TAG_AREA
+                    && !hasHighAmbiguity(mt2.rawFiducials)
+                    && !isPoseOutOfField(mt2.pose)
+                    && mt2.avgTagDist < bestDist) {
+                bestDist = mt2.avgTagDist;
+                bestMT2 = mt2;
             }
         }
 
-        if (bestMT1 != null) {
-            double visionYaw = bestMT1.pose.getRotation().getDegrees();
-            drivetrain.getPigeon2().setYaw(visionYaw);
+        if (bestMT2 != null) {
+            // XY from vision, rotation from Pigeon — best of both at typical match
+            // distances
             drivetrain.resetPose(new Pose2d(
-                    bestMT1.pose.getX(),
-                    bestMT1.pose.getY(),
-                    bestMT1.pose.getRotation()));
+                    bestMT2.pose.getX(),
+                    bestMT2.pose.getY(),
+                    Rotation2d.fromDegrees(orientationDeg)));
             Constants.hasInitializedFromVision = true;
         }
     }
