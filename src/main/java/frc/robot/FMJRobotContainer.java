@@ -34,6 +34,7 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.intake.AgitateBalls;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -67,13 +68,14 @@ public class FMJRobotContainer {
     private FeederSubsystem feeder;
     private ClimberSubsystem climber;
     private SpindexerSubsystem spindexer;
-    //private LedSubsystem LED;
+    private LedSubsystem LED;
 
     //private AutoAimAndShoot autoAaS;
     private AutoAimAndShootMoving autoAaSM;
     private FeedAimAndShootMoving autoAimFeed;
     private RobotAimAtHub autoRobotHub;
     private ShootBalls shootBalls;
+    private AgitateBalls agitate;
 
     private BooleanPublisher haveBallPublisher;
 
@@ -104,7 +106,7 @@ public class FMJRobotContainer {
         feeder = new FeederSubsystem();
         climber = new ClimberSubsystem();
         spindexer = new SpindexerSubsystem();
-        //LED = new LedSubsystem();
+        LED = new LedSubsystem();
 
         shootBalls = new ShootBalls(this);
 
@@ -231,6 +233,7 @@ public class FMJRobotContainer {
         driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
         //driverJoystick.x().onTrue(new InstantCommand(shooter::stopMasterShooter));
         driverJoystick.a().whileTrue(new InstantCommand(intake::manuelUndeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
+        driverJoystick.x().onTrue(new AgitateBalls(intake));
 
         //driverJoystick.y().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
         //driverJoystick.y().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));

@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -65,22 +66,23 @@ public class IntakeSubsystem extends SubsystemBase {
     private CANcoder intakeAbsEncoder;
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+    private VelocityVoltage velocityOut = new VelocityVoltage(0);
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
     private DoublePublisher intakePositionPublisher;
 
-    private double intakeDeployPosition = 16;
+    private double intakeDeployPosition = 11.07;
     private double intakeStowPosition = 0;
-    private double intakeUndeployPosition = 8;
-    private double intakeAgitatePosition = 8;
+    private double intakeUndeployPosition = 2.8;
+    private double intakeAgitatePosition = 2.8;
     private double intakeAbsDeployPosition = 0.87;
     private double intakeAbsStowPosition = 0.55;
 
 
     private double intakeDeploySpeed = 0.10;
 
-    private double deployCruiseVelocity = 50;
-    private double deployCruiseAcceleration = 50;
+    private double deployCruiseVelocity = 75;
+    private double deployCruiseAcceleration = 150;
     private double deployCruiseJerk = 0;
     
 
@@ -125,8 +127,14 @@ public class IntakeSubsystem extends SubsystemBase {
                 .withInverted(InvertedValue.Clockwise_Positive);
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(80);
+        Slot0Configs slotZeroConfigs = new Slot0Configs()
+                .withKP(0.5)
+                .withKI(0.0)
+                .withKD(0.0)
+                .withKS(0.45)
+                .withKV(0.1005);
         TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
-                .withCurrentLimits(currentLimitConfig);
+                .withCurrentLimits(currentLimitConfig).withSlot0(slotZeroConfigs);
 
         intakeRollerMotor.getConfigurator().apply(intakeMotorConfig);
     }
@@ -139,7 +147,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(35);
+                .withStatorCurrentLimit(55);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(deploykG)
@@ -187,7 +195,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntake() {
-        intakeRollerMotor.setControl(dcOut.withOutput(0.90));
+        intakeRollerMotor.setControl(velocityOut.withVelocity(95.0));
     }
 
     public void stopIntake() {
@@ -195,7 +203,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntakeReverse() {
-        intakeRollerMotor.setControl(dcOut.withOutput(-0.90));
+        intakeRollerMotor.setControl(velocityOut.withVelocity(-95.0));
     }
 
     //public double getIntakePosition() {

@@ -9,13 +9,15 @@ public class AgitateBalls extends SequentialCommandGroup {
   public AgitateBalls(IntakeSubsystem intake) {
 
     addCommands(
+        new InstantCommand(intake::runIntake),
         new InstantCommand(intake::moveIntakeToAgitate),
-        new WaitCommand(1.5),
+        new WaitCommand(2.0),
         new InstantCommand(intake::deployIntake),
-        new WaitCommand(1),
+        new WaitCommand(2.0),
         new InstantCommand(intake::moveIntakeToAgitate),
-        new WaitCommand(1.5),
-        new InstantCommand(intake::deployIntake)
+        new WaitCommand(2.0),
+        new InstantCommand(intake::deployIntake),
+        new InstantCommand(intake::stopIntake)
     );
   }
 }
