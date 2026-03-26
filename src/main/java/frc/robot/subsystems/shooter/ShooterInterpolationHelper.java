@@ -17,27 +17,32 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     }
 
     public void initializeTables() {
-        shooterSpeedTable.put(1.5, 29.5);
-        shooterSpeedTable.put(2.0, 32.0);
-        shooterSpeedTable.put(2.5, 35.0);
+        shooterSpeedTable.put(1.25, 28.5);
+        shooterSpeedTable.put(1.5, 30.0);
+        shooterSpeedTable.put(2.0, 35.0);
+        shooterSpeedTable.put(2.5, 37.5);
         shooterSpeedTable.put(3.0, 38.5);
-        shooterSpeedTable.put(3.5, 41.0);
-        shooterSpeedTable.put(4.0, 45.0);
-        shooterSpeedTable.put(4.5, 52.5);
-        shooterSpeedTable.put(5.265, 56.0);
+        shooterSpeedTable.put(3.5, 41.5);
+        shooterSpeedTable.put(4.0, 44.0);
+        shooterSpeedTable.put(4.5, 45.5);
+        shooterSpeedTable.put(5.24, 47.5);
 
-        hoodTable.put(1.5, 0.0);
-        hoodTable.put(6.0, 0.35);
+        hoodTable.put(1.5, 0.05);
+        hoodTable.put(5.5, 0.45);
 
-        //Distance to hub -> Time of Flight sec
-        timeOfFlightTable.put(1.5, 0.77);
-        timeOfFlightTable.put(2.0, 0.84);
-        timeOfFlightTable.put(2.5, 0.96);
-        timeOfFlightTable.put(3.0, 1.11);
-        timeOfFlightTable.put(3.5, 1.19);
-        timeOfFlightTable.put(4.0, 1.30);
-        timeOfFlightTable.put(4.5, 1.68);
-        timeOfFlightTable.put(5.265, 1.76);
+        //Distance to hub -> Time of Flight sec        
+        timeOfFlightTable.put(1.25, 0.80);
+        timeOfFlightTable.put(1.5, 0.89);
+        timeOfFlightTable.put(2.0, 0.87);
+        timeOfFlightTable.put(2.5, 1.17);
+        timeOfFlightTable.put(3.0, 1.17);
+        timeOfFlightTable.put(3.5, 1.27);
+        timeOfFlightTable.put(4.0, 1.33);
+        timeOfFlightTable.put(4.5, 1.38);
+        timeOfFlightTable.put(5.24, 1.37);
+        timeOfFlightTable.put(6.0, 1.38);
+
+
     }
 
     public double calculateToF(double distance) {
@@ -52,8 +57,8 @@ public class ShooterInterpolationHelper extends SubsystemBase {
         double hood = 0.0;
         if (distance <= 1.5) {
             hood = 0;
-        } else if (distance >= 6.0){
-            hood = 0.35;
+        } else if (distance >= 5.5){
+            hood = 0.4;
         } else {
             hood = hoodTable.get(distance);
         }

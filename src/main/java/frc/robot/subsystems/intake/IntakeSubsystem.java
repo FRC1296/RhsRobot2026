@@ -22,6 +22,8 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -63,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private TalonFX intakeRollerMotor;
     private TalonFX intakeDeployMotor;
-    private CANcoder intakeAbsEncoder;
+    //private CANcoder intakeAbsEncoder;
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
@@ -126,7 +128,7 @@ public class IntakeSubsystem extends SubsystemBase {
         MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
                 .withInverted(InvertedValue.Clockwise_Positive);
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(80);
+                .withStatorCurrentLimit(120);
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKP(0.5)
                 .withKI(0.0)
@@ -185,7 +187,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         BaseStatusSignal.refreshAll(deployMMAtSetpoint, deployMMEnabled, deployVoltage);
         if (deployMMEnabled.getValue() && deployMMAtSetpoint.getValue()) {
-            resetMotorEncoder();
+            //resetMotorEncoder();
         }
         //intakePositionPublisher.set(getIntakePosition());
     }
@@ -219,6 +221,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void deployIntake() {
+        intakeRollerMotor.setControl(velocityOut.withSlot(0).withVelocity(95));
         intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
     }
 

@@ -26,7 +26,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private DutyCycleOut dcOut = new DutyCycleOut(0);
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
 
-    private double statorCurrentLimit = 80.0;
+    private double statorCurrentLimit = 95.0;
     private StatusSignal spindexerVelocitySS;
     private StatusSignal spindexerVelocityErrorSS;
     private StatusSignal spindexerStatorCurrentSS;

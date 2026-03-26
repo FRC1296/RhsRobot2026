@@ -37,7 +37,7 @@ public class FeederSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(80);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.3)
+                .withKP(1.0)
                 .withKI(0.0)
                 .withKD(0.0)
                 .withKS(0.375)

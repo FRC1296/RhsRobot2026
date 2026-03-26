@@ -37,7 +37,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private TalonFX hoodMotor;
     private TalonFX shooterMasterMotor;
     private TalonFX shooterFollowerMotor;
-    private CANcoder hoodAbsEncoder;
+    //private CANcoder hoodAbsEncoder;
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     private DutyCycleOut dcOut = new DutyCycleOut(0);
@@ -86,7 +86,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         hoodMotor = new TalonFX(Constants.shooterConstants.HOOD_MOTOR_ID);
         shooterMasterMotor = new TalonFX(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID);
         shooterFollowerMotor = new TalonFX(Constants.shooterConstants.SHOOTER_SLAVE_MOTOR_ID);
-        hoodAbsEncoder = new CANcoder(Constants.shooterConstants.HOOD_ENCODER_ID);
+        //hoodAbsEncoder = new CANcoder(Constants.shooterConstants.HOOD_ENCODER_ID);
 
         ConfigureAbsoluteEncoder();
         ConfigureHoodMotor();
@@ -112,9 +112,9 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
         cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
-        hoodAbsEncoder.getConfigurator().apply(cc_cfg);
-        hoodAbsEncoder.clearStickyFaults();
-        hoodAbsEncoder.setPosition(0.0);
+        //hoodAbsEncoder.getConfigurator().apply(cc_cfg);
+        //hoodAbsEncoder.clearStickyFaults();
+        //hoodAbsEncoder.setPosition(0.0);
     }
 
     private void ConfigureHoodMotor() {
@@ -124,7 +124,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(60);
+                .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKS(hoodkS)
@@ -197,7 +197,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
             resetMotorEncoder();
         }
 
-        hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
+        //hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
         TofAd.set(ToFInterpAdjustment);
         Dis.set(shooterDisModfier);
@@ -257,9 +257,9 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void resetHoodPosition() {
-        double absolutePosition = hoodAbsEncoder.getAbsolutePosition().getValueAsDouble();
+        //double absolutePosition = hoodAbsEncoder.getAbsolutePosition().getValueAsDouble();
         //determine the position to set the motor to
-        hoodMotor.setPosition(absolutePosition);
+        //hoodMotor.setPosition(absolutePosition);
     }
     public void moveHoodZero() {
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodStartPosition));

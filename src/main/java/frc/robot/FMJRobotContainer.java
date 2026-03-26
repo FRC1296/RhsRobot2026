@@ -190,11 +190,11 @@ public class FMJRobotContainer {
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(spindexer::runSpindexer))
         .onFalse(new InstantCommand(spindexer::stopSpindexer));
         operatorJoystick.rightBumper().whileTrue(new InstantCommand(feeder::runFeeder))
-        .onFalse(new InstantCommand(feeder::runFeeder).withTimeout(1.0).andThen(new InstantCommand(feeder::stopFeeder)));
+        .onFalse(new InstantCommand(feeder::reverseFeeder).withTimeout(1.0).andThen(new InstantCommand(feeder::stopFeeder)));
 
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
         operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
-        //operatorJoystick.y().onTrue(new InstantCommand(shooter::increaseToF));
+        operatorJoystick.y().onTrue(new InstantCommand(shooter::stopMasterShooter));
         //operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseToF));
 
         operatorJoystick.povRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
