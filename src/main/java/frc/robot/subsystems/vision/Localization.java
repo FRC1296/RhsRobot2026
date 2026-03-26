@@ -110,17 +110,33 @@ public class Localization {
         // --- Step 1: Initial seeding from MT1 (works at ANY robot orientation) ---
         // MT1 solves full 6DOF from tag geometry so it doesn't need a gyro hint.
         // We use it exactly once to seed the gyro and pose before relying on MT2.
+        // if (!Constants.hasInitializedFromVision) {
+        //     for (String llName : llNames) {
+        //         PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(llName);
+        //         if (isValidMT1Seed(mt1)) {
+        //             double visionYaw = mt1.pose.getRotation().getDegrees();
+        //             // Correct the pigeon so future MT2 calls get a real heading hint
+        //             drivetrain.getPigeon2().setYaw(visionYaw);
+        //             drivetrain.resetPose(new Pose2d(
+        //                     mt1.pose.getX(),
+        //                     mt1.pose.getY(),
+        //                     mt1.pose.getRotation()));
+        //             Constants.hasInitializedFromVision = true;
+        //             break; // one camera is enough to seed
+        //         }
+        //     }
+        //     // Don't integrate measurements until we have a valid initial pose
+        //     return;
+        // }
+
         if (!Constants.hasInitializedFromVision) {
             for (String llName : llNames) {
-                PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(llName);
-                if (isValidMT1Seed(mt1)) {
-                    double visionYaw = mt1.pose.getRotation().getDegrees();
-                    // Correct the pigeon so future MT2 calls get a real heading hint
-                    drivetrain.getPigeon2().setYaw(visionYaw);
+                PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName);
+                if (isValidMT2Seed(mt2)) {
                     drivetrain.resetPose(new Pose2d(
-                            mt1.pose.getX(),
-                            mt1.pose.getY(),
-                            mt1.pose.getRotation()));
+                            mt2.pose.getX(),
+                            mt2.pose.getY(),
+                            mt2.pose.getRotation()));
                     Constants.hasInitializedFromVision = true;
                     break; // one camera is enough to seed
                 }
@@ -528,6 +544,24 @@ public class Localization {
         if (hasHighAmbiguity(mt1.rawFiducials))
             return false;
         if (isPoseOutOfField(mt1.pose))
+            return false;
+        return true;
+    }
+
+        private static boolean isValidMT2Seed(PoseEstimate mt2) {
+        if (mt2 == null)
+            return false;
+        if (mt2.tagCount == 0)
+            return false;
+        if (mt2.rawFiducials == null)
+            return false;
+        if (mt2.rawFiducials.length == 0)
+            return false;
+        if (mt2.avgTagDist > MAX_SEED_DIST)
+            return false;
+        if (hasHighAmbiguity(mt2.rawFiducials))
+            return false;
+        if (isPoseOutOfField(mt2.pose))
             return false;
         return true;
     }

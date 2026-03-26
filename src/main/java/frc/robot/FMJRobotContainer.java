@@ -100,6 +100,8 @@ public class FMJRobotContainer {
     private boolean initialized = false;
 
     public FMJRobotContainer() {
+
+        drivetrain.getPigeon2().setYaw(0.0);
         shooter = new ShooterSubsystem(drivetrain);
         turret = new TurretSubsystem(drivetrain);
         intake = new IntakeSubsystem();
@@ -113,11 +115,9 @@ public class FMJRobotContainer {
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             hubLocation = Constants.BLUE_HUB;
             feedLocation = Constants.BLUE_FEED_ONE;
-            drivetrain.getPigeon2().setYaw(0.0);
         } else {
             hubLocation = Constants.RED_HUB;
             feedLocation = Constants.RED_FEED_ONE;
-            drivetrain.getPigeon2().setYaw(180.0);
         }
 
         autoRobotHub = new RobotAimAtHub(this);

@@ -291,7 +291,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         double virtualX = realTargetX;
         double virtualY = realTargetY;
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 7; i++) {
             virtualX = realTargetX - (velocityX * (timeOfFlight)) * ToFFudgeFactor;
             virtualY = realTargetY - (velocityY * (timeOfFlight)) * ToFFudgeFactor;
             

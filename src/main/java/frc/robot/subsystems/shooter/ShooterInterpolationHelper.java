@@ -40,7 +40,6 @@ public class ShooterInterpolationHelper extends SubsystemBase {
         timeOfFlightTable.put(4.0, 1.33);
         timeOfFlightTable.put(4.5, 1.38);
         timeOfFlightTable.put(5.24, 1.37);
-        timeOfFlightTable.put(6.0, 1.38);
 
 
     }
