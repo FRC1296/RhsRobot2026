@@ -136,7 +136,7 @@ public class Localization {
                     drivetrain.resetPose(new Pose2d(
                             mt2.pose.getX(),
                             mt2.pose.getY(),
-                            mt2.pose.getRotation()));
+                            Rotation2d.fromDegrees(currentYaw)));
                     Constants.hasInitializedFromVision = true;
                     break; // one camera is enough to seed
                 }

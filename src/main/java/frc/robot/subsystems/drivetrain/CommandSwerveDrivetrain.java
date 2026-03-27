@@ -346,7 +346,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                 .withSpeeds(speeds)
                                 .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                                 .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-                new PPHolonomicDriveController(new PIDConstants(0.75, 0.0, 0.0), new PIDConstants(1.0, 0.0, 0.0)),
+                new PPHolonomicDriveController(new PIDConstants(1.5, 0.0, 0.0), new PIDConstants(1.5, 0.0, 0.0)),
                 pathPlannerRobotConfig,
                 () -> {
                     return false;
@@ -373,8 +373,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier (MUST BE ROBOT RELATIVE)
                 (speeds, feedforwards) -> driveRobotRelative(speeds), // Method to drive the robot
                 new PPHolonomicDriveController(
-                        new PIDConstants(0.75, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(0.75, 0.0, 0.0) // Rotation PID constants
+                        new PIDConstants(1.5, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(1.5, 0.0, 0.0) // Rotation PID constants
                 ),
                 pathPlannerRobotConfig, // Robot configuration
                 () -> {

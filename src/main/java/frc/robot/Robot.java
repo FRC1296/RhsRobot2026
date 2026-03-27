@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
         // Initialize PathPlanner
         FollowPathCommand.warmupCommand();
 
-        if (DriverStation.isFMSAttached()) {
+        // if (DriverStation.isFMSAttached()) {
             //Start WPILib Data Log
             DataLogManager.start(); // stores logs in either USB(diretory logs) or roborio drive(/home/lvuser/logs)
             DriverStation.startDataLog(DataLogManager.getLog());
@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
             // Start CTRE Data Log - logging will automatically start for FRC match
             SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this location
             SignalLogger.start();
-        }
+        // }
     }
 
     @Override

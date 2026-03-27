@@ -12,16 +12,21 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
 public class SpindexerSubsystem extends SubsystemBase {
 
     private TalonFX spindexerMotor;
+
+    private CommandSwerveDrivetrain drivetrain;
 
     private DutyCycleOut dcOut = new DutyCycleOut(0);
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
@@ -34,7 +39,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private BooleanPublisher spindexerStallPublisher;
     private SpindexerStallCommand stallCommand;
 
-    public SpindexerSubsystem() {
+    public SpindexerSubsystem(CommandSwerveDrivetrain drivetrain) {
         super("Spindexer");
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
@@ -48,6 +53,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         stallCommand = new SpindexerStallCommand(this);
 
+        this.drivetrain = drivetrain;
     }
 
     private void ConfigureSpindexerMotor() {
@@ -81,7 +87,13 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void runSpindexer() {
-        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
+        ChassisSpeeds speed = drivetrain.getRobotRelativeSpeeds();
+        double currentSpeed = Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
+        if(currentSpeed <= 1.2 && DriverStation.isTeleop()){
+            spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
+        } else if(DriverStation.isAutonomous()){
+            spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
+        }
     }
 
     public void reverseSpindexer() {

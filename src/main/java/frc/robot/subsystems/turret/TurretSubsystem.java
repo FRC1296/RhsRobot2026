@@ -152,11 +152,11 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void increaseTurretAngle() {
-        turretAngleAdjustment = turretAngleAdjustment + 1;
+        turretAngleAdjustment = turretAngleAdjustment + 0.5;
     }
 
     public void decreaseTurretAngle() {
-        turretAngleAdjustment = turretAngleAdjustment - 1;
+        turretAngleAdjustment = turretAngleAdjustment - 0.5;
     }
 
     public void moveTurretToZero() {

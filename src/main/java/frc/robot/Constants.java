@@ -71,7 +71,7 @@ public class Constants {
         public static final int SPINDEXER_MOTOR_ID = 15;
         public static final int FEEDER_MOTOR_ID = 16;
         
-        public static final double feederSpeed = 0.8;
+        public static final double feederSpeed = 90.0;
         public static final double SPINDEXER_SPEED = 72.0;
 
     }
