@@ -63,10 +63,10 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private double shooterDisModfier = 0.0;
 
     private double hoodCruiseVelocity = 10;
-    private final double hoodkP = 8.0;
+    private final double hoodkP = 25.0;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
-    private final double hoodkS = 0.5;
+    private final double hoodkS = 0.37;
     private final double hoodkV = 0.055;
 
     private Transform2d shooterOffset = new Transform2d(new Translation2d(0.0, 0.0381),new Rotation2d());

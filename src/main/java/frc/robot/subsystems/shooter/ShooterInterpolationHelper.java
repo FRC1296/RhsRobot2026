@@ -17,29 +17,31 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     }
 
     public void initializeTables() {
-        shooterSpeedTable.put(1.25, 28.5);
-        shooterSpeedTable.put(1.5, 30.0);
-        shooterSpeedTable.put(2.0, 35.0);
-        shooterSpeedTable.put(2.5, 37.5);
-        shooterSpeedTable.put(3.0, 38.5);
-        shooterSpeedTable.put(3.5, 41.5);
-        shooterSpeedTable.put(4.0, 44.0);
-        shooterSpeedTable.put(4.5, 45.5);
-        shooterSpeedTable.put(5.24, 47.5);
+        shooterSpeedTable.put(1.25, 28.0);
+        shooterSpeedTable.put(1.5, 29.0);
+        shooterSpeedTable.put(2.0, 33.0);
+        shooterSpeedTable.put(2.5, 35.0);
+        shooterSpeedTable.put(3.0, 37.0);
+        shooterSpeedTable.put(3.5, 38.5);
+        shooterSpeedTable.put(4.0, 42.0);
+        shooterSpeedTable.put(4.5, 43.5);
+        shooterSpeedTable.put(5.0, 46.5);
+        shooterSpeedTable.put(5.45, 47.0);
 
         hoodTable.put(1.5, 0.05);
         hoodTable.put(5.5, 0.45);
 
         //Distance to hub -> Time of Flight sec        
-        timeOfFlightTable.put(1.25, 0.80);
-        timeOfFlightTable.put(1.5, 0.89);
-        timeOfFlightTable.put(2.0, 0.87);
-        timeOfFlightTable.put(2.5, 1.17);
-        timeOfFlightTable.put(3.0, 1.17);
-        timeOfFlightTable.put(3.5, 1.27);
-        timeOfFlightTable.put(4.0, 1.33);
-        timeOfFlightTable.put(4.5, 1.38);
-        timeOfFlightTable.put(5.24, 1.37);
+        timeOfFlightTable.put(1.25, 0.77);
+        timeOfFlightTable.put(1.5, 0.77);
+        timeOfFlightTable.put(2.0, 1.00);
+        timeOfFlightTable.put(2.5, 1.10);
+        timeOfFlightTable.put(3.0, 1.00);
+        timeOfFlightTable.put(3.5, 1.13);
+        timeOfFlightTable.put(4.0, 1.27);
+        timeOfFlightTable.put(4.5, 1.33);
+        timeOfFlightTable.put(5.0, 1.4);
+        timeOfFlightTable.put(5.45, 1.45);
 
 
     }

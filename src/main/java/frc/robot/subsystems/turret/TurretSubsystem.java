@@ -126,7 +126,7 @@ public class TurretSubsystem extends SubsystemBase {
 
         double offsetCorrection = Math.toDegrees(Math.asin(MathUtil.clamp(turretOffset.getTranslation().getY() / distanceToTarget, -1.0, 1.0)));
         Translation2d vectorToTarget = targetTranslation.minus(turretTranslation);
-        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees() + offsetCorrection, minAngle, maxAngle) - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
+        double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees() , minAngle, maxAngle) - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
         return angleToTarget;
     }
 

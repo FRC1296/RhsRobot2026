@@ -76,8 +76,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double intakeDeployPosition = 11.07;
     private double intakeStowPosition = 0;
-    private double intakeUndeployPosition = 2.8;
-    private double intakeAgitatePosition = 6.0;
+    private double intakeUndeployPosition = 5.0;
+    private double intakeAgitatePosition = 5.0;
     private double intakeAbsDeployPosition = 0.87;
     private double intakeAbsStowPosition = 0.55;
 
@@ -222,10 +222,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void deployIntake() {
-        runIntake();
         intakeDeployMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(intakeDeployPosition));
-        new WaitCommand(0.5);
-        stopIntake();
     }
 
     public void moveIntakeToAgitate() {
