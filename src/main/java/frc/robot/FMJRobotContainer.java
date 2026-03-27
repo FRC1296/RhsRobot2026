@@ -127,7 +127,7 @@ public class FMJRobotContainer {
         //autoAaS = new AutoAimAndShoot(this);
 
         NamedCommands.registerCommand("runIntake", new InstantCommand(intake::runIntake));
-        NamedCommands.registerCommand("resetLLP", new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        NamedCommands.registerCommand("resetLLP", new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
         NamedCommands.registerCommand("runFeeder", new InstantCommand(feeder::runFeeder, feeder));
         NamedCommands.registerCommand("runSpindexer", new InstantCommand(spindexer::runSpindexer));
         NamedCommands.registerCommand("stopSpindexer", new InstantCommand(spindexer::stopSpindexer));
@@ -290,7 +290,7 @@ public class FMJRobotContainer {
         Command auton = autonChooser.getSelected();
 
         if (Localization.tagInView("limelight-a", "limelight-b")) {
-            LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
+            Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
         } else {
             drivetrain.resetPose(((IAuto) auton).getInitialPose());
         }
@@ -303,9 +303,9 @@ public class FMJRobotContainer {
     }
 
     public void robotPeriodic() {
-        LocalizationHelpers.updatePose(drivetrain, "limelight-a");
-        LocalizationHelpers.updatePose(drivetrain, "limelight-b");
-        //Localization.updatePose(drivetrain, "limelight-a", "limelight-b");
+        //LocalizationHelpers.updatePose(drivetrain, "limelight-a");
+        //LocalizationHelpers.updatePose(drivetrain, "limelight-b");
+        Localization.updatePose(drivetrain, "limelight-a", "limelight-b");
 
         //getDriveVector();
         robotVelocityPublisher.set(robotVelocity);
