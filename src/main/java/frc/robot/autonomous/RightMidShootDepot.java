@@ -11,8 +11,8 @@ import frc.robot.subsystems.vision.Localization;
 import frc.robot.subsystems.vision.LocalizationHelpers;
 
 /** Add your docs here. */
-public class LeftMidShootDepot extends AutonomousRoutine{
-     public LeftMidShootDepot(FMJRobotContainer robot, double velocity, double acceleration,
+public class RightMidShootDepot extends AutonomousRoutine{
+     public RightMidShootDepot(FMJRobotContainer robot, double velocity, double acceleration,
             boolean isRedAlliance) {
         super(robot, velocity, acceleration, isRedAlliance);
 
@@ -22,7 +22,7 @@ public class LeftMidShootDepot extends AutonomousRoutine{
 
         boolean pathLoaded = true;
         try {
-            firstPath = PathPlannerPath.fromPathFile("Left Mid Shoot Depot");
+            firstPath = PathPlannerPath.fromPathFile("Right Mid Shoot Depot");
             
         } catch (Exception e) {
             System.err.println("Unable to load PathPlanner file - " + e.getLocalizedMessage());

@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.5991668948963165,
-        "y": 5.6827213552730775
+        "x": 5.727160714285714,
+        "y": 5.557464285714286
       },
       "prevControl": {
-        "x": 5.149417481606624,
-        "y": 5.652453781476357
+        "x": 5.303039955742211,
+        "y": 5.404780812638625
       },
       "nextControl": {
-        "x": 6.036558355682454,
-        "y": 5.71215725430086
+        "x": 6.132071428571428,
+        "y": 5.703232142857144
       },
       "isLocked": false,
       "linkedName": null
@@ -96,27 +96,27 @@
     },
     {
       "anchor": {
-        "x": 5.573513513513514,
-        "y": 5.516024774774776
+        "x": 5.7757499999999995,
+        "y": 5.444089285714285
       },
       "prevControl": {
-        "x": 6.1148536036027625,
-        "y": 5.383243243238978
+        "x": 6.174023084261015,
+        "y": 5.127813601154066
       },
       "nextControl": {
-        "x": 4.996791944147049,
-        "y": 5.657484782359995
+        "x": 5.225071428571429,
+        "y": 5.881392857142857
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.478682432432433,
+        "x": 2.48,
         "y": 5.689662162162162
       },
       "prevControl": {
-        "x": 3.0200225225232686,
+        "x": 3.0213400900908356,
         "y": 5.699876126126907
       },
       "nextControl": null,
@@ -127,7 +127,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.4245283018867924,
-      "rotationDegrees": -45.0
+      "rotationDegrees": 0.0
     },
     {
       "waypointRelativePos": 2.95,
@@ -146,12 +146,12 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 6.15,
-      "rotationDegrees": 45.0
+      "waypointRelativePos": 6.101604278074865,
+      "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 6.35,
-      "rotationDegrees": 45.0
+      "waypointRelativePos": 6.588235294117657,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
@@ -160,9 +160,9 @@
       "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 0.8581687612208247,
       "constraints": {
-        "maxVelocity": 2.5,
-        "maxAcceleration": 2.5,
-        "maxAngularVelocity": 540.0,
+        "maxVelocity": 3.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
         "unlimited": false
@@ -171,7 +171,7 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 5.026929982046684,
-      "maxWaypointRelativePos": 6.35,
+      "maxWaypointRelativePos": 5.433898305084759,
       "constraints": {
         "maxVelocity": 2.5,
         "maxAcceleration": 2.5,
@@ -183,39 +183,13 @@
     },
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 6.35,
-      "maxWaypointRelativePos": 6.75,
+      "minWaypointRelativePos": 5.766101694915264,
+      "maxWaypointRelativePos": 6.549152542372883,
       "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 1.75,
-        "maxAngularVelocity": 540.0,
+        "maxVelocity": 3.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 6.8,
-      "maxWaypointRelativePos": 6.95,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 1.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 6.95,
-      "maxWaypointRelativePos": 7.0,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 1.75,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 540.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }

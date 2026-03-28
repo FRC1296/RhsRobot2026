@@ -1,5 +1,7 @@
 {
   "download": {
+    "localDir": "C:\\Users\\2023User\\2026\\2026logs",
+    "remoteDir": "/home/etc/home",
     "serverTeam": "1296"
   }
 }

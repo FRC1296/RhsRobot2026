@@ -55,13 +55,15 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void runFeeder() {
-        ChassisSpeeds speed = drivetrain.getRobotRelativeSpeeds();
-        double currentSpeed = Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
-        if(currentSpeed <= 1.2 && DriverStation.isTeleop()){
-            feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
-        } else if(DriverStation.isAutonomous()){
-            feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
-        }
+        // ChassisSpeeds speed = drivetrain.getRobotRelativeSpeeds();
+        // double currentSpeed = Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
+        // if(currentSpeed <= 1.2 && DriverStation.isTeleop()){
+        //     feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
+        // } else if(DriverStation.isAutonomous()){
+        //     feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
+        // }
+        feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
+
     }
 
     public void reverseFeeder() {

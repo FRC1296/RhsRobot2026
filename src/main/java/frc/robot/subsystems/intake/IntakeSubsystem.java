@@ -131,11 +131,11 @@ public class IntakeSubsystem extends SubsystemBase {
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(120);
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.5)
+                .withKP(1.6)
                 .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.45)
-                .withKV(0.1005);
+                .withKS(0.2)
+                .withKV(0.117);
         TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
                 .withCurrentLimits(currentLimitConfig).withSlot0(slotZeroConfigs);
 
@@ -247,4 +247,8 @@ public class IntakeSubsystem extends SubsystemBase {
     //         }
     //     }
     // }
+
+    public void resetDeployPosition() {
+        intakeDeployMotor.setPosition(intakeDeployPosition);
+    }
 }

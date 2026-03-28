@@ -18,12 +18,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.autonomous.DefaultAuton;
 import frc.robot.autonomous.FullMidSwipe;
 import frc.robot.autonomous.IAuto;
 import frc.robot.autonomous.LeftMidShoot;
 import frc.robot.autonomous.LeftMidShootDepot;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.LeftToMiddle;
+import frc.robot.autonomous.RightMidShootDepot;
 import frc.robot.autonomous.RightToStation;
 import frc.robot.autonomous.ShootAuton;
 import frc.robot.commands.AutoAimAndShootMoving;
@@ -203,9 +205,11 @@ public class FMJRobotContainer {
         operatorJoystick.povLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
         //operatorJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
         //operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
+        operatorJoystick.povUp().onTrue(autoAaSM);
+        operatorJoystick.povDown().onTrue(autoAimFeed);
 
-        operatorJoystick.start().onTrue(new InstantCommand(() -> Localization.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
-        //operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
+        operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
 
     }
 
@@ -218,6 +222,13 @@ public class FMJRobotContainer {
             .withVelocityX(-driverJoystick.getLeftY() * MaxSpeed * 0.25)
             .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed * 0.25)
             .withRotationalRate(-driverJoystick.getRightX() * 2  )));
+        driverJoystick.y().whileTrue(new ParallelCommandGroup(
+            new InstantCommand(spindexer::runSpindexer),
+            new InstantCommand(feeder::runFeeder)
+        )).onFalse(new ParallelCommandGroup(
+            new InstantCommand(spindexer::stopSpindexer),
+            new InstantCommand(feeder::stopFeeder)
+        ));
         // driverJoystick.rightStick().whileTrue(
         //     drivetrain.applyRequest(() -> drive
         //         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate * 0.5  )
@@ -278,6 +289,11 @@ public class FMJRobotContainer {
 
         autonChooser.addOption("LeftMidShootDepot Blue", new LeftMidShootDepot(this, 3, MaxAngularRate, bluePath));
         autonChooser.addOption("LeftMidShootDepot Red", new LeftMidShootDepot(this, 3, MaxAngularRate, redPath));
+   
+        autonChooser.addOption("RightMidShootDepot Blue", new RightMidShootDepot(this, 3, MaxAngularRate, bluePath));
+        autonChooser.addOption("RightMidShootDepot Red", new RightMidShootDepot(this, 3, MaxAngularRate, redPath));
+
+
 
         SmartDashboard.putData("Auto Choices", autonChooser);
     }
@@ -288,6 +304,14 @@ public class FMJRobotContainer {
 
     public Command getAutonomousCommand() {
         Command auton = autonChooser.getSelected();
+
+        if(auton == null) {
+            if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+                auton = new DefaultAuton(this, MaxSpeed, MaxAngularRate, false);
+            } else {
+                auton = new DefaultAuton(this, MaxSpeed, MaxAngularRate, true);
+            }
+        } 
 
         if (Localization.tagInView("limelight-a", "limelight-b")) {
             LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");

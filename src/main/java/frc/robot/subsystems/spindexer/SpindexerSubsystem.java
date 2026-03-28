@@ -87,13 +87,15 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void runSpindexer() {
-        ChassisSpeeds speed = drivetrain.getRobotRelativeSpeeds();
-        double currentSpeed = Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
-        if(currentSpeed <= 1.2 && DriverStation.isTeleop()){
-            spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
-        } else if(DriverStation.isAutonomous()){
-            spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
-        }
+        // ChassisSpeeds speed = drivetrain.getRobotRelativeSpeeds();
+        // double currentSpeed = Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
+        // if(currentSpeed <= 1.2 && DriverStation.isTeleop()){
+        //     spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
+        // } else if(DriverStation.isAutonomous()){
+        //     spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
+        // }
+        spindexerMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.SPINDEXER_SPEED));
+
     }
 
     public void reverseSpindexer() {
