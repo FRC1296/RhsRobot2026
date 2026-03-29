@@ -249,14 +249,14 @@ public class FMJRobotContainer {
         driverJoystick.x().onTrue(new AgitateBalls(intake));
 
         //driverJoystick.y().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
-        //driverJoystick.y().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
+        //driverJoystick.y().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::st `````````````````````````111111111111111111`q*opFeeder));
 
         driverJoystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         driverJoystick.povLeft().onTrue(new InstantCommand(shooter::decreaseShooterSpeed));
         driverJoystick.povRight().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
-        driverJoystick.povUp().onTrue(autoAaSM);
-        driverJoystick.povDown().onTrue(autoAimFeed);
+        driverJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
+        driverJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
 
         //for tuning the drivetrain
         // driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));

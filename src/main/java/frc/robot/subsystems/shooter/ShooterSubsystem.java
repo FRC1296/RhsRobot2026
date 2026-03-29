@@ -229,11 +229,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void increaseShooterInterpSpeed() {
-        shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment + 2;
+        shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment + 0.5;
     }
 
     public void decreaseShooterInterpSpeed() {
-        shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment - 2;
+        shooterInterpSpeedAdjustment = shooterInterpSpeedAdjustment - 0.5;
     }
 
     public void increaseToF() {

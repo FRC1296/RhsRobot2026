@@ -8,7 +8,7 @@ public class ShooterInterpolationHelper extends SubsystemBase {
     protected InterpolatingDoubleTreeMap shooterSpeedTable = new InterpolatingDoubleTreeMap();
     protected InterpolatingDoubleTreeMap timeOfFlightTable = new InterpolatingDoubleTreeMap();
     protected InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
-    protected double shooterInterpSpeedAdjustment = 0;
+    protected double shooterInterpSpeedAdjustment = 0.5;
     protected double ToFInterpAdjustment = 0;
 
     public ShooterInterpolationHelper(String name) {

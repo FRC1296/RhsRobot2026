@@ -275,54 +275,16 @@
       "name": "resetLLP",
       "waypointRelativePos": 4.434470377019759,
       "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "resetLLP",
-      "waypointRelativePos": 6.95,
-      "endWaypointRelativePos": null,
       "command": {
-        "type": "sequential",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "resetLLP"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "stopIntake"
-              }
-            },
-            {
-              "type": "parallel",
-              "data": {
-                "commands": [
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "runSpindexer"
-                    }
-                  },
-                  {
-                    "type": "named",
-                    "data": {
-                      "name": "runFeeder"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
+          "name": "resetLLP"
         }
       }
     },
     {
       "name": "runFeederAndSpindexer",
-      "waypointRelativePos": 6.987432675044876,
+      "waypointRelativePos": 6.96,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -346,25 +308,12 @@
     },
     {
       "name": "resetLLP",
-      "waypointRelativePos": 7.0,
+      "waypointRelativePos": 6.99,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "parallel",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "undeployIntake"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "resetLLP"
-              }
-            }
-          ]
+          "name": "resetLLP"
         }
       }
     }

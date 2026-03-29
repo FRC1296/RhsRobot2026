@@ -42,10 +42,10 @@ public class FeederSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(80);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(1.0)
+                .withKP(0.65)
                 .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.375)
+                .withKS(0.4)
                 .withKV(0.096);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)

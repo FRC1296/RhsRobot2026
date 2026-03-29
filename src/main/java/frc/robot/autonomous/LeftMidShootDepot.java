@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.intake.AgitateBalls;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.vision.Localization;
 import frc.robot.subsystems.vision.LocalizationHelpers;
 
@@ -17,6 +19,7 @@ public class LeftMidShootDepot extends AutonomousRoutine{
         super(robot, velocity, acceleration, isRedAlliance);
 
         CommandSwerveDrivetrain drivetrain = robot.getDrivetrain();
+        IntakeSubsystem intake = robot.getIntake();
 
         PathPlannerPath firstPath = null;
 
@@ -41,7 +44,9 @@ public class LeftMidShootDepot extends AutonomousRoutine{
                     new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     drivetrain.runOnce(() -> drivetrain.seedFieldCentric()),
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
-                    drivetrain.getAutoPath(firstPath)
+                    drivetrain.getAutoPath(firstPath),
+                    new AgitateBalls(intake),
+                    new InstantCommand(intake::undeployIntake)
             );
                     
         }
