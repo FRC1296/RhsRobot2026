@@ -332,6 +332,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return ret;
     }
 
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+        this.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+
+    public Rotation2d getRotation() {
+        return this.getState().Pose.getRotation();
+    }
+
     public Command getAutoPath(PathPlannerPath path) {
 
         SmartDashboard.putString("AutonMessages", "Got auto path, wieght - '" + pathPlannerRobotConfig.massKG + "'");

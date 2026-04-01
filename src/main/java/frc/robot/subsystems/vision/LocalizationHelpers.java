@@ -86,24 +86,24 @@ public class LocalizationHelpers {
         return stdDev;
     }
 
-    private static void updateDynamicCrop(String name, boolean isInvalid) {
-        if (isInvalid) {
-            LimelightHelpers.setCropWindow(name, -1.0, 1.0, -1.0, 1.0);
-        } else {
-            double centerX = LimelightHelpers.getTX(name) / 41.0;
-            double centerY = LimelightHelpers.getTY(name) / 28.1;
-            double cropRadius = 0.25;
-            double xMin = centerX - cropRadius - 0.25;
-            double xMax = centerX + cropRadius + 0.25;
-            double yMin = centerY - cropRadius;
-            double yMax = centerY + cropRadius;
-            xMin = Math.max(-1.0, xMin);
-            xMax = Math.min(1.0, xMax);
-            yMin = Math.max(-1.0, yMin);
-            yMax = Math.min(1.0, yMax);
-            LimelightHelpers.setCropWindow(name, xMin, xMax, yMin, yMax);
-        }
-    }
+    // private static void updateDynamicCrop(String name, boolean isInvalid) {
+    //     if (isInvalid) {
+    //         LimelightHelpers.setCropWindow(name, -1.0, 1.0, -1.0, 1.0);
+    //     } else {
+    //         double centerX = LimelightHelpers.getTX(name) / 41.0;
+    //         double centerY = LimelightHelpers.getTY(name) / 28.1;
+    //         double cropRadius = 0.25;
+    //         double xMin = centerX - cropRadius - 0.25;
+    //         double xMax = centerX + cropRadius + 0.25;
+    //         double yMin = centerY - cropRadius;
+    //         double yMax = centerY + cropRadius;
+    //         xMin = Math.max(-1.0, xMin);
+    //         xMax = Math.min(1.0, xMax);
+    //         yMin = Math.max(-1.0, yMin);
+    //         yMax = Math.min(1.0, yMax);
+    //         LimelightHelpers.setCropWindow(name, xMin, xMax, yMin, yMax);
+    //     }
+    // }
 
     public static void resetToLimelightPose(CommandSwerveDrivetrain drivetrain, String LLName1, String LLName2) {
         double angularVelocity = drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();

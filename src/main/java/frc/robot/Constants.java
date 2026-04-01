@@ -4,6 +4,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public class Constants {
     public static boolean hasInitializedFromVision = false;
+    public static final Mode currentMode = Mode.REAL;
+
+    public enum Mode {
+        REAL,
+        SIM,
+        REPLAY
+    }
     //location constants
     public static final Translation2d BLUE_HUB = new Translation2d(4.6, 4.0);
     public static final Translation2d RED_HUB = new Translation2d(11.9, 4.0);

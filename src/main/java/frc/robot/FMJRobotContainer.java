@@ -1,8 +1,9 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.BooleanPublisher;
@@ -42,8 +43,9 @@ import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
-import frc.robot.subsystems.vision.Localization;
-import frc.robot.subsystems.vision.LocalizationHelpers;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 
 
 public class FMJRobotContainer {
@@ -71,14 +73,13 @@ public class FMJRobotContainer {
     private FeederSubsystem feeder;
     private ClimberSubsystem climber;
     private SpindexerSubsystem spindexer;
+    private Vision vision;
     private LedSubsystem LED;
 
-    //private AutoAimAndShoot autoAaS;
     private AutoAimAndShootMoving autoAaSM;
     private FeedAimAndShootMoving autoAimFeed;
     private RobotAimAtHub autoRobotHub;
     private ShootBalls shootBalls;
-    private AgitateBalls agitate;
 
     private BooleanPublisher haveBallPublisher;
 
@@ -96,15 +97,9 @@ public class FMJRobotContainer {
 
     private SendableChooser<Command> autonChooser = new SendableChooser<>();
 
-    /** 
-     * Boolean to tell us if the robot is fully initialized. 
-     * On practice field we need to insure that Alliance is set correctly
-     */
     private boolean initialized = false;
 
     public FMJRobotContainer() {
-
-        drivetrain.getPigeon2().setYaw(0.0);
         shooter = new ShooterSubsystem(drivetrain);
         turret = new TurretSubsystem(drivetrain);
         intake = new IntakeSubsystem();
@@ -112,6 +107,28 @@ public class FMJRobotContainer {
         climber = new ClimberSubsystem();
         spindexer = new SpindexerSubsystem(drivetrain);
         LED = new LedSubsystem();
+
+        switch (Constants.currentMode) {
+            case REAL:
+                vision = new Vision(
+                        drivetrain::addVisionMeasurement,
+                        new VisionIOLimelight("limelight-a", drivetrain::getRotation),
+                        new VisionIOLimelight("limelight-b", drivetrain::getRotation));
+                break;
+            case SIM:
+                vision = new Vision(
+                        drivetrain::addVisionMeasurement,
+                        new VisionIO() {},
+                        new VisionIO() {});
+                break;
+            case REPLAY:
+            default:
+                vision = new Vision(
+                        drivetrain::addVisionMeasurement,
+                        new VisionIO() {},
+                        new VisionIO() {});
+                break;
+        }
 
         shootBalls = new ShootBalls(this);
 
@@ -126,10 +143,9 @@ public class FMJRobotContainer {
         autoRobotHub = new RobotAimAtHub(this);
         autoAimFeed = new FeedAimAndShootMoving(this);
         autoAaSM = new AutoAimAndShootMoving(this);
-        //autoAaS = new AutoAimAndShoot(this);
 
         NamedCommands.registerCommand("runIntake", new InstantCommand(intake::runIntake));
-        NamedCommands.registerCommand("resetLLP", new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        //NamedCommands.registerCommand("resetLLP", new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
         NamedCommands.registerCommand("runFeeder", new InstantCommand(feeder::runFeeder, feeder));
         NamedCommands.registerCommand("runSpindexer", new InstantCommand(spindexer::runSpindexer));
         NamedCommands.registerCommand("stopSpindexer", new InstantCommand(spindexer::stopSpindexer));
@@ -208,7 +224,7 @@ public class FMJRobotContainer {
         operatorJoystick.povUp().onTrue(autoAaSM);
         operatorJoystick.povDown().onTrue(autoAimFeed);
 
-        operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
+        //operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
         operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
 
     }
@@ -229,14 +245,6 @@ public class FMJRobotContainer {
             new InstantCommand(spindexer::stopSpindexer),
             new InstantCommand(feeder::stopFeeder)
         ));
-        // driverJoystick.rightStick().whileTrue(
-        //     drivetrain.applyRequest(() -> drive
-        //         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate * 0.5  )
-        //         .withCenterOfRotation(hubLocation)
-        //     )
-        // );
-
-        //driverJoystick.x().onTrue(new TurretResetHome(this).andThen(new InstantCommand(turret::resetTurretZero)));
 
         driverJoystick.rightTrigger().whileTrue(new InstantCommand(intake::runIntake)).onFalse(new InstantCommand(intake::stopIntake));
         driverJoystick.rightBumper().whileTrue(new InstantCommand(intake::runIntakeReverse)).onFalse(new InstantCommand(intake::stopIntake));
@@ -249,7 +257,7 @@ public class FMJRobotContainer {
         driverJoystick.x().onTrue(new AgitateBalls(intake));
 
         //driverJoystick.y().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
-        //driverJoystick.y().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::st `````````````````````````111111111111111111`q*opFeeder));
+        //driverJoystick.y().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
 
         driverJoystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
@@ -313,11 +321,7 @@ public class FMJRobotContainer {
             }
         } 
 
-        if (Localization.tagInView("limelight-a", "limelight-b")) {
-            LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
-        } else {
-            drivetrain.resetPose(((IAuto) auton).getInitialPose());
-        }
+        drivetrain.resetPose(((IAuto) auton).getInitialPose());
 
         shooter.setDefaultCommand(new AutoAimAndShootMoving(this, hubLocation.getX(), hubLocation.getY()));
         return auton;
@@ -327,11 +331,6 @@ public class FMJRobotContainer {
     }
 
     public void robotPeriodic() {
-        LocalizationHelpers.updatePose(drivetrain, "limelight-a");
-        LocalizationHelpers.updatePose(drivetrain, "limelight-b");
-        //Localization.updatePose(drivetrain, "limelight-a", "limelight-b");
-
-        //getDriveVector();
         robotVelocityPublisher.set(robotVelocity);
         robotAnglePublisher.set(robotAngle);
 
@@ -371,14 +370,6 @@ public class FMJRobotContainer {
     }
 
     public void teleopPeriodic() {
-        // if (drivetrain.getState().Pose.getX() < 4.6 || drivetrain.getState().Pose.getX() > 11.9) {
-        //     LimelightHelpers.SetThrottle("limelight-a", 0);
-        //     LimelightHelpers.SetThrottle("limelight-b", 0);
-        // } else {
-        //     LimelightHelpers.SetThrottle("limelight-a", 50);
-        //     LimelightHelpers.SetThrottle("limelight-b", 50);
-        // }
-
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             if (drivetrain.getPose().getY() > 4.0) {
                 autoAimFeed.setTarget(Constants.BLUE_FEED_ONE);

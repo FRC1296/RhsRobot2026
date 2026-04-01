@@ -122,9 +122,7 @@ public class TurretSubsystem extends SubsystemBase {
     public double calculateTurretAngleDelta(Translation2d targetTranslation) {
         Pose2d drivetrainPose = drivetrain.getState().Pose;
         Translation2d turretTranslation = (drivetrainPose.plus(turretOffset)).getTranslation();
-        double distanceToTarget = targetTranslation.getDistance(turretTranslation);
 
-        double offsetCorrection = Math.toDegrees(Math.asin(MathUtil.clamp(turretOffset.getTranslation().getY() / distanceToTarget, -1.0, 1.0)));
         Translation2d vectorToTarget = targetTranslation.minus(turretTranslation);
         double angleToTarget = MathUtil.inputModulus(vectorToTarget.getAngle().getDegrees() , minAngle, maxAngle) - drivetrainPose.getRotation().getDegrees() - getTurretAngle();
         return angleToTarget;
