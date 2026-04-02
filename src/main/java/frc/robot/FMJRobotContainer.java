@@ -54,11 +54,9 @@ public class FMJRobotContainer {
     private double MaxAngularRate = Constants.driveConstants.rotationSpeed;
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate * 0.15) // Add a 15% deadband
+            .withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate * 0.15)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    // private final SwerveRequest.PointWheelsAt point = new
-    // SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -145,7 +143,6 @@ public class FMJRobotContainer {
         autoAaSM = new AutoAimAndShootMoving(this);
 
         NamedCommands.registerCommand("runIntake", new InstantCommand(intake::runIntake));
-        //NamedCommands.registerCommand("resetLLP", new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
         NamedCommands.registerCommand("runFeeder", new InstantCommand(feeder::runFeeder, feeder));
         NamedCommands.registerCommand("runSpindexer", new InstantCommand(spindexer::runSpindexer));
         NamedCommands.registerCommand("stopSpindexer", new InstantCommand(spindexer::stopSpindexer));
@@ -175,7 +172,6 @@ public class FMJRobotContainer {
             autoRobotHub.setTarget(hubLocation);
             autoAimFeed.setTarget(feedLocation);
             autoAaSM.setTarget(hubLocation);
-            //autoAaS.setTarget(hubLocation);
 
             initialized = true;
         }
@@ -214,17 +210,12 @@ public class FMJRobotContainer {
 
         operatorJoystick.x().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
         operatorJoystick.b().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
-        operatorJoystick.y().onTrue(new InstantCommand(shooter::stopMasterShooter));
-        //operatorJoystick.a().onTrue(new InstantCommand(shooter::decreaseToF));
 
         operatorJoystick.povRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
         operatorJoystick.povLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
-        //operatorJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
-        //operatorJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
         operatorJoystick.povUp().onTrue(autoAaSM);
         operatorJoystick.povDown().onTrue(autoAimFeed);
 
-        //operatorJoystick.start().onTrue(new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")));
         operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
 
     }
@@ -252,12 +243,8 @@ public class FMJRobotContainer {
         driverJoystick.leftBumper().onTrue(new InstantCommand(intake::undeployIntake));
 
         driverJoystick.b().whileTrue(drivetrain.applyRequest(() -> brake));
-        //driverJoystick.x().onTrue(new InstantCommand(shooter::stopMasterShooter));
         driverJoystick.a().whileTrue(new InstantCommand(intake::manuelUndeployIntake)).onFalse(new InstantCommand(intake::stopDeployIntake));
         driverJoystick.x().onTrue(new AgitateBalls(intake));
-
-        //driverJoystick.y().whileTrue(new InstantCommand(spindexer::runSpindexer)).onFalse(new InstantCommand(spindexer::stopSpindexer));
-        //driverJoystick.y().whileTrue(new InstantCommand(feeder::runFeeder)).onFalse(new InstantCommand(feeder::stopFeeder));
 
         driverJoystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
@@ -351,22 +338,6 @@ public class FMJRobotContainer {
         feeder.stopFeeder();
         spindexer.stopSpindexer();
         intake.stopIntake();
-
-        // If we are testing teleop - not connected to a real match then zero all mechanisms
-        // if (DriverStation.isFMSAttached() == false) {
-        //     // Intake - set position based on absolute encoder
-        //     intake.resetDeployPosition();
-
-        //     // Hood - set positon based on absolute encoder
-        //     shooter.resetHoodPosition();
-
-        //     // Turret - use command to move turret to zero position
-        //     CommandScheduler.getInstance().schedule(new TurretResetHome(this));
-        
-
-        //     // Limelight - set robot position based on limelights
-        //     LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b");
-        // }
     }
 
     public void teleopPeriodic() {
@@ -388,22 +359,6 @@ public class FMJRobotContainer {
     public void setInitialPose(double x, double y) {
         drivetrain.resetPose(new Pose2d(x, y, drivetrain.getState().Pose.getRotation()));
     }
-
-    // public Vector<N2> getDriveVector() {
-
-    //     ChassisSpeeds cs = drivetrain.getKinematics().toChassisSpeeds();
-    //     double vx = cs.vxMetersPerSecond;
-    //     double vy = cs.vyMetersPerSecond;
-    
-    //     // Total Speed (Magnitude): V = sqrt(vx2 + vy2)
-    //     robotVelocity = Math.hypot(vx, vy);
-
-    //     // Direction (Angle): theta = inverse tan(vy/vx)
-    //     robotAngle = Math.toDegrees(Math.atan2(vy, vx));
-
-    //     Translation2d test = new Translation2d(robotVelocity,robotAngle);
-    //     return test.toVector();
-    // }
 
     public TurretSubsystem getTurret() {
         return turret;

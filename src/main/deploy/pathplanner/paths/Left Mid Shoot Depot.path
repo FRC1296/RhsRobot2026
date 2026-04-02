@@ -228,61 +228,6 @@
       }
     },
     {
-      "name": "resetLLP",
-      "waypointRelativePos": 1.4542190305206473,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "resetLLP"
-        }
-      }
-    },
-    {
-      "name": "resetLLP",
-      "waypointRelativePos": 1.7773788150807914,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "resetLLP"
-        }
-      }
-    },
-    {
-      "name": "resetLLP",
-      "waypointRelativePos": 2.1723518850987436,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "resetLLP"
-        }
-      }
-    },
-    {
-      "name": "resetLLP",
-      "waypointRelativePos": 3.0664272890484745,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "resetLLP"
-        }
-      }
-    },
-    {
-      "name": "resetLLP",
-      "waypointRelativePos": 4.434470377019759,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "resetLLP"
-        }
-      }
-    },
-    {
       "name": "runFeederAndSpindexer",
       "waypointRelativePos": 6.96,
       "endWaypointRelativePos": null,
@@ -303,17 +248,6 @@
               }
             }
           ]
-        }
-      }
-    },
-    {
-      "name": "resetLLP",
-      "waypointRelativePos": 6.99,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "resetLLP"
         }
       }
     }

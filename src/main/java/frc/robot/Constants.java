@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public class Constants {
     public static boolean hasInitializedFromVision = false;
-    public static final Mode currentMode = Mode.REAL;
+    public static final Mode currentMode = Mode.SIM;
 
     public enum Mode {
         REAL,

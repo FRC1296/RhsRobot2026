@@ -13,7 +13,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -43,24 +42,10 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private DutyCycleOut dcOut = new DutyCycleOut(0);
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
 
-    private DoublePublisher hoodPositionPublisher;
     private DoublePublisher shooterSpeedPublisher;
     private DoubleSubscriber robotVelocitySubscriber;
-    private DoublePublisher TofAd;
-    private DoublePublisher Dis;
 
     private double shooterSpeed = 35.0;
-
-    // Hood Absolute Encoder positions
-    private double hoodAbsClosed = 0.00;
-    private double hoodAbsFull = 0.75;
-
-    // Hood Motor Encoder Positions (zero down at start)
-    private double hoodStartPosition = 0.00;
-    private double hoodUp100Percent = 0.75;
-    private double hoodUp50Percent = 0.35;
-
-    private double shooterDisModfier = 0.0;
 
     private double hoodCruiseVelocity = 10;
     private final double hoodkP = 25.0;
@@ -97,11 +82,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable shooterTable = robotTable.getSubTable(Constants.NT_SHOOTER);
-        hoodPositionPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_HOOD_POSITION).publish();
         shooterSpeedPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
-        TofAd = shooterTable.getDoubleTopic("TOF AD").publish();
-        Dis = shooterTable.getDoubleTopic("Dis").publish();
-
 
         NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
         robotVelocitySubscriber = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).subscribe(0.0);
@@ -199,18 +180,11 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         //hoodPositionPublisher.set(hoodAbsEncoder.getAbsolutePosition().getValueAsDouble());
         shooterSpeedPublisher.set(shooterSpeed);
-        TofAd.set(ToFInterpAdjustment);
-        Dis.set(shooterDisModfier);
     }
 
     protected void resetMotorEncoder() {
         //TODO : implement 
     }
-
-    // public void fullCourtShoot() {
-    //     shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(95.0));
-    //     hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.5));
-    // }
 
     public double getShooterVelocity(){
         return shooterMasterMotor.getVelocity().getValueAsDouble();
@@ -250,19 +224,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
     public void stopMasterShooter() {
         shooterMasterMotor.setControl(dcOut.withOutput(0.0));
-    }
-
-    public void moveHoodUp() {
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodUp50Percent));
-    }
-
-    public void resetHoodPosition() {
-        //double absolutePosition = hoodAbsEncoder.getAbsolutePosition().getValueAsDouble();
-        //determine the position to set the motor to
-        //hoodMotor.setPosition(absolutePosition);
-    }
-    public void moveHoodZero() {
-        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(hoodStartPosition));
     }
 
     public void setAutoShooter(double targetX, double targetY) {
@@ -364,13 +325,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         Constants.turretConstants.turretAimAtHub = false;
     }
 
-    /*
-     * The shooter is not centered on the robot, so this will return the transform
-     * necessary for adjusting the pose.
-     * 
-     * Primary used for calculating distances
-     * 
-     */
     public Transform2d getShooterOffset() {
         return shooterOffset;
     }

@@ -259,9 +259,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-        // if (DriverStation.isDisabled()) {
-        //     Constants.hasInitializedFromVision = false;
-        // }
 
         robotSpeedPublisher.set(Math.hypot(
             this.getRobotRelativeSpeeds().vxMetersPerSecond,
@@ -311,7 +308,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
-        // Convert ChassisSpeeds to SwerveRequest
         var request = new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds);
         this.setControl(request);
     }
@@ -372,9 +368,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             return;
         }
 
-        // TODO: we used this::getCurrentRobotChassisSpeeds last year for ChassisSpeeds
-        // supplier;
-        // Configure AutoBuilder
         AutoBuilder.configure(
                 this::getPose, // Robot pose supplier
                 this::resetPose, // Method to reset odometry

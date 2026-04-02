@@ -11,12 +11,12 @@ import frc.robot.subsystems.turret.TurretSubsystem;
 public class SafetyCommand extends ParallelCommandGroup {
 
     public SafetyCommand(FMJRobotContainer robot) {
-        TurretSubsystem turret = robot.getTurret();
-        ShooterSubsystem shooter = robot.getShooter();
-        addCommands(
-                Commands.runOnce(shooter::moveHoodZero, shooter),
-                Commands.runOnce(turret::resetTurretZero,turret),
-                Commands.runOnce(shooter::setShooterSafeVelocity,shooter)
-        );
+        // TurretSubsystem turret = robot.getTurret();
+        // ShooterSubsystem shooter = robot.getShooter();
+        // addCommands(
+        //         Commands.runOnce(shooter::moveHoodZero, shooter),
+        //         Commands.runOnce(turret::resetTurretZero,turret),
+        //         Commands.runOnce(shooter::setShooterSafeVelocity,shooter)
+        // );
     }
 }

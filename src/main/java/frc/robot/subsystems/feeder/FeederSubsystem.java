@@ -7,12 +7,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
@@ -25,12 +22,9 @@ public class FeederSubsystem extends SubsystemBase {
 
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
-    private CommandSwerveDrivetrain drivetrain;
-
     public FeederSubsystem(CommandSwerveDrivetrain drivetrain) {
         super("Feeder");
         feederMotor = new TalonFX(Constants.feederConstants.FEEDER_MOTOR_ID);
-        this.drivetrain = drivetrain;
         ConfigureFeederMotor();
     }
 
@@ -55,13 +49,6 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void runFeeder() {
-        // ChassisSpeeds speed = drivetrain.getRobotRelativeSpeeds();
-        // double currentSpeed = Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
-        // if(currentSpeed <= 1.2 && DriverStation.isTeleop()){
-        //     feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
-        // } else if(DriverStation.isAutonomous()){
-        //     feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
-        // }
         feederMotor.setControl(velocityOut.withSlot(0).withVelocity(Constants.feederConstants.feederSpeed));
 
     }

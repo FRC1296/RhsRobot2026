@@ -43,7 +43,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotInit() {
-        // Create Robot
         m_robotContainer = new FMJRobotContainer();
 
         // Initialize PathPlanner

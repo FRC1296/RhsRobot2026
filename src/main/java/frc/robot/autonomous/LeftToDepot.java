@@ -13,7 +13,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
-import frc.robot.subsystems.vision.LocalizationHelpers;
+//import frc.robot.subsystems.vision.LocalizationHelpers;
 
 public class LeftToDepot extends AutonomousRoutine {
     public LeftToDepot(FMJRobotContainer robot, double velocity, double acceleration,
@@ -52,7 +52,7 @@ public class LeftToDepot extends AutonomousRoutine {
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
                     Commands.runOnce(intake::deployIntake,intake),

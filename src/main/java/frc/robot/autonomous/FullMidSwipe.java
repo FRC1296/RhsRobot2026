@@ -17,7 +17,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
-import frc.robot.subsystems.vision.LocalizationHelpers;
+//import frc.robot.subsystems.vision.LocalizationHelpers;
 
 /** Add your docs here. */
 public class FullMidSwipe extends AutonomousRoutine{
@@ -63,12 +63,12 @@ public class FullMidSwipe extends AutonomousRoutine{
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
                     new InstantCommand(intake::deployIntake), 
                     drivetrain.getAutoPath(firstPath),
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new ParallelCommandGroup(
                         Commands.runOnce(intake::undeployIntake, intake),
                         new InstantCommand(feeder::runFeeder, feeder),

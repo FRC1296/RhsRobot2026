@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
-import frc.robot.subsystems.vision.Localization;
-import frc.robot.subsystems.vision.LocalizationHelpers;
+//import frc.robot.subsystems.vision.Localization;
+//import frc.robot.subsystems.vision.LocalizationHelpers;
 
 /** Add your docs here. */
 public class RightMidShootDepot extends AutonomousRoutine{
@@ -38,7 +38,7 @@ public class RightMidShootDepot extends AutonomousRoutine{
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     drivetrain.runOnce(() -> drivetrain.seedFieldCentric()),
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     drivetrain.getAutoPath(firstPath)

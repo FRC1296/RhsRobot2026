@@ -15,7 +15,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
-import frc.robot.subsystems.vision.LocalizationHelpers;
+//import frc.robot.subsystems.vision.LocalizationHelpers;
 
 public class LeftToMiddle extends AutonomousRoutine {
     public LeftToMiddle(FMJRobotContainer robot, double velocity, double acceleration,
@@ -60,16 +60,16 @@ public class LeftToMiddle extends AutonomousRoutine {
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     new InstantCommand(() -> SmartMove.move(drivetrain, initialPose.getX(), initialPose.getY(), 0.0)),
                     new InstantCommand(intake::deployIntake),                
                     drivetrain.getAutoPath(firstPath),
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     // new InstantCommand(intake::runIntake),
                     drivetrain.getAutoPath(secondPath),
                     drivetrain.getAutoPath(thirdPath),
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new InstantCommand(intake::stopIntake),
                     new InstantCommand(feeder::runFeeder, feeder),
                     new InstantCommand(spindexer::runSpindexer, spindexer),
@@ -78,7 +78,7 @@ public class LeftToMiddle extends AutonomousRoutine {
                     new InstantCommand(spindexer::stopSpindexer, spindexer),
                     new InstantCommand(intake::runIntake),
                     drivetrain.getAutoPath(fourthPath),
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new WaitCommand(1),
                     new ParallelCommandGroup(
                         drivetrain.getAutoPath(fifthPath),
@@ -86,7 +86,7 @@ public class LeftToMiddle extends AutonomousRoutine {
                         new InstantCommand(feeder::runFeeder, feeder),
                         new InstantCommand(spindexer::runSpindexer, spindexer)
                     ),
-                    new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     new WaitCommand(3.5),
                     new InstantCommand(feeder::stopFeeder, feeder),
                     new InstantCommand(spindexer::stopSpindexer, spindexer),
