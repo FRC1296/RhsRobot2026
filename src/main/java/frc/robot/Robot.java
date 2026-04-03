@@ -47,7 +47,6 @@ public class Robot extends LoggedRobot {
 
         // Initialize PathPlanner
         FollowPathCommand.warmupCommand();
-        m_robotContainer.setInitialPose(13.033, 2.951);
 
         // // if (DriverStation.isFMSAttached()) {
         // //Start WPILib Data Log

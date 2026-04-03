@@ -372,7 +372,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::getPose, // Robot pose supplier
                 this::resetPose, // Method to reset odometry
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier (MUST BE ROBOT RELATIVE)
-                (speeds, feedforwards) -> driveRobotRelative(speeds), // Method to drive the robot
+                (speeds, feedforwards) -> setControl( // Use velocity mode + feedforwards (matches getAutoPath)
+                        autoRequest
+                                .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
+                                .withSpeeds(speeds)
+                                .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                                .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
                 new PPHolonomicDriveController(
                         new PIDConstants(1.5, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(1.5, 0.0, 0.0) // Rotation PID constants

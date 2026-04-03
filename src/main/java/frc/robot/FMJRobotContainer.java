@@ -99,7 +99,6 @@ public class FMJRobotContainer {
     private boolean initialized = false;
 
     public FMJRobotContainer() {
-        drivetrain.getPigeon2().setYaw(0.0);
         shooter = new ShooterSubsystem(drivetrain);
         turret = new TurretSubsystem(drivetrain);
         intake = new IntakeSubsystem();
