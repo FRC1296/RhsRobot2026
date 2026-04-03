@@ -29,6 +29,7 @@ import frc.robot.autonomous.LeftToMiddle;
 import frc.robot.autonomous.RightMidShootDepot;
 import frc.robot.autonomous.RightToStation;
 import frc.robot.autonomous.ShootAuton;
+import frc.robot.autonomous.Test1;
 import frc.robot.commands.AutoAimAndShootMoving;
 import frc.robot.commands.FeedAimAndShootMoving;
 import frc.robot.commands.RobotAimAtHub;
@@ -98,6 +99,7 @@ public class FMJRobotContainer {
     private boolean initialized = false;
 
     public FMJRobotContainer() {
+        drivetrain.getPigeon2().setYaw(0.0);
         shooter = new ShooterSubsystem(drivetrain);
         turret = new TurretSubsystem(drivetrain);
         intake = new IntakeSubsystem();
@@ -288,7 +290,8 @@ public class FMJRobotContainer {
         autonChooser.addOption("RightMidShootDepot Blue", new RightMidShootDepot(this, 3, MaxAngularRate, bluePath));
         autonChooser.addOption("RightMidShootDepot Red", new RightMidShootDepot(this, 3, MaxAngularRate, redPath));
 
-
+        autonChooser.addOption("MidTest Blue", new Test1(this, 3, MaxAngularRate, bluePath));
+        autonChooser.addOption("MidTest Red", new Test1(this, 3, MaxAngularRate, redPath));
 
         SmartDashboard.putData("Auto Choices", autonChooser);
     }

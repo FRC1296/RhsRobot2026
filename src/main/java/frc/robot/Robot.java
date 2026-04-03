@@ -25,7 +25,7 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("ProjectName", "RhsRobot2026");
         switch (Constants.currentMode) {
             case REAL:
-                Logger.addDataReceiver(new WPILOGWriter());
+                Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
                 Logger.addDataReceiver(new NT4Publisher());
                 break;
             case SIM:
@@ -47,6 +47,7 @@ public class Robot extends LoggedRobot {
 
         // Initialize PathPlanner
         FollowPathCommand.warmupCommand();
+        m_robotContainer.setInitialPose(13.033, 2.951);
 
         // // if (DriverStation.isFMSAttached()) {
         // //Start WPILib Data Log
