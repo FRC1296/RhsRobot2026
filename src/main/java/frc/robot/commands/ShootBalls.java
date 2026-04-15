@@ -13,8 +13,8 @@ public class ShootBalls extends ParallelCommandGroup {
         FeederSubsystem feeder = robot.getFeeder();
 
         addCommands(
-                Commands.startEnd(shooter::runMasterShooter, shooter::stopMasterShooter, shooter),
-                Commands.startEnd(feeder::runFeeder, feeder::stopFeeder, feeder)
+                Commands.startEnd(shooter::runMasterShooter, shooter::stopMasterShooter, shooter)
+                //Commands.startEnd(feeder::runFeeder, feeder::stopFeeder, feeder)
         );
     }
 }

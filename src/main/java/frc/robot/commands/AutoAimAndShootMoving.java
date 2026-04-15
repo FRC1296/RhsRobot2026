@@ -46,6 +46,8 @@ public class AutoAimAndShootMoving extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.stopMasterShooter();
+        turret.moveTurretToZero();
+        shooter.moveHoodToZero();
     }
 
     public void setTarget(Translation2d target) {

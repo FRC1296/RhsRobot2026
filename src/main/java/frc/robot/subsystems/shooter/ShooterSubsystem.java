@@ -48,7 +48,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private double shooterSpeed = 35.0;
 
     private double hoodCruiseVelocity = 10;
-    private final double hoodkP = 25.0;
+    private final double hoodkP = 20.0;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
     private final double hoodkS = 0.37;
@@ -154,10 +154,10 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
                 .withStatorCurrentLimit(120);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.5)
+                .withKP(0.3)
                 .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.3)
+                .withKS(0.34)
                 .withKV(0.118);
 
         TalonFXConfiguration masterMotorConfig = new TalonFXConfiguration()
@@ -324,6 +324,10 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         Constants.shooterConstants.shooterInterpolate = false;
         Constants.turretConstants.turretAimAtHub = false;
     }
+
+    public void moveHoodToZero() {
+    hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.0));
+}
 
     public Transform2d getShooterOffset() {
         return shooterOffset;

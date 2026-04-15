@@ -55,7 +55,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Coast)
-                .withInverted(InvertedValue.Clockwise_Positive);
+                .withInverted(InvertedValue.CounterClockwise_Positive);
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)

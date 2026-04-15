@@ -11,7 +11,8 @@ public class Constants {
         SIM,
         REPLAY
     }
-    //location constants
+
+    // location constants
     public static final Translation2d BLUE_HUB = new Translation2d(4.6, 4.0);
     public static final Translation2d RED_HUB = new Translation2d(11.9, 4.0);
     public static final Translation2d BLUE_FEED_ONE = new Translation2d(2.0, 6.5);
@@ -41,15 +42,15 @@ public class Constants {
     public static final String NT_SHOOTER_DISTANCE_TO_HUB = "Distance To Hub";
 
     public static final String NT_TURRET_ANGLE = "Turret Angle";
-    
-    public class driveConstants{
+
+    public class driveConstants {
 
         public static boolean driveAimAtHub = false;
 
-        public static final double driveSpeed = 2.5; // meters per sec
+        public static final double driveSpeed = 3.0; // meters per sec
         public static final double rotationSpeed = 2.5; // rotations per sec
     }
-    
+
     public class turretConstants {
         public static boolean turretAimAtHub = false;
         public static boolean turretAimToFeed = false;
@@ -70,16 +71,17 @@ public class Constants {
 
     public class intakeConstants {
         public static final int INTAKE_DEPLOY_MOTOR_ID = 13;
-        public static final int INTAKE_ROLLER_MOTOR_ID = 14;
+        public static final int INTAKE_ROLLER_MOTOR_LEFT_ID = 14;
+        public static final int INTAKE_ROLLER_MOTOR_RIGHT_ID = 17;
         public static final int INTAKE_ENCODER_ID = 26;
     }
 
     public class feederConstants {
         public static final int SPINDEXER_MOTOR_ID = 15;
         public static final int FEEDER_MOTOR_ID = 16;
-        
+
         public static final double feederSpeed = 90.0;
-        public static final double SPINDEXER_SPEED = 72.0;
+        public static final double SPINDEXER_SPEED = 70;
 
     }
 

@@ -3,6 +3,7 @@ package frc.robot.autonomous;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.FMJRobotContainer;
 import frc.robot.autonomous.routes.AutonomousRoutine;
@@ -22,10 +23,11 @@ public class LeftMidShootDepot extends AutonomousRoutine{
         IntakeSubsystem intake = robot.getIntake();
 
         PathPlannerPath firstPath = null;
-
+        PathPlannerPath secondPath = null;
         boolean pathLoaded = true;
         try {
-            firstPath = PathPlannerPath.fromPathFile("Left Mid Shoot Depot");
+            firstPath = PathPlannerPath.fromPathFile("Left Mid Shoot For Depot");
+            secondPath = PathPlannerPath.fromPathFile("Get Depot Balls");
             
         } catch (Exception e) {
             System.err.println("Unable to load PathPlanner file - " + e.getLocalizedMessage());
@@ -36,6 +38,7 @@ public class LeftMidShootDepot extends AutonomousRoutine{
 
             if (isRedAlliance) {
                 firstPath = firstPath.flipPath();
+                secondPath = secondPath.flipPath();
             }
 
             this.initialPose = firstPath.getStartingHolonomicPose().get();
@@ -43,10 +46,12 @@ public class LeftMidShootDepot extends AutonomousRoutine{
             addCommands(
                     //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     drivetrain.runOnce(() -> drivetrain.seedFieldCentric()),
-                    new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
+                   // new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     drivetrain.getAutoPath(firstPath),
-                    new AgitateBalls(intake),
-                    new InstantCommand(intake::undeployIntake)
+                    drivetrain.getAutoPath(secondPath),
+                    new WaitCommand(2.5),
+                    new AgitateBalls(intake)
+                    //new InstantCommand(intake::undeployIntake)
             );
                     
         }

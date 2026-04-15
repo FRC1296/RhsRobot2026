@@ -16,12 +16,28 @@
     },
     {
       "anchor": {
-        "x": 1.645660714283045,
-        "y": 6.4320714285664256
+        "x": 0.8196428571428569,
+        "y": 7.193303571428571
       },
       "prevControl": {
-        "x": 1.078785714283045,
-        "y": 4.731446428566427
+        "x": 0.5610288668226842,
+        "y": 7.22013012885756
+      },
+      "nextControl": {
+        "x": 1.461862462427479,
+        "y": 7.1266848200537485
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7470178571428567,
+        "y": 5.735625
+      },
+      "prevControl": {
+        "x": 2.2287321428571425,
+        "y": 5.978571428571428
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,10 +47,46 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "runIntake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "runIntake"
+        }
+      }
+    },
+    {
+      "name": "runFeederAndSpindexer",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "runFeeder"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "runSpindexer"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.8,
+    "maxAcceleration": 1.8,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +94,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 47.72631099390632
   },
   "reversed": false,
   "folder": "Auton With Vision",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": 90.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

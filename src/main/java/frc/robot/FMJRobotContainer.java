@@ -1,6 +1,9 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+
+import java.lang.ProcessBuilder.Redirect;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -26,7 +29,7 @@ import frc.robot.autonomous.LeftMidShoot;
 import frc.robot.autonomous.LeftMidShootDepot;
 import frc.robot.autonomous.LeftToDepot;
 import frc.robot.autonomous.LeftToMiddle;
-import frc.robot.autonomous.RightMidShootDepot;
+import frc.robot.autonomous.RightMidShoot;
 import frc.robot.autonomous.RightToStation;
 import frc.robot.autonomous.ShootAuton;
 import frc.robot.autonomous.Test1;
@@ -227,8 +230,8 @@ public class FMJRobotContainer {
                         .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)));
         driverJoystick.y().whileTrue(drivetrain.applyRequest(() -> drive
-            .withVelocityX(-driverJoystick.getLeftY() * MaxSpeed * 0.25)
-            .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed * 0.25)
+            .withVelocityX(-driverJoystick.getLeftY() * MaxSpeed * 0.5)
+            .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed * 0.5)
             .withRotationalRate(-driverJoystick.getRightX() * 2  )));
         driverJoystick.y().whileTrue(new ParallelCommandGroup(
             new InstantCommand(spindexer::runSpindexer),
@@ -267,30 +270,31 @@ public class FMJRobotContainer {
         boolean redPath = true;
         boolean bluePath = false;
 
-        autonChooser.addOption("RightToStation Red", new RightToStation(this, MaxSpeed, MaxAngularRate, redPath));
-        autonChooser.addOption("RightToStation Blue", new RightToStation(this, MaxSpeed, MaxAngularRate, bluePath));
+        // autonChooser.addOption("RightToStation Red", new RightToStation(this, MaxSpeed, MaxAngularRate, redPath));
+        // autonChooser.addOption("RightToStation Blue", new RightToStation(this, MaxSpeed, MaxAngularRate, bluePath));
 
-        autonChooser.addOption("LeftToDepot Red", new LeftToDepot(this, MaxSpeed, MaxAngularRate, redPath));
-        autonChooser.addOption("LeftToDepot Blue", new LeftToDepot(this, MaxSpeed, MaxAngularRate, bluePath));
+        // autonChooser.addOption("LeftToDepot Red", new LeftToDepot(this, MaxSpeed, MaxAngularRate, redPath));
+        // autonChooser.addOption("LeftToDepot Blue", new LeftToDepot(this, MaxSpeed, MaxAngularRate, bluePath));
 
         autonChooser.addOption("ShootAuton Red", new ShootAuton(this, MaxSpeed, MaxAngularRate, redPath));
         autonChooser.addOption("ShootAuton Blue", new ShootAuton(this, MaxSpeed, MaxAngularRate, bluePath));
 
-        autonChooser.addOption("LeftToMiddle Red", new LeftToMiddle(this, MaxSpeed, MaxAngularRate, redPath));
-        autonChooser.addOption("LeftToMiddle Blue", new LeftToMiddle(this, MaxSpeed, MaxAngularRate, bluePath));
+        // autonChooser.addOption("LeftToMiddle Red", new LeftToMiddle(this, MaxSpeed, MaxAngularRate, redPath));
+        // autonChooser.addOption("LeftToMiddle Blue", new LeftToMiddle(this, MaxSpeed, MaxAngularRate, bluePath));
 
-        autonChooser.addOption("FullMidSwipe Blue", new FullMidSwipe(this, 3, MaxAngularRate, bluePath));
+        // autonChooser.addOption("FullMidSwipe Blue", new FullMidSwipe(this, 3, MaxAngularRate, bluePath));
 
         autonChooser.addOption("LeftMidShoot Blue", new LeftMidShoot(this, 3, MaxAngularRate, bluePath));
+        autonChooser.addOption("LeftMidShoot Red", new LeftMidShoot(this, 3, MaxAngularRate, redPath));
 
         autonChooser.addOption("LeftMidShootDepot Blue", new LeftMidShootDepot(this, 3, MaxAngularRate, bluePath));
         autonChooser.addOption("LeftMidShootDepot Red", new LeftMidShootDepot(this, 3, MaxAngularRate, redPath));
    
-        autonChooser.addOption("RightMidShootDepot Blue", new RightMidShootDepot(this, 3, MaxAngularRate, bluePath));
-        autonChooser.addOption("RightMidShootDepot Red", new RightMidShootDepot(this, 3, MaxAngularRate, redPath));
+        autonChooser.addOption("RightMidShoot Blue", new RightMidShoot(this, 3, MaxAngularRate, bluePath));
+        autonChooser.addOption("RightMidShoot Red", new RightMidShoot(this, 3, MaxAngularRate, redPath));
 
-        autonChooser.addOption("MidTest Blue", new Test1(this, 3, MaxAngularRate, bluePath));
-        autonChooser.addOption("MidTest Red", new Test1(this, 3, MaxAngularRate, redPath));
+        // autonChooser.addOption("MidTest Blue", new Test1(this, 3, MaxAngularRate, bluePath));
+        // autonChooser.addOption("MidTest Red", new Test1(this, 3, MaxAngularRate, redPath));
 
         SmartDashboard.putData("Auto Choices", autonChooser);
     }

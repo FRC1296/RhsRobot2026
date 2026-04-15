@@ -36,11 +36,11 @@ public class FeederSubsystem extends SubsystemBase {
                 .withStatorCurrentLimit(80);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(0.65)
+                .withKP(0.7)
                 .withKI(0.0)
                 .withKD(0.0)
                 .withKS(0.4)
-                .withKV(0.096);
+                .withKV(0.095);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
                 .withCurrentLimits(currentLimitConfig).withSlot0(slotZeroConfigs);
@@ -54,7 +54,7 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void reverseFeeder() {
-        feederMotor.setControl(velocityOut.withVelocity(-90.0));
+        feederMotor.setControl(velocityOut.withVelocity(-Constants.feederConstants.feederSpeed));
     }
 
     public void stopFeeder() {

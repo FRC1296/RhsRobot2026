@@ -7,11 +7,13 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -22,7 +24,8 @@ import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-    private TalonFX intakeRollerMotor;
+    private TalonFX intakeRollerMotorLeft;
+    private TalonFX intakeRollerMotorRight;
     private TalonFX intakeDeployMotor;
     //private CANcoder intakeAbsEncoder;
 
@@ -30,24 +33,24 @@ public class IntakeSubsystem extends SubsystemBase {
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
-    private double intakeDeployPosition = 11.07;
+    private double intakeDeployPosition = 10.25;
     private double intakeStowPosition = 0;
     private double intakeUndeployPosition = 5.0;
     private double intakeAgitatePosition = 5.0;
 
     private double intakeDeploySpeed = 0.10;
 
-    private double deployCruiseVelocity = 75;
-    private double deployCruiseAcceleration = 150;
+    private double deployCruiseVelocity = 50;
+    private double deployCruiseAcceleration = 35;
     private double deployCruiseJerk = 0;
     
 
     private final double deploykP = 9.5;
     private final double deploykI = 0.0;
     private final double deploykD = 0.0;
-    private final double deploykG = 0.35;
+    private final double deploykG = 0.6;
     private final double deployKS = 0.6;
-    private final double deployKV = 0.125;
+    private final double deployKV = 0.145;
 
     private StatusSignal<Boolean> deployMMAtSetpoint;
     private StatusSignal<Voltage> deployVoltage;
@@ -59,7 +62,8 @@ public class IntakeSubsystem extends SubsystemBase {
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable shooterTable = robotTable.getSubTable(Constants.NT_INTAKE);
 
-        intakeRollerMotor = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_ID);
+        intakeRollerMotorLeft = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_LEFT_ID);
+        intakeRollerMotorRight = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_RIGHT_ID);
         intakeDeployMotor = new TalonFX(Constants.intakeConstants.INTAKE_DEPLOY_MOTOR_ID);
         //intakeAbsEncoder = new CANcoder(Constants.intakeConstants.INTAKE_ENCODER_ID);
 
@@ -77,20 +81,29 @@ public class IntakeSubsystem extends SubsystemBase {
     // }
 
     private void ConfigureIntakeRollerMotor() {
+        intakeRollerMotorRight.setControl(
+                new Follower(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_LEFT_ID, MotorAlignmentValue.Opposed));
+
         MotorOutputConfigs outputConfig = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)
-                .withInverted(InvertedValue.Clockwise_Positive);
+                .withInverted(InvertedValue.CounterClockwise_Positive);
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(120);
         Slot0Configs slotZeroConfigs = new Slot0Configs()
-                .withKP(1.6)
+                .withKP(0.6)
                 .withKI(0.0)
                 .withKD(0.0)
-                .withKS(0.2)
-                .withKV(0.117);
-        TalonFXConfiguration intakeMotorConfig = new TalonFXConfiguration().withMotorOutput(outputConfig)
+                .withKS(0.25)
+                .withKV(0.112);
+
+        TalonFXConfiguration leftMotorConfig = new TalonFXConfiguration()
+                .withCurrentLimits(currentLimitConfig)
+                .withMotorOutput(outputConfig).withSlot0(slotZeroConfigs);
+
+        TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration()
                 .withCurrentLimits(currentLimitConfig).withSlot0(slotZeroConfigs);
 
-        intakeRollerMotor.getConfigurator().apply(intakeMotorConfig);
+        intakeRollerMotorLeft.getConfigurator().apply(leftMotorConfig);
+        intakeRollerMotorRight.getConfigurator().apply(rightMotorConfig);
     }
 
     private void ConfigureDeployMotor() {
@@ -139,15 +152,15 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntake() {
-        intakeRollerMotor.setControl(velocityOut.withVelocity(95.0));
+        intakeRollerMotorLeft.setControl(velocityOut.withVelocity(45.0));
     }
 
     public void stopIntake() {
-        intakeRollerMotor.setControl(dcOut.withOutput(0.0));
+        intakeRollerMotorLeft.setControl(dcOut.withOutput(0.0));
     }
 
     public void runIntakeReverse() {
-        intakeRollerMotor.setControl(velocityOut.withVelocity(-95.0));
+        intakeRollerMotorLeft.setControl(velocityOut.withVelocity(-45.0));
     }
 
     public void undeployIntake() {
