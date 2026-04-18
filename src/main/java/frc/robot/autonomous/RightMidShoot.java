@@ -44,11 +44,14 @@ public class RightMidShoot extends AutonomousRoutine{
             this.initialPose = firstPath.getStartingHolonomicPose().get();
 
             addCommands(
-                    //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
+                   //new InstantCommand(() -> LocalizationHelpers.resetToLimelightPose(drivetrain, "limelight-a", "limelight-b")),
                     drivetrain.runOnce(() -> drivetrain.seedFieldCentric()),
                     //new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     drivetrain.getAutoPath(firstPath),
                     new AgitateBalls(intake).withTimeout(4),
+                    new AgitateBalls(intake).withTimeout(4),
+                    new AgitateBalls(intake).withTimeout(4),
+                    new AgitateBalls(intake).withTimeout(4),                  
                     drivetrain.getAutoPath(secondPath),
                     new AgitateBalls(intake)
             );

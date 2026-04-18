@@ -96,6 +96,9 @@ public class FMJRobotContainer {
     private DoublePublisher shooterVelocityPublisher;
     private DoublePublisher turretAnglePublisher;
     private DoublePublisher robotDistanceToHubPublisher;
+    private BooleanPublisher activePhasePublisher;
+    private DoublePublisher matchTimePublisher;
+    private DoublePublisher timeLeftInShift;
 
     private SendableChooser<Command> autonChooser = new SendableChooser<>();
 
@@ -194,6 +197,11 @@ public class FMJRobotContainer {
         turretAnglePublisher = robotTable.getDoubleTopic(Constants.NT_TURRET_ANGLE).publish();
 
         robotDistanceToHubPublisher = robotTable.getDoubleTopic(Constants.NT_ROBOT_DISTANCE_TO_HUB).publish();
+        
+        NetworkTable FMSTable = robotTable.getSubTable("FMS");
+        activePhasePublisher = FMSTable.getBooleanTopic("Active").publish();
+        matchTimePublisher = FMSTable.getDoubleTopic("Match Time").publish();
+        timeLeftInShift = FMSTable.getDoubleTopic("Time Left In Shift").publish();
     }
 
     private void configureOperatorBindings() {;
@@ -273,8 +281,8 @@ public class FMJRobotContainer {
         // autonChooser.addOption("RightToStation Red", new RightToStation(this, MaxSpeed, MaxAngularRate, redPath));
         // autonChooser.addOption("RightToStation Blue", new RightToStation(this, MaxSpeed, MaxAngularRate, bluePath));
 
-        // autonChooser.addOption("LeftToDepot Red", new LeftToDepot(this, MaxSpeed, MaxAngularRate, redPath));
-        // autonChooser.addOption("LeftToDepot Blue", new LeftToDepot(this, MaxSpeed, MaxAngularRate, bluePath));
+        autonChooser.addOption("LeftToDepot Red", new LeftToDepot(this, MaxSpeed, MaxAngularRate, redPath));
+        autonChooser.addOption("LeftToDepot Blue", new LeftToDepot(this, MaxSpeed, MaxAngularRate, bluePath));
 
         autonChooser.addOption("ShootAuton Red", new ShootAuton(this, MaxSpeed, MaxAngularRate, redPath));
         autonChooser.addOption("ShootAuton Blue", new ShootAuton(this, MaxSpeed, MaxAngularRate, bluePath));
@@ -335,6 +343,16 @@ public class FMJRobotContainer {
             Translation2d robotLocation = drivetrain.getPose().plus(shooter.getShooterOffset()).getTranslation();
             robotDistanceToHubPublisher.set(robotLocation.getDistance(hubLocation));
         }
+
+        try {
+            activePhasePublisher.set(ShiftHelpers.getOfficialShiftInfo().active());
+            matchTimePublisher.set(DriverStation.getMatchTime());
+            timeLeftInShift.set(ShiftHelpers.getOfficialShiftInfo().remainingTime());
+        } catch (Throwable t) {
+            System.out.println("Can't Publish Shifted Shift");
+            throw t;
+        }
+          
     }
 
     public void teleopInit() {
@@ -346,6 +364,7 @@ public class FMJRobotContainer {
         intake.stopIntake();
     }
 
+    
     public void teleopPeriodic() {
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             if (drivetrain.getPose().getY() > 4.0) {

@@ -49,6 +49,9 @@ public class LeftMidShoot extends AutonomousRoutine{
                     //new VerifyHeading(robot, initialPose.getRotation().getDegrees()),
                     drivetrain.getAutoPath(firstPath),
                     new AgitateBalls(intake).withTimeout(4),
+                    new AgitateBalls(intake).withTimeout(4),
+                    new AgitateBalls(intake).withTimeout(4),
+                    new AgitateBalls(intake).withTimeout(4),                  
                     drivetrain.getAutoPath(secondPath),
                     new AgitateBalls(intake)
             );

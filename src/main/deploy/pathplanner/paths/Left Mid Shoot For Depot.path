@@ -183,7 +183,7 @@
       "minWaypointRelativePos": 5.430508474576271,
       "maxWaypointRelativePos": 5.918644067796603,
       "constraints": {
-        "maxVelocity": 1.8,
+        "maxVelocity": 1.25,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 720.0,
@@ -220,7 +220,7 @@
     },
     {
       "name": "runFeederAndSpindexer",
-      "waypointRelativePos": 5.430508474576279,
+      "waypointRelativePos": 5.633898305084745,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",

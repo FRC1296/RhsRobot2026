@@ -11,8 +11,11 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -48,17 +51,15 @@ public class Robot extends LoggedRobot {
         // Initialize PathPlanner
         FollowPathCommand.warmupCommand();
 
-        // // if (DriverStation.isFMSAttached()) {
-        // //Start WPILib Data Log
-        // DataLogManager.start(); // stores logs in either USB(diretory logs) or
-        // roborio drive(/home/lvuser/logs)
+        //if (DriverStation.isFMSAttached()) {
+        //Start WPILib Data Log
+        // DataLogManager.start(); // stores logs in either USB(diretory logs) or roborio drive(/home/lvuser/logs)
         // DriverStation.startDataLog(DataLogManager.getLog());
 
-        // // Start CTRE Data Log - logging will automatically start for FRC match
-        // SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this
-        // location
+        //Start CTRE Data Log - logging will automatically start for FRC match
+        // SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this location
         // SignalLogger.start();
-        // // }
+        //}
     }
 
     @Override
