@@ -43,11 +43,11 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double cruiseVelocity = 75;
 
-    private final double kP = 7.75;
+    private final double kP = 7.25;
     private final double kI = 0.0;
     private final double kD = 0.0;
     private final double kS = 0.4;
-    private final double kV = 0.085;
+    private final double kV = 0.075;
 
     private final double gearRatio = 184.0 / 10.0;
     private Transform2d turretOffset = new Transform2d(

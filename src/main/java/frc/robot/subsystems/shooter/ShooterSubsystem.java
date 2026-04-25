@@ -47,7 +47,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
     private double shooterSpeed = 35.0;
 
-    private double hoodCruiseVelocity = 10;
+    private double hoodCruiseVelocity = 100;
     private final double hoodkP = 20.0;
     private final double hoodkI = 0.0;
     private final double hoodkD = 0.0;
@@ -116,7 +116,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(hoodCruiseVelocity)
-                .withMotionMagicAcceleration(hoodCruiseVelocity / 2)
+                .withMotionMagicAcceleration(hoodCruiseVelocity)
                 .withMotionMagicJerk(0);
 
         // FeedbackConfigs feedbackConfigs = new FeedbackConfigs()

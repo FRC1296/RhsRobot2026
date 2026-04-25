@@ -1,7 +1,9 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -10,11 +12,14 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -27,29 +32,29 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonFX intakeRollerMotorLeft;
     private TalonFX intakeRollerMotorRight;
     private TalonFX intakeDeployMotor;
-    //private CANcoder intakeAbsEncoder;
+    private CANcoder intakeAbsEncoder;
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
-    private double intakeDeployPosition = 10.25;
-    private double intakeStowPosition = 0;
+    private double intakeDeployPosition = -0.001;
+    private double intakeStowPosition = -0.344;
     private double intakeUndeployPosition = 5.0;
     private double intakeAgitatePosition = 5.0;
 
     private double intakeDeploySpeed = 0.10;
 
-    private double deployCruiseVelocity = 50;
-    private double deployCruiseAcceleration = 35;
+    private double deployCruiseVelocity = 100;
+    private double deployCruiseAcceleration = 75;
     private double deployCruiseJerk = 0;
     
 
-    private final double deploykP = 9.5;
+    private final double deploykP = 20;
     private final double deploykI = 0.0;
     private final double deploykD = 0.0;
-    private final double deploykG = 0.6;
-    private final double deployKS = 0.6;
+    private final double deploykG = -0.52;
+    private final double deployKS = 0.45;
     private final double deployKV = 0.145;
 
     private StatusSignal<Boolean> deployMMAtSetpoint;
@@ -65,20 +70,20 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeRollerMotorLeft = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_LEFT_ID);
         intakeRollerMotorRight = new TalonFX(Constants.intakeConstants.INTAKE_ROLLER_MOTOR_RIGHT_ID);
         intakeDeployMotor = new TalonFX(Constants.intakeConstants.INTAKE_DEPLOY_MOTOR_ID);
-        //intakeAbsEncoder = new CANcoder(Constants.intakeConstants.INTAKE_ENCODER_ID);
+        intakeAbsEncoder = new CANcoder(Constants.intakeConstants.INTAKE_ENCODER_ID);
 
-        //ConfigureAbsoluteEncoder();
+        ConfigureAbsoluteEncoder();
         ConfigureIntakeRollerMotor();
         ConfigureDeployMotor();
     }
 
-    // private void ConfigureAbsoluteEncoder() {
-    //     CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
-    //     cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
-    //     cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    //     cc_cfg.MagnetSensor.withMagnetOffset(Rotations.of(0.0));
-    //     intakeAbsEncoder.getConfigurator().apply(cc_cfg);
-    // }
+    private void ConfigureAbsoluteEncoder() {
+        CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
+        cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
+        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        cc_cfg.MagnetSensor.withMagnetOffset(0.0);
+        intakeAbsEncoder.getConfigurator().apply(cc_cfg);
+    }
 
     private void ConfigureIntakeRollerMotor() {
         intakeRollerMotorRight.setControl(
@@ -129,19 +134,19 @@ public class IntakeSubsystem extends SubsystemBase {
                 .withMotionMagicCruiseVelocity(deployCruiseVelocity)
                 .withMotionMagicAcceleration(deployCruiseAcceleration).withMotionMagicJerk(deployCruiseJerk);
 
-        // FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
-        //         .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
-        //         .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
-        //         .withSensorToMechanismRatio(1.0)
-        //         .withRotorToSensorRatio(50.0);
+        FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
+                .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                .withSensorToMechanismRatio(1.0)
+                .withRotorToSensorRatio(28.166666666);
 
         TalonFXConfiguration intakeDeployMotorConfig = new TalonFXConfiguration()
                 .withMotorOutput(outputConfig).withCurrentLimits(currentLimitConfig)
-                .withSlot0(slotZeroConfigs).withMotionMagic(mmConfigs);
-                //.withFeedback(feedbackConfigs);
+                .withSlot0(slotZeroConfigs).withMotionMagic(mmConfigs)
+                .withFeedback(feedbackConfigs);
 
         intakeDeployMotor.getConfigurator().apply(intakeDeployMotorConfig);
-        intakeDeployMotor.setPosition(intakeStowPosition);
+        //intakeDeployMotor.setPosition(intakeStowPosition);
 
         deployMMAtSetpoint = intakeDeployMotor.getMotionMagicAtTarget();
         deployMMEnabled = intakeDeployMotor.getMotionMagicIsRunning();
@@ -152,7 +157,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntake() {
-        intakeRollerMotorLeft.setControl(velocityOut.withVelocity(45.0));
+        intakeRollerMotorLeft.setControl(velocityOut.withVelocity(75.0));
     }
 
     public void stopIntake() {
@@ -160,7 +165,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntakeReverse() {
-        intakeRollerMotorLeft.setControl(velocityOut.withVelocity(-45.0));
+        intakeRollerMotorLeft.setControl(velocityOut.withVelocity(-75.0));
     }
 
     public void undeployIntake() {
@@ -188,6 +193,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void resetDeployPosition() {
-        intakeDeployMotor.setPosition(intakeDeployPosition);
+        //intakeDeployMotor.setPosition(intakeDeployPosition);
     }
 }
