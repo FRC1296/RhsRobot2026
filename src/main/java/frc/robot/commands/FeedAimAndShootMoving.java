@@ -33,9 +33,11 @@ public class FeedAimAndShootMoving extends Command {
 
     @Override
     public void execute() {
-        Translation2d virtualTarget = shooter.getVirtualTarget(targetX, targetY);
+        // Use feed virtual target solver (feed ToF table for correct motion lead on lob arc)
+        Translation2d virtualTarget = shooter.getFeedVirtualTarget(targetX, targetY);
         turret.turretAimAt(virtualTarget);
-        shooter.setAutoShooter(virtualTarget.getX(), virtualTarget.getY());
+        // Hood always at max, speed from feed table
+        shooter.setFeedShooter(virtualTarget.getX(), virtualTarget.getY());
     }
 
     @Override
@@ -46,6 +48,8 @@ public class FeedAimAndShootMoving extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.stopMasterShooter();
+        turret.moveTurretToZero();
+        shooter.moveHoodToZero();
     }
 
     public void setTarget(Translation2d target) {

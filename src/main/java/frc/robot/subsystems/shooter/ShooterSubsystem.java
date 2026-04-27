@@ -13,7 +13,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -24,14 +23,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
-public class ShooterSubsystem extends ShooterInterpolationHelper {
+public class ShooterSubsystem extends ShotCalculator {
 
     private TalonFX hoodMotor;
     private TalonFX shooterMasterMotor;
@@ -43,7 +41,6 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
 
     private DoublePublisher shooterSpeedPublisher;
-    private DoubleSubscriber robotVelocitySubscriber;
 
     private double shooterSpeed = 35.0;
 
@@ -55,18 +52,15 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     private final double hoodkV = 0.055;
 
     private Transform2d shooterOffset = new Transform2d(new Translation2d(0.0, 0.0381),new Rotation2d());
-    private CommandSwerveDrivetrain drivetrain;
 
     private StatusSignal<Boolean> hoodMMAtSetpoint;
     private StatusSignal<Voltage> hoodVoltage;
     private StatusSignal<Boolean> hoodMMEnabled;
 
     public ShooterSubsystem(CommandSwerveDrivetrain drive) {
-        super("Shooter");
+        super("Shooter", drive, new Transform2d(new Translation2d(0.0, 0.0381), new Rotation2d()));
 
         configureNetworkTable();
-
-        drivetrain = drive;
 
         hoodMotor = new TalonFX(Constants.shooterConstants.HOOD_MOTOR_ID);
         shooterMasterMotor = new TalonFX(Constants.shooterConstants.SHOOTER_MASTER_MOTOR_ID);
@@ -84,8 +78,7 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
         NetworkTable shooterTable = robotTable.getSubTable(Constants.NT_SHOOTER);
         shooterSpeedPublisher = shooterTable.getDoubleTopic(Constants.NT_SHOOTER_VELOCITY).publish();
 
-        NetworkTable driveTable = robotTable.getSubTable(Constants.NT_DRIVE);
-        robotVelocitySubscriber = driveTable.getDoubleTopic(Constants.NT_DRIVE_VELOCITY).subscribe(0.0);
+        // Note: robotVelocitySubscriber is now set up in ShotCalculator
     }
 
     private void ConfigureAbsoluteEncoder() {
@@ -227,93 +220,27 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void setAutoShooter(double targetX, double targetY) {
-        Pose2d drivetrainPose = drivetrain.getPose();
+        Pose2d drivetrainPose = getDrivetrain().getPose();
         Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
         double distanceToHub = shooterTranslation.getDistance(new Translation2d(targetX, targetY));
 
         shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(calculateShooterSpeed(distanceToHub)));
         hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(calculateHoodPosition(distanceToHub)));
-        }
-
-    public Translation2d calculateVirtualTarget(double realTargetX, double realTargetY) {
-        double ToFFudgeFactor = 1;
-        
-        double[] robotData = calculateRobotMetric();
-
-        // Gets the xFinal and yFinal of the robot
-        Translation2d shooterPos = new Translation2d(robotData[0], robotData[1]);
-        // Gets the vxFinal and vyFinal of the robot
-        double velocityX = robotData[2];
-        double velocityY = robotData[3];
-
-        Translation2d virtualTarget = new Translation2d(realTargetX, realTargetY);
-        double distance = shooterPos.getDistance(virtualTarget);
-        double timeOfFlight = calculateToF(distance);
-        double virtualX = realTargetX;
-        double virtualY = realTargetY;
-
-        for (int i = 0; i < 7; i++) {
-            virtualX = realTargetX - (velocityX * (timeOfFlight)) * ToFFudgeFactor;
-            virtualY = realTargetY - (velocityY * (timeOfFlight)) * ToFFudgeFactor;
-            
-
-            Translation2d testTarget = new Translation2d(virtualX, virtualY);
-            distance = shooterPos.getDistance(testTarget);
-            timeOfFlight = calculateToF(distance);
-        }
-        return new Translation2d(virtualX, virtualY);
     }
 
-    public double[] calculateRobotMetric(){
-        double deltaT = 0.020;
+    /**
+     * Feed shot: hood is always at maximum angle, shooter speed from feed table.
+     *
+     * @param targetX  field-relative X of the feed target (m)
+     * @param targetY  field-relative Y of the feed target (m)
+     */
+    public void setFeedShooter(double targetX, double targetY) {
+        Pose2d drivetrainPose = getDrivetrain().getPose();
+        Translation2d shooterTranslation = (drivetrainPose.plus(shooterOffset)).getTranslation();
+        double distanceToFeed = shooterTranslation.getDistance(new Translation2d(targetX, targetY));
 
-        double[] variables = new double[4];
-
-        double xInitial = (drivetrain.getPose().plus(shooterOffset)).getTranslation().getX();
-        double yInitial = (drivetrain.getPose().plus(shooterOffset)).getTranslation().getY();
-        double vxInitial = drivetrain.getFieldRelativeSpeeds().vxMetersPerSecond;
-        double vyInitial = drivetrain.getFieldRelativeSpeeds().vyMetersPerSecond;
-        // Gets the accelerations of the robot
-        double accelerationX = calculateRobotAcceleration()[0];
-        double accelerationY = calculateRobotAcceleration()[1];
-
-        double vxFinal = vxInitial + (accelerationX * deltaT);
-        double vyFinal = vyInitial + (accelerationY * deltaT);
-
-        double xFinal = xInitial + (vxInitial * deltaT) + (0.5 * accelerationX * deltaT * deltaT);
-        double yFinal = yInitial + (vyInitial * deltaT) + (0.5 * accelerationY * deltaT * deltaT);
-
-        variables[0] = xFinal;
-        variables[1] = yFinal;
-        variables[2] = vxFinal;
-        variables[3] = vyFinal;
-
-        return variables;
-    }
-
-    public double[] calculateRobotAcceleration(){
-        // G is 9.80665
-        Pigeon2 pigeon = drivetrain.getPigeon2();
-
-        double robotAx = pigeon.getAccelerationX().getValueAsDouble() * 9.80665;
-        double robotAy = pigeon.getAccelerationY().getValueAsDouble() * 9.80665;
-
-        Rotation2d yaw = pigeon.getRotation2d();
-        double yawCos = yaw.getCos();
-        double yawSin = yaw.getSin();
-
-        double fieldAx = robotAx * yawCos - robotAy * yawSin;
-        double fieldAy = robotAx * yawSin + robotAy * yawCos;
-
-        return new double[]{fieldAx, fieldAy};
-    }
-
-    public Translation2d getVirtualTarget(double targetX, double targetY) {
-
-        if(robotVelocitySubscriber.getAsDouble() < 0.1){
-            return new Translation2d(targetX, targetY);
-        }
-        return calculateVirtualTarget(targetX, targetY);
+        shooterMasterMotor.setControl(velocityOut.withSlot(0).withVelocity(calculateFeedShooterSpeed(distanceToFeed)));
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(calculateFeedHoodPosition()));
     }
 
     public void shooterAutoInterpolateBool(boolean bool) {
@@ -326,8 +253,8 @@ public class ShooterSubsystem extends ShooterInterpolationHelper {
     }
 
     public void moveHoodToZero() {
-    hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.0));
-}
+        hoodMotor.setControl(motionMagicVoltage.withSlot(0).withPosition(0.0));
+    }
 
     public Transform2d getShooterOffset() {
         return shooterOffset;

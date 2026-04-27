@@ -46,14 +46,12 @@ public class IntakeSubsystem extends SubsystemBase {
     private double intakeDeploySpeed = 0.10;
 
     private double deployCruiseVelocity = 100;
-    private double deployCruiseAcceleration = 75;
-    private double deployCruiseJerk = 0;
-    
+    private double deployCruiseAcceleration = 75;    
 
     private final double deploykP = 20;
     private final double deploykI = 0.0;
     private final double deploykD = 0.0;
-    private final double deploykG = -0.52;
+    private final double deploykG = 0.52;
     private final double deployKS = 0.45;
     private final double deployKV = 0.145;
 
@@ -80,7 +78,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private void ConfigureAbsoluteEncoder() {
         CANcoderConfiguration cc_cfg = new CANcoderConfiguration();
         cc_cfg.MagnetSensor.withAbsoluteSensorDiscontinuityPoint(1.0);
-        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        cc_cfg.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         cc_cfg.MagnetSensor.withMagnetOffset(0.0);
         intakeAbsEncoder.getConfigurator().apply(cc_cfg);
     }
@@ -115,11 +113,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
         MotorOutputConfigs outputConfig = new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake)
-                .withInverted(InvertedValue.Clockwise_Positive);
+                .withInverted(InvertedValue.CounterClockwise_Positive);
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(55);
+                .withStatorCurrentLimit(80);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(deploykG)
@@ -132,11 +130,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
         MotionMagicConfigs mmConfigs = new MotionMagicConfigs()
                 .withMotionMagicCruiseVelocity(deployCruiseVelocity)
-                .withMotionMagicAcceleration(deployCruiseAcceleration).withMotionMagicJerk(deployCruiseJerk);
+                .withMotionMagicAcceleration(deployCruiseAcceleration);
 
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(Constants.intakeConstants.INTAKE_ENCODER_ID)
-                .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
                 .withSensorToMechanismRatio(1.0)
                 .withRotorToSensorRatio(28.166666666);
 
