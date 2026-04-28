@@ -96,6 +96,7 @@ public class FMJRobotContainer {
     private DoublePublisher shooterVelocityPublisher;
     private DoublePublisher turretAnglePublisher;
     private DoublePublisher robotDistanceToHubPublisher;
+    private DoublePublisher robotDistanceToFeedPublisher;
     private BooleanPublisher activePhasePublisher;
     private DoublePublisher matchTimePublisher;
     private DoublePublisher timeLeftInShift;
@@ -110,7 +111,7 @@ public class FMJRobotContainer {
         intake = new IntakeSubsystem();
         feeder = new FeederSubsystem(drivetrain);
         climber = new ClimberSubsystem();
-        spindexer = new SpindexerSubsystem(drivetrain);
+        spindexer = new SpindexerSubsystem(this);
         LED = new LedSubsystem();
 
         switch (Constants.currentMode) {
@@ -197,6 +198,7 @@ public class FMJRobotContainer {
         turretAnglePublisher = robotTable.getDoubleTopic(Constants.NT_TURRET_ANGLE).publish();
 
         robotDistanceToHubPublisher = robotTable.getDoubleTopic(Constants.NT_ROBOT_DISTANCE_TO_HUB).publish();
+        robotDistanceToFeedPublisher = robotTable.getDoubleTopic("Robot Distance to Feed").publish();
         
         NetworkTable FMSTable = robotTable.getSubTable("FMS");
         activePhasePublisher = FMSTable.getBooleanTopic("Active").publish();
@@ -342,6 +344,11 @@ public class FMJRobotContainer {
         if (hubLocation != null) {
             Translation2d robotLocation = drivetrain.getPose().plus(shooter.getShooterOffset()).getTranslation();
             robotDistanceToHubPublisher.set(robotLocation.getDistance(hubLocation));
+        }
+
+        if (feedLocation != null) {
+            Translation2d robotLocation = drivetrain.getPose().plus(shooter.getShooterOffset()).getTranslation();
+            robotDistanceToFeedPublisher.set(robotLocation.getDistance(feedLocation));
         }
 
         try {

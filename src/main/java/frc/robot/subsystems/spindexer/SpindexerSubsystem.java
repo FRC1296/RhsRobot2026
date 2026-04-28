@@ -18,12 +18,14 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.FMJRobotContainer;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.feeder.FeederSubsystem;
 
 public class SpindexerSubsystem extends SubsystemBase {
 
     private TalonFX spindexerMotor;
-
+    private FMJRobotContainer robot;
 
     private DutyCycleOut dcOut = new DutyCycleOut(0);
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
@@ -36,8 +38,11 @@ public class SpindexerSubsystem extends SubsystemBase {
     private BooleanPublisher spindexerStallPublisher;
     private SpindexerStallCommand stallCommand;
 
-    public SpindexerSubsystem(CommandSwerveDrivetrain drivetrain) {
+    public SpindexerSubsystem(FMJRobotContainer robot) {
         super("Spindexer");
+
+        this.robot = robot;
+
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable robotTable = inst.getTable(Constants.NETWORK_TABLE);
         NetworkTable spindexerTable = robotTable.getSubTable(Constants.NT_SPINDEXER);
@@ -48,7 +53,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         ConfigureSpindexerMotor();
 
-        stallCommand = new SpindexerStallCommand(this);
+        stallCommand = new SpindexerStallCommand(this, robot.getFeeder());
     }
 
     private void ConfigureSpindexerMotor() {

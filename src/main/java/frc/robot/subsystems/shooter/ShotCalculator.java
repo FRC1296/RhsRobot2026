@@ -29,7 +29,7 @@ public class ShotCalculator extends SubsystemBase {
     // -------------------------------------------------------------------------
     protected InterpolatingDoubleTreeMap feedShooterSpeedTable = new InterpolatingDoubleTreeMap();
     protected InterpolatingDoubleTreeMap feedTimeOfFlightTable = new InterpolatingDoubleTreeMap();
-    public static final double FEED_HOOD_MAX = 0.625;
+    public static final double FEED_HOOD_MAX = 0.85;
 
     // -------------------------------------------------------------------------
     // Dependencies (moved here from ShooterSubsystem)
@@ -61,56 +61,50 @@ public class ShotCalculator extends SubsystemBase {
 
     public void initializeTables() {
         // ---- Hub shooter speed table (original, unchanged) ----
-        shooterSpeedTable.put(1.25, 30.0);
-        shooterSpeedTable.put(1.5, 33.25);
-        shooterSpeedTable.put(2.0, 34.0);
-        shooterSpeedTable.put(2.5, 35.5);
-        shooterSpeedTable.put(3.0, 37.0);
-        shooterSpeedTable.put(3.5, 38.75);
+        shooterSpeedTable.put(1.25, 31.0);
+        shooterSpeedTable.put(1.5, 31.5);
+        shooterSpeedTable.put(2.0, 33.0);
+        shooterSpeedTable.put(2.5, 34.0);
+        shooterSpeedTable.put(3.0, 35.5);
+        shooterSpeedTable.put(3.5, 38.5);
         shooterSpeedTable.put(4.0, 40.5);
         shooterSpeedTable.put(4.5, 43.0);
-        shooterSpeedTable.put(5.0, 44.5);
-        shooterSpeedTable.put(5.40, 46.5);
+        shooterSpeedTable.put(5.0, 43.5);
+        shooterSpeedTable.put(5.45, 46.0);
         shooterSpeedTable.put(6.0, 47.5);
         shooterSpeedTable.put(6.5, 50.0);
 
         // ---- Hub hood table (original, unchanged) ----
         hoodTable.put(1.5, 0.05);
-        hoodTable.put(5.5, 0.625);
+        hoodTable.put(6.5, FEED_HOOD_MAX);
 
         //Distance to hub -> Time of Flight sec (original, unchanged)
-        timeOfFlightTable.put(1.25, 0.98);
-        timeOfFlightTable.put(1.5, 1.15);
-        timeOfFlightTable.put(2.0, 1.16);
-        timeOfFlightTable.put(2.5, 1.18);
-        timeOfFlightTable.put(3.0, 1.20);
-        timeOfFlightTable.put(3.5, 1.06);
-        timeOfFlightTable.put(4.0, 1.10);
-        timeOfFlightTable.put(4.5, 1.18);
-        timeOfFlightTable.put(5.0, 1.15);
-        timeOfFlightTable.put(5.45, 1.12);
-        timeOfFlightTable.put(6.0, 1.26);
-        timeOfFlightTable.put(6.5, 1.27);
+        timeOfFlightTable.put(1.25, 1.01);
+        timeOfFlightTable.put(1.5, 1.00);
+        timeOfFlightTable.put(2.0, 1.07);
+        timeOfFlightTable.put(2.5, 1.03);
+        timeOfFlightTable.put(3.0, 1.17);
+        timeOfFlightTable.put(3.5, 1.17);
+        timeOfFlightTable.put(4.0, 1.07);
+        timeOfFlightTable.put(4.5, 1.06);
+        timeOfFlightTable.put(5.0, 1.02);
+        timeOfFlightTable.put(5.45, 1.00);
+        timeOfFlightTable.put(6.0, 1.02);
+        timeOfFlightTable.put(6.5, 0.96);
 
         // ---- Feed shooter speed table (tune on practice field) ----
-        feedShooterSpeedTable.put(5.0,  44.0);
-        feedShooterSpeedTable.put(6.0,  46.0);
-        feedShooterSpeedTable.put(7.0,  48.5);
-        feedShooterSpeedTable.put(8.0,  51.0);
-        feedShooterSpeedTable.put(9.0,  53.5);
-        feedShooterSpeedTable.put(10.0, 56.0);
-        feedShooterSpeedTable.put(11.0, 58.5);
-        feedShooterSpeedTable.put(12.0, 61.0);
+        feedShooterSpeedTable.put(4.0,  34.0);
+        feedShooterSpeedTable.put(6.0,  42.0);
+        feedShooterSpeedTable.put(8.0,  50.0);
+        feedShooterSpeedTable.put(11.0, 63.5 );
+        feedShooterSpeedTable.put(13.5,  80.0);
 
         // ---- Feed time of flight table (tune on practice field) ----
-        feedTimeOfFlightTable.put(5.0,  1.30);
-        feedTimeOfFlightTable.put(6.0,  1.45);
-        feedTimeOfFlightTable.put(7.0,  1.60);
-        feedTimeOfFlightTable.put(8.0,  1.75);
-        feedTimeOfFlightTable.put(9.0,  1.90);
-        feedTimeOfFlightTable.put(10.0, 2.05);
-        feedTimeOfFlightTable.put(11.0, 2.20);
-        feedTimeOfFlightTable.put(12.0, 2.35);
+        feedTimeOfFlightTable.put(4.0,  1.22);
+        feedTimeOfFlightTable.put(6.0,  1.28);
+        feedTimeOfFlightTable.put(8.0,  1.56);
+        feedTimeOfFlightTable.put(11.0,  1.79);
+        feedTimeOfFlightTable.put(13.5,  1.92);
     }
 
     // =========================================================================
@@ -129,8 +123,8 @@ public class ShotCalculator extends SubsystemBase {
         double hood = 0.0;
         if (distance <= 1.5) {
             hood = 0;
-        } else if (distance >= 5.5){
-            hood = 0.625;
+        } else if (distance >= 6.5){
+            hood = 0.85;
         } else {
             hood = hoodTable.get(distance);
         }

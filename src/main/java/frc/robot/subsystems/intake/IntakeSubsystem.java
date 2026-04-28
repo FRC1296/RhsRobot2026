@@ -38,14 +38,14 @@ public class IntakeSubsystem extends SubsystemBase {
     private VelocityVoltage velocityOut = new VelocityVoltage(0);
     private DutyCycleOut dcOut = new DutyCycleOut(0);
 
-    private double intakeDeployPosition = -0.001;
-    private double intakeStowPosition = -0.344;
-    private double intakeUndeployPosition = 5.0;
-    private double intakeAgitatePosition = 5.0;
+    private double intakeDeployPosition = 0.005;
+    private double intakeStowPosition = 0.339;
+    private double intakeUndeployPosition = 0.18;
+    private double intakeAgitatePosition = -0.842;
 
     private double intakeDeploySpeed = 0.10;
 
-    private double deployCruiseVelocity = 100;
+    private double deployCruiseVelocity = 50;
     private double deployCruiseAcceleration = 75;    
 
     private final double deploykP = 20;
@@ -117,7 +117,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(80);
+                .withStatorCurrentLimit(45);
 
         Slot0Configs slotZeroConfigs = new Slot0Configs()
                 .withKG(deploykG)
