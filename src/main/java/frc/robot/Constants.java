@@ -48,7 +48,7 @@ public class Constants {
         public static boolean driveAimAtHub = false;
 
         public static final double driveSpeed = 2.625; // meters per sec
-        public static final double rotationSpeed = 3.25; // rotations per sec
+        public static final double rotationSpeed = 360.0; // Degrees per sec
     }
 
     public class turretConstants {

@@ -29,6 +29,7 @@ public class Robot extends LoggedRobot {
         switch (Constants.currentMode) {
             case REAL:
                 Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+                //need to get usb and change path to /media/sda1/akitlogs
                 Logger.addDataReceiver(new NT4Publisher());
                 break;
             case SIM:
@@ -57,8 +58,8 @@ public class Robot extends LoggedRobot {
         // DriverStation.startDataLog(DataLogManager.getLog());
 
         //Start CTRE Data Log - logging will automatically start for FRC match
-        // SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this location
-        // SignalLogger.start();
+        //SignalLogger.setPath("/media/sda1/ctre-logs"); // we need to valid this location
+        //SignalLogger.start();
         //}
     }
 

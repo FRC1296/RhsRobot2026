@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autonomous.DefaultAuton;
 import frc.robot.autonomous.FullMidSwipe;
 import frc.robot.autonomous.IAuto;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.hid.ControlPanel;
 import frc.robot.subsystems.intake.AgitateBalls;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.led.LedSubsystem;
@@ -66,6 +68,8 @@ public class FMJRobotContainer {
 
     private final CommandXboxController driverJoystick = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
+    private final CommandXboxController testJoystick = new CommandXboxController(3);
+    private final ControlPanel controlPanel = new ControlPanel(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -76,7 +80,7 @@ public class FMJRobotContainer {
     private ClimberSubsystem climber;
     private SpindexerSubsystem spindexer;
     private Vision vision;
-    private LedSubsystem LED;
+    //private LedSubsystem LED;
 
     private AutoAimAndShootMoving autoAaSM;
     private FeedAimAndShootMoving autoAimFeed;
@@ -112,7 +116,7 @@ public class FMJRobotContainer {
         feeder = new FeederSubsystem(drivetrain);
         climber = new ClimberSubsystem();
         spindexer = new SpindexerSubsystem(this);
-        LED = new LedSubsystem();
+        //LED = new LedSubsystem();
 
         switch (Constants.currentMode) {
             case REAL:
@@ -163,6 +167,7 @@ public class FMJRobotContainer {
         configureNetworkTable();
         configureDriverBindings();
         configureOperatorBindings();
+        //configureControlPanelBindings();
         configureAutonOptions();
 
     }
@@ -206,7 +211,7 @@ public class FMJRobotContainer {
         timeLeftInShift = FMSTable.getDoubleTopic("Time Left In Shift").publish();
     }
 
-    private void configureOperatorBindings() {;
+    private void configureOperatorBindings() {
 
         operatorJoystick.leftTrigger().toggleOnTrue(shootBalls);
         operatorJoystick.leftBumper().whileTrue(new ParallelCommandGroup(
@@ -231,18 +236,46 @@ public class FMJRobotContainer {
         operatorJoystick.povDown().onTrue(autoAimFeed);
 
         operatorJoystick.back().onTrue(new InstantCommand(intake::resetDeployPosition));
+    }
 
+    private void configureControlPanelBindings() {
+
+        controlPanel.shootBalls().toggleOnTrue(shootBalls);
+        controlPanel.reverseSpindexer().whileTrue(new ParallelCommandGroup(
+            new InstantCommand(spindexer::reverseSpindexer),
+            new InstantCommand(feeder::reverseFeeder)
+        )).onFalse(new ParallelCommandGroup(
+            new InstantCommand(spindexer::stopSpindexer),
+            new InstantCommand(feeder::stopFeeder)
+        ));
+        controlPanel.manuelDeployIntake()
+            .whileTrue(new InstantCommand(intake::manuelDeployIntake))
+            .onFalse(new InstantCommand(intake::stopDeployIntake));
+        controlPanel.runSpindexerFeeder()
+            .whileTrue(new InstantCommand(spindexer::runSpindexer))
+            .onFalse(new InstantCommand(spindexer::stopSpindexer));
+        controlPanel.runSpindexerFeeder()
+            .whileTrue(new InstantCommand(feeder::runFeeder))
+            .onFalse(new InstantCommand(feeder::reverseFeeder).withTimeout(1.0).andThen(new InstantCommand(feeder::stopFeeder)));
+
+        controlPanel.turretAimHub().onTrue(new InstantCommand(() -> turret.turretAimAtHubBool(false)));
+        controlPanel.turretAimFeed().onTrue(new InstantCommand(() -> turret.turretAimToFeedBool(false)));
+
+        controlPanel.turretAngleRight().onTrue(new InstantCommand(turret::increaseTurretAngle));
+        controlPanel.turretAngleLeft().onTrue(new InstantCommand(turret::decreaseTurretAngle));
+        controlPanel.autoAimShoot().onTrue(autoAaSM);
+        controlPanel.autoAimFeed().onTrue(autoAimFeed);
     }
 
     private void configureDriverBindings() {
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
-                        .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate)));
+                        .withRotationalRate(-driverJoystick.getRightX() * Math.toRadians(MaxAngularRate))));
         driverJoystick.y().whileTrue(drivetrain.applyRequest(() -> drive
             .withVelocityX(-driverJoystick.getLeftY() * MaxSpeed * 0.5)
             .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed * 0.5)
-            .withRotationalRate(-driverJoystick.getRightX() * 2  )));
+            .withRotationalRate(-driverJoystick.getRightX() * Math.toRadians(MaxAngularRate) * 1.5  )));
         driverJoystick.y().whileTrue(new ParallelCommandGroup(
             new InstantCommand(spindexer::runSpindexer),
             new InstantCommand(feeder::runFeeder)
@@ -266,13 +299,15 @@ public class FMJRobotContainer {
         driverJoystick.povRight().onTrue(new InstantCommand(shooter::increaseShooterSpeed));
         driverJoystick.povUp().onTrue(new InstantCommand(shooter::increaseShooterInterpSpeed));
         driverJoystick.povDown().onTrue(new InstantCommand(shooter::decreaseShooterInterpSpeed));
-
-        //for tuning the drivetrain
-        // driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        
         drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    public void configureTempBindings() {
+        driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
     }
 
     public void configureAutonOptions() {
@@ -340,7 +375,6 @@ public class FMJRobotContainer {
         shooterVelocityPublisher.set(shooter.getShooterVelocity());
         turretAnglePublisher.set(turret.getTurretAngle());
 
-        //Publish the robot distance to the hub
         if (hubLocation != null) {
             Translation2d robotLocation = drivetrain.getPose().plus(shooter.getShooterOffset()).getTranslation();
             robotDistanceToHubPublisher.set(robotLocation.getDistance(hubLocation));
@@ -359,7 +393,6 @@ public class FMJRobotContainer {
             System.out.println("Can't Publish Shifted Shift");
             throw t;
         }
-          
     }
 
     public void teleopInit() {
@@ -371,7 +404,6 @@ public class FMJRobotContainer {
         intake.stopIntake();
     }
 
-    
     public void teleopPeriodic() {
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             if (drivetrain.getPose().getY() > 4.0) {
